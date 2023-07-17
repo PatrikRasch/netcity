@@ -1,6 +1,8 @@
 import React from "react";
 
 const Register = () => {
+  const signIn = () => {};
+
   return (
     <div className="min-h-[100svh]">
       <div className="min-h-[90svh] grid justify-center">
