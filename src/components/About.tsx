@@ -1,6 +1,6 @@
 import React from "react";
 
-function About() {
+const About = () => {
   return (
     <div className="grid justify-items-center">
       <div className="text-3xl mb-3 mt-3">Bio</div>
@@ -12,6 +12,6 @@ function About() {
       </div>
     </div>
   );
-}
+};
 
 export default About;

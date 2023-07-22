@@ -3,6 +3,8 @@ import Header from "./Header";
 import AllPosts from "./AllPosts";
 import profilePicture from "./../assets/images/profile-picture.jpg";
 
+//2 Need to split AllPosts into PublicPosts and ProfilePosts
+
 function Public() {
   return (
     <div>
@@ -20,7 +22,7 @@ function Public() {
         />
       </div>
       <div className="w-full h-[15px] bg-gray-100"></div>
-      <AllPosts />
+      {/* <AllPosts /> */}
     </div>
   );
 }

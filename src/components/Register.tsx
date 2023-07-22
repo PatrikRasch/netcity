@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { auth, googleProvider, db } from "./../config/firebase.config";
 import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-
 import { collection, addDoc, doc, setDoc, getDocs, deleteDoc } from "firebase/firestore";
+
 import LoadingBar from "./LoadingBar";
 
 const Register = () => {

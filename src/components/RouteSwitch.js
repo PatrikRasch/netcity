@@ -16,7 +16,7 @@ function RouteSwitch() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<ProfileLayout />} />
-        <Route path="/about" element={<AboutLayout />} />
+        <Route path="/profile-about" element={<AboutLayout />} />
         <Route path="/public" element={<PublicLayout />} />
       </Routes>
     </BrowserRouter>
@@ -43,7 +43,6 @@ const PublicLayout = () => {
   return (
     <>
       <Public />
-      <About />
     </>
   );
 };
