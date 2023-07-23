@@ -1,13 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Post from "./Post";
 
 import { userIdProp } from "../interfaces";
 import { FirstNameProp } from "../interfaces";
 import { LastNameProp } from "../interfaces";
 import { PostsProp } from "../interfaces";
-
-import { db } from "./../config/firebase.config";
-import { collection, doc, getDocs, orderBy, query } from "firebase/firestore";
 
 interface Props {
   userId: userIdProp["userId"];
@@ -18,10 +15,8 @@ interface Props {
 }
 
 const AllPosts = (props: Props) => {
-  const { userId, setUserId } = props;
   const { posts } = props;
-  const { firstName } = props;
-  const { lastName } = props;
+  const { userId } = props;
 
   //1 Adds all the posts on Firebase onto the page.
   const populatePostsOnPage = () => {
@@ -32,9 +27,11 @@ const AllPosts = (props: Props) => {
           postLastName={post.lastName}
           postText={post.text}
           postDate={post.date}
-          postNumOfLikes={post.likes}
-          postNumOfDislikes={post.dislikes}
+          postLikes={post.likes}
+          postDislikes={post.dislikes}
           postNumOfComments={post.comments}
+          userId={userId}
+          postId={post.id}
         />
         <div className="w-full h-[15px] bg-gray-100"></div>
       </div>
