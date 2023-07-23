@@ -42,8 +42,8 @@ function MakePost(props: Props) {
     lastName: string;
     text: string;
     date: string;
-    likes: number;
-    dislikes: number;
+    likes: object;
+    dislikes: object;
     comments: number;
   }) => {
     try {
@@ -89,13 +89,14 @@ function MakePost(props: Props) {
             placeholder="Make a post"
             className="w-full bg-transparent resize-none"
             maxLength={150}
+            value={postInput}
             onChange={(e) => setPostInput(e.target.value)}
           />
         </div>
         {/* <div className="w-full h-[2px] bg-gray-300"></div> */}
         <button
           className="min-h-[30px] w-full bg-[#00A7E1] text-white"
-          onClick={() => {
+          onClick={(e) => {
             if (postInput.length === 0) return console.log("add text to input before posting");
             writePost({
               timestamp: date,
@@ -103,11 +104,12 @@ function MakePost(props: Props) {
               lastName: lastName,
               text: postInput,
               date: fullDate(date.getMonth() + 1),
-              likes: 0,
-              dislikes: 0,
+              likes: {},
+              dislikes: {},
               comments: 0,
             });
             getAllDocs();
+            setPostInput("");
           }}
         >
           Post

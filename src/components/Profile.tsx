@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 
 import { db } from "./../config/firebase.config";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -16,12 +15,14 @@ import { PostData } from "../interfaces";
 //3 1. Fetch the data from firestore and display firstname + lastname
 //3       Gotta match the user from auth to users and then fetch the data
 //3 2. Allow user to make post. When text input and post clicked, add post to firebase user's post
-//3    Only display the posts added to the user's page
 //3 3. Set up routing to about when about it clicked
-//2 4. Set up routing to and from public
+//3 4. Set up routing to and from public
 
 //2 It's going to be a problem down the line to separate a visiting user from the profile the
 //2 user is viewing. As of now I think it all goes under the same umbrella. We'll see.
+
+//2 Currently, whenever this (Profile) component is navigated to, the getAllDocs(); effect is ran.
+//2   This is not necessary.
 
 const Profile = () => {
   const [showPosts, setShowPosts] = useState(true);
@@ -29,7 +30,6 @@ const Profile = () => {
   const [lastName, setLastName] = useState("");
   const [userId, setUserId] = useState("");
   const [posts, setPosts] = useState<PostData[]>([]);
-  const navigate = useNavigate();
 
   //1 Gets all the profilePosts from the user's subcollection.
   const getAllDocs = async () => {
