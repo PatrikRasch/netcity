@@ -4,6 +4,7 @@ import profilePicture2 from "./../assets/images/autumn-girl.jpg";
 import likeIcon from "./../assets/icons/heartPlus.png";
 import heartLiked from "./../assets/icons/heartLiked.png";
 import dislikeIcon from "./../assets/icons/heartMinus.png";
+import heartDisliked from "./../assets/icons/heartDisliked.png";
 import commentIcon from "./../assets/icons/comment.png";
 
 import { db } from "./../config/firebase.config";
@@ -33,6 +34,7 @@ interface Props {
 
 function Post(props: Props) {
   const [liked, setLiked] = useState(false);
+  const [disliked, setDisliked] = useState(false);
   const [postNumOfLikes, setPostNumOfLikes] = useState(0);
   const [postNumOfDislikes, setPostNumOfDislikes] = useState(0);
   const [postData, setPostData] = useState<TargetData | null>(null);
@@ -47,13 +49,10 @@ function Post(props: Props) {
   const { postId } = props;
 
   useEffect(() => {
+    console.log("loop");
     setPostNumOfLikes(Object.keys(postLikes).length);
-    setPostNumOfDislikes(Object.keys(postDislikes).length);
+    setPostNumOfDislikes(-Object.keys(postDislikes).length);
   }, []);
-
-  //2 Next goal is to ensure that when a like is removed, it is reflected on the screen.
-  //2 Work with the useEffect below and handleClick. Gotta do something with state
-  //2 That updates every time the like button is clicked.
 
   const usersDoc = doc(db, "users", userId);
   const postsProfileCollection = collection(usersDoc, "postsProfile");
@@ -70,35 +69,84 @@ function Post(props: Props) {
     }
   };
   useEffect(() => {
+    console.log("use effect");
     getPostData();
   }, []);
 
+  const addLike = async () => {
+    setLiked(true); // Set liked to true, makes heart red
+    // Frontend updates:
+    (postLikes as { [key: string]: boolean })[userId] = true; // Add the userId into postLikes as true
+    setPostNumOfLikes(Object.keys(postLikes).length); // Update state for number of likes to display
+    // Backend updates:
+    const newLikes = { ...postData?.likes, [userId]: true }; // Define new object to hold the likes
+    await updateDoc(postDoc, { likes: newLikes }); // Update the backend with the new likes
+  };
+
+  const removeLike = async () => {
+    setLiked(false); // Set liked to false, makes heart empty
+    // Frontend updates
+    delete (postLikes as { [key: string]: boolean })[userId]; // Remove the userId from postLikes
+    setPostNumOfLikes(Object.keys(postLikes).length); // Update state for number of likes to display
+    // Backend updates:
+    delete (postData?.likes as { [key: string]: boolean })[userId]; // Delete the userId from the postData object
+    const newLikes = { ...postData?.likes }; // Define new object to hold the likes
+    await updateDoc(postDoc, { likes: newLikes }); // Update the backend with the new likes
+  };
+
+  const addDislike = async () => {
+    setDisliked(true); // Set disliked to true, makes heart black
+    // Frontend updates:
+    (postDislikes as { [key: string]: boolean })[userId] = true; // Add the userId into postDislikes as true
+    setPostNumOfDislikes(-Object.keys(postDislikes).length); // Update state for number of dislikes to display
+    // Backend updates:
+    const newDislikes = { ...postData?.dislikes, [userId]: true }; // Define new object to hold the dislikes
+    await updateDoc(postDoc, { dislikes: newDislikes }); // Update the backend with the new dislikes
+  };
+
+  const removeDislike = async () => {
+    setDisliked(false); // Set liked to false, makes heart empty
+    // Frontend updates
+    delete (postDislikes as { [key: string]: boolean })[userId]; // Remove the userId from postLikes
+    setPostNumOfDislikes(-Object.keys(postDislikes).length); // Update state for number of likes to display
+    // Backend updates:
+    delete (postData?.dislikes as { [key: string]: boolean })[userId]; // Delete the userId from the postData object
+    const newDislikes = { ...postData?.dislikes }; // Define new object to hold the likes
+    await updateDoc(postDoc, { dislikes: newDislikes }); // Update the backend with the new likes
+  };
+
   //2 Could potentially add in a revert of the frontend update if the backend update
   //2 was to fail for whatever reason, and then alert the user of the issue. Optimistic UI, that is.
+
   const handleClickLike = async () => {
     // If post not liked
     if (!liked) {
-      setLiked(true); // Set liked to true, makes heart red
-      // Frontend updates:
-      (postLikes as { [key: string]: boolean })[userId] = true; // Add the userId into postLikes as true
-      setPostNumOfLikes(Object.keys(postLikes).length); // Update state for number of likes to display
-      // Backend updates:
-      const newLikes = { ...postData?.likes, [userId]: true }; // Define new object to hold the likes
-      await updateDoc(postDoc, { likes: newLikes }); // Update the backend with the new likes
+      if (disliked) {
+        removeDislike();
+      }
+      addLike();
     }
     // If post already liked
     if (liked) {
-      setLiked(false); // Set liked to false, makes heart empty
-      // Frontend updates
-      delete (postLikes as { [key: string]: boolean })[userId]; // Remove the userId from postLikes
-      setPostNumOfLikes(Object.keys(postLikes).length); // Update state for number of likes to display
-      // Backend updates:
-      delete (postData?.likes as { [key: string]: boolean })[userId]; // Delete the userId from the postData object
-      const newLikes = { ...postData?.likes }; // Define new object to hold the likes
-      await updateDoc(postDoc, { likes: newLikes }); // Update the backend with the new likes
+      removeLike();
     }
   };
 
+  const handleClickDislike = async () => {
+    // If post not disliked
+    if (!disliked) {
+      if (liked) {
+        removeLike();
+      }
+      addDislike();
+    }
+    // If post already liked
+    if (disliked) {
+      removeDislike();
+    }
+  };
+
+  //1 Gets the initial post data from Firebase
   const getPost = async () => {
     const usersDoc = doc(db, "users", userId);
     const postsProfileCollection = collection(usersDoc, "postsProfile");
@@ -106,17 +154,27 @@ function Post(props: Props) {
     const targetDoc = await getDoc(postDoc);
     const data = targetDoc.data();
     if (data?.likes?.hasOwnProperty(userId)) setLiked(true);
+    if (data?.dislikes?.hasOwnProperty(userId)) setDisliked(true);
   };
-
   useEffect(() => {
+    console.log("loop");
     getPost();
   }, []);
 
+  //1 The like icon on each post. Shows if the user has liked a post.
   const showLikedOrNot = () => {
     if (!liked) {
       return <img src={likeIcon} alt="" className="max-h-6" />;
     } else {
       return <img src={heartLiked} alt="" className="max-h-6" />;
+    }
+  };
+  //1 The dislike icon on each post. Shows if the user has disliked a post.
+  const showDislikedOrNot = () => {
+    if (!disliked) {
+      return <img src={dislikeIcon} alt="" className="max-h-6" />;
+    } else {
+      return <img src={heartDisliked} alt="" className="max-h-6" />;
     }
   };
 
@@ -151,7 +209,7 @@ function Post(props: Props) {
         </div>
         {/*//1 Dislike */}
         <div className="flex gap-2">
-          <img src={dislikeIcon} alt="" className="max-h-6" />
+          <button onClick={() => handleClickDislike()}>{showDislikedOrNot()}</button>
           <div>{postNumOfDislikes}</div>
         </div>
         {/* //1 Comment */}
@@ -172,3 +230,11 @@ export default Post;
 //3 For tomorrow: What is the difference on postLikes and postData?
 //3   1. postLikes is the prop for the "likes" key-value pair  for the post, coming from AllPosts
 //3   2. postData is state declared in this component, which gets populated by the getPostData() function
+
+//3 Next goal is to ensure that when a like is removed, it is reflected on the screen.
+//3 Work with the useEffect below and handleClick. Gotta do something with state
+//3 That updates every time the like button is clicked.
+
+//3 Only allow a userId to have either liked or disliked a post.
+//3 - If a user dislikes a post after having liked it, remove the like
+//3 - If a user likes post after having disliked it, remove the dislike
