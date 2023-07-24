@@ -34,6 +34,7 @@ export interface TargetData {
   firstName: string;
   lastName: string;
   likes: object;
+  dislikes: object;
   text: string;
   timestamp: firebase.firestore.Timestamp;
 }
