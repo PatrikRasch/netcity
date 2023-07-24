@@ -10,6 +10,7 @@ import { db } from "./../config/firebase.config";
 import { doc, getDoc, updateDoc, collection } from "firebase/firestore";
 
 import { PostProp } from "../interfaces";
+import { TargetData } from "../interfaces";
 
 //3 Must take in props with postUser, postDate, postText, postNumOfLikes, postNumOfDislikes, postNumOfComments
 //3    When a new post is made, the numbers should be 0 (or "no comments").
@@ -32,7 +33,9 @@ interface Props {
 
 function Post(props: Props) {
   const [liked, setLiked] = useState(false);
-  const [likeObject, setLikeObject] = useState(null);
+  const [postNumOfLikes, setPostNumOfLikes] = useState(0);
+  const [postNumOfDislikes, setPostNumOfDislikes] = useState(0);
+  const [postData, setPostData] = useState<TargetData | null>(null);
   const { postFirstName } = props;
   const { postLastName } = props;
   const { postText } = props;
@@ -43,23 +46,56 @@ function Post(props: Props) {
   const { userId } = props;
   const { postId } = props;
 
-  const postNumOfLikes = Object.keys(postLikes).length;
-  const postNumOfDislikes = Object.keys(postDislikes).length;
+  useEffect(() => {
+    setPostNumOfLikes(Object.keys(postLikes).length);
+    setPostNumOfDislikes(Object.keys(postDislikes).length);
+  }, []);
 
-  //2 If user clicks on like/dislike, add the userId into the object as true
-  //2   Update the backend with the like
+  //2 Next goal is to ensure that when a like is removed, it is reflected on the screen.
+  //2 Work with the useEffect below and handleClick. Gotta do something with state
+  //2 That updates every time the like button is clicked.
 
+  const usersDoc = doc(db, "users", userId);
+  const postsProfileCollection = collection(usersDoc, "postsProfile");
+  const postDoc = doc(postsProfileCollection, postId);
+
+  //1 Get the data from this post from the backend and store it in the "postData" state
+  const getPostData = async () => {
+    try {
+      const targetDoc = await getDoc(postDoc);
+      const targetData = targetDoc.data();
+      setPostData(targetData as TargetData | null);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  useEffect(() => {
+    getPostData();
+  }, []);
+
+  //2 Could potentially add in a revert of the frontend update if the backend update
+  //2 was to fail for whatever reason, and then alert the user of the issue. Optimistic UI, that is.
   const handleClickLike = async () => {
-    setLiked(true);
-    (postLikes as any)[userId] = true;
-    const usersDoc = doc(db, "users", userId);
-    const postsProfileCollection = collection(usersDoc, "postsProfile");
-    const postDoc = doc(postsProfileCollection, postId);
-    const targetDoc = await getDoc(postDoc);
-    const data = targetDoc.data();
-    if (data) {
-      const newLikes = { ...data.likes, [userId]: true };
-      await updateDoc(postDoc, { likes: newLikes });
+    // If post not liked
+    if (!liked) {
+      setLiked(true); // Set liked to true, makes heart red
+      // Frontend updates:
+      (postLikes as { [key: string]: boolean })[userId] = true; // Add the userId into postLikes as true
+      setPostNumOfLikes(Object.keys(postLikes).length); // Update state for number of likes to display
+      // Backend updates:
+      const newLikes = { ...postData?.likes, [userId]: true }; // Define new object to hold the likes
+      await updateDoc(postDoc, { likes: newLikes }); // Update the backend with the new likes
+    }
+    // If post already liked
+    if (liked) {
+      setLiked(false); // Set liked to false, makes heart empty
+      // Frontend updates
+      delete (postLikes as { [key: string]: boolean })[userId]; // Remove the userId from postLikes
+      setPostNumOfLikes(Object.keys(postLikes).length); // Update state for number of likes to display
+      // Backend updates:
+      delete (postData?.likes as { [key: string]: boolean })[userId]; // Delete the userId from the postData object
+      const newLikes = { ...postData?.likes }; // Define new object to hold the likes
+      await updateDoc(postDoc, { likes: newLikes }); // Update the backend with the new likes
     }
   };
 
@@ -129,3 +165,10 @@ function Post(props: Props) {
 }
 
 export default Post;
+
+//3 If user clicks on like/dislike, add the userId into the object as true
+//3   Update the backend with the like
+
+//3 For tomorrow: What is the difference on postLikes and postData?
+//3   1. postLikes is the prop for the "likes" key-value pair  for the post, coming from AllPosts
+//3   2. postData is state declared in this component, which gets populated by the getPostData() function
