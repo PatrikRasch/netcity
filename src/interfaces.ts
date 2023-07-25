@@ -15,6 +15,11 @@ export interface PostData {
   dislikes: object;
   comments: number;
 }
+export interface UserData {
+  id: string;
+  firstName: string;
+  lastName: string;
+}
 
 export interface PostProp {
   firstName: string;
@@ -53,4 +58,8 @@ export interface PostsProp {
 
 export interface GetAllDocs {
   getAllDocs: () => Promise<void>;
+}
+
+export interface ProfilePicture {
+  profilePicture: string;
 }
