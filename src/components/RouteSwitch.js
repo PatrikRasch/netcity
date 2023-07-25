@@ -7,6 +7,7 @@ import Profile from "./Profile";
 import Header from "./Header";
 import Public from "./Public";
 import About from "./About";
+import People from "./People";
 
 function RouteSwitch() {
   return (
@@ -17,7 +18,8 @@ function RouteSwitch() {
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<ProfileLayout />} />
         <Route path="/profile-about" element={<AboutLayout />} />
-        <Route path="/public" element={<PublicLayout />} />
+        <Route path="/public" element={<Public />} />
+        <Route path="/people" element={<PeopleLayout />} />
       </Routes>
     </BrowserRouter>
   );
@@ -39,10 +41,11 @@ const AboutLayout = () => {
     </>
   );
 };
-const PublicLayout = () => {
+const PeopleLayout = () => {
   return (
     <>
-      <Public />
+      <Header />
+      <People />
     </>
   );
 };

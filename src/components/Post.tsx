@@ -13,12 +13,7 @@ import { doc, getDoc, updateDoc, collection } from "firebase/firestore";
 import { PostProp } from "../interfaces";
 import { TargetData } from "../interfaces";
 
-//3 Must take in props with postUser, postDate, postText, postNumOfLikes, postNumOfDislikes, postNumOfComments
-//3    When a new post is made, the numbers should be 0 (or "no comments").
-//3    The date should be set to today's date
-
-//3 Posts needs to be populated with data that comes from Firebase.
-//3   When a user makes a post, all of its data should populate a Post component
+//6 Have to implement comments into each post
 
 interface Props {
   postFirstName: PostProp["firstName"];
@@ -49,7 +44,6 @@ function Post(props: Props) {
   const { postId } = props;
 
   useEffect(() => {
-    console.log("loop");
     setPostNumOfLikes(Object.keys(postLikes).length);
     setPostNumOfDislikes(-Object.keys(postDislikes).length);
   }, []);
@@ -69,7 +63,6 @@ function Post(props: Props) {
     }
   };
   useEffect(() => {
-    console.log("use effect");
     getPostData();
   }, []);
 
@@ -157,7 +150,6 @@ function Post(props: Props) {
     if (data?.dislikes?.hasOwnProperty(userId)) setDisliked(true);
   };
   useEffect(() => {
-    console.log("loop");
     getPost();
   }, []);
 
@@ -238,3 +230,10 @@ export default Post;
 //3 Only allow a userId to have either liked or disliked a post.
 //3 - If a user dislikes a post after having liked it, remove the like
 //3 - If a user likes post after having disliked it, remove the dislike
+
+//3 Must take in props with postUser, postDate, postText, postNumOfLikes, postNumOfDislikes, postNumOfComments
+//3    When a new post is made, the numbers should be 0 (or "no comments").
+//3    The date should be set to today's date
+
+//3 Posts needs to be populated with data that comes from Firebase.
+//3   When a user makes a post, all of its data should populate a Post component
