@@ -1,22 +1,16 @@
 import React, { useState, useEffect } from "react";
 
-import { db } from "./../config/firebase.config";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc, getDocs, collection, query, orderBy } from "firebase/firestore";
+import { db, storage } from "./../config/firebase.config";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+import { doc, getDoc, getDocs, updateDoc, collection, query, orderBy } from "firebase/firestore";
 
 import MakePost from "./MakePost";
 import AllPosts from "./AllPosts";
 import About from "./About";
-import profilePicture from "./../assets/images/profile-picture.jpg";
+import emptyProfilePicture from "./../assets/icons/emptyProfilePicture.jpg";
 
 import { PostData } from "../interfaces";
-
-//1 Feature work plan:
-//3 1. Fetch the data from firestore and display firstname + lastname
-//3       Gotta match the user from auth to users and then fetch the data
-//3 2. Allow user to make post. When text input and post clicked, add post to firebase user's post
-//3 3. Set up routing to about when about it clicked
-//3 4. Set up routing to and from public
 
 //2 It's going to be a problem down the line to separate a visiting user from the profile the
 //2 user is viewing. As of now I think it all goes under the same umbrella. We'll see.
@@ -29,7 +23,9 @@ const Profile = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [userId, setUserId] = useState("");
+  const [profilePicture, setProfilePicture] = useState(emptyProfilePicture);
   const [posts, setPosts] = useState<PostData[]>([]);
+  const [profilePictureUpload, setProfilePictureUpload] = useState<File | null>(null);
 
   //1 Gets all the profilePosts from the user's subcollection.
   const getAllDocs = async () => {
@@ -66,6 +62,7 @@ const Profile = () => {
             setUserId={setUserId}
             firstName={firstName}
             lastName={lastName}
+            profilePicture={profilePicture}
             getAllDocs={getAllDocs}
           />
           <AllPosts
@@ -95,24 +92,63 @@ const Profile = () => {
         const data = targetDoc.data();
         setFirstName(data?.firstName);
         setLastName(data?.lastName);
+        setProfilePicture(data?.profilePicture);
       }
     });
   }, []);
+
+  const profilePictureClicked = async () => {
+    if (profilePictureUpload === null) return;
+    const storageRef = ref(storage, `/profilePictures/${userId}`);
+    try {
+      const uploadedPicture = await uploadBytes(storageRef, profilePictureUpload);
+      const downloadURL = await getDownloadURL(uploadedPicture.ref);
+      setProfilePicture(downloadURL);
+      //2 Need to now write the profile picture to Firestore
+      const usersCollectionRef = collection(db, "users"); // Grabs the users collection
+      const userDocRef = doc(usersCollectionRef, userId); // Grabs the doc where the user is
+      await updateDoc(userDocRef, { profilePicture: downloadURL });
+      console.log("Profile picture uploaded");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const userSignOut = () => {
+    const auth = getAuth();
+    signOut(auth).then(() => {
+      console.log("Signed out");
+    });
+  };
+
+  const displayProfilePicture = () => {
+    return (
+      <img
+        src={profilePicture === "" ? emptyProfilePicture : profilePicture}
+        alt="profile"
+        className="rounded-[50%] aspect-square object-cover"
+        onClick={() => profilePictureClicked()}
+      />
+    );
+  };
 
   return (
     <div>
       {/*//1 Profile picture and name */}
       <div className="grid grid-cols-[120px,1fr] items-center justify-center gap-4 p-8">
-        <img
-          src={profilePicture}
-          alt="profile"
-          className="rounded-[50%] aspect-square object-cover"
-        />
+        <div>
+          <label htmlFor="fileInput">{displayProfilePicture()}</label>
+          <input
+            type="file"
+            id="fileInput"
+            className="opacity-0 hidden"
+            onChange={(e) => setProfilePictureUpload(e.target.files?.[0] || null)}
+          />
+        </div>
         <div className="text-3xl">
           {firstName} {lastName}
         </div>
       </div>
-
       {/*//1 Posts/About selection */}
       <div className="grid w-[100svw] justify-center">
         <div className="flex w-[65svw] rounded-lg h-12 border-2 border-black">
@@ -133,10 +169,17 @@ const Profile = () => {
       <div className="w-full h-[12px] bg-gray-100"></div>
       {/*//1 Posts or About */}
       <div>{showPostsOrAbout()}</div>
-
       <div className="w-full h-[15px] bg-gray-100"></div>
+      <button onClick={() => userSignOut()}>LOG OUT</button>
     </div>
   );
 };
 
 export default Profile;
+
+//1 Feature work plan:
+//3 1. Fetch the data from firestore and display firstname + lastname
+//3       Gotta match the user from auth to users and then fetch the data
+//3 2. Allow user to make post. When text input and post clicked, add post to firebase user's post
+//3 3. Set up routing to about when about it clicked
+//3 4. Set up routing to and from public

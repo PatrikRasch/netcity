@@ -1,10 +1,6 @@
 import React, { useState } from "react";
-import profilePicture from "./../assets/images/profile-picture.jpg";
 
-import { userIdProp } from "../interfaces";
-import { FirstNameProp } from "../interfaces";
-import { LastNameProp } from "../interfaces";
-import { GetAllDocs } from "../interfaces";
+import { userIdProp, FirstNameProp, LastNameProp, GetAllDocs, ProfilePicture } from "../interfaces";
 
 import { db } from "./../config/firebase.config";
 import { doc, addDoc, collection } from "firebase/firestore";
@@ -15,15 +11,12 @@ interface Props {
   firstName: FirstNameProp["firstName"];
   lastName: LastNameProp["lastName"];
   getAllDocs: GetAllDocs["getAllDocs"];
+  profilePicture: ProfilePicture["profilePicture"];
 }
 
-function MakePost(props: Props) {
+function MakePost({ userId, setUserId, firstName, lastName, getAllDocs, profilePicture }: Props) {
   const [postInput, setPostInput] = useState("");
   const [postId, setPostId] = useState("");
-  const { userId, setUserId } = props;
-  const { firstName } = props;
-  const { lastName } = props;
-  const { getAllDocs } = props;
 
   //1 Gets the reference to the postsProfile collection for the user
   const getPostsProfileRef = () => {

@@ -3,8 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { auth, googleProvider, db } from "./../config/firebase.config";
 import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
-import { collection, addDoc, doc, setDoc, getDocs, deleteDoc } from "firebase/firestore";
+import { collection, doc, setDoc } from "firebase/firestore";
 
 import LoadingBar from "./LoadingBar";
 
@@ -29,7 +28,7 @@ const Register = () => {
     if (formFilled && passwordsMatch) {
       setShowLoadingBar(true);
       try {
-        const userCredentials = await createUserWithEmailAndPassword(auth, email, password).then(); // Stores user credentials/details
+        const userCredentials = await createUserWithEmailAndPassword(auth, email, password); // Stores user credentials/details
         const userId = userCredentials.user.uid; // Gets the id of new user from auth
         const usersCollection = collection(db, "users"); // Grabs the collection from Firebase
         // Defines the data to be added into Firestore for the user
@@ -37,6 +36,7 @@ const Register = () => {
           firstName: firstName,
           lastName: lastName,
           bio: "",
+          profilePicture: "",
         };
         const docToBeAdded = doc(usersCollection, userId); // Document that is to be added into Firestore
         await setDoc(docToBeAdded, dataToAdd); // Set the document and add it into Firestore
