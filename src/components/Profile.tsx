@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { db, storage } from "./../config/firebase.config";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -18,6 +19,13 @@ import { PostData } from "../interfaces";
 //2 Currently, whenever this (Profile) component is navigated to, the getAllDocs(); effect is ran.
 //2   This is not necessary.
 
+//2 When a user visits another user:
+//2   Perhaps having a UUID id for each user which would be
+//2   the route for a users profile would be a good idea.
+//2   So that when a user visits another user, the URL holds their UUID id.
+//2     Might also be able to use the userId for this, but that might cause security issues.
+//2 When a user visits another user, check if the userId matches the currently signed in user?...
+
 const Profile = () => {
   const [showPosts, setShowPosts] = useState(true);
   const [firstName, setFirstName] = useState("");
@@ -26,6 +34,7 @@ const Profile = () => {
   const [profilePicture, setProfilePicture] = useState(emptyProfilePicture);
   const [posts, setPosts] = useState<PostData[]>([]);
   const [profilePictureUpload, setProfilePictureUpload] = useState<File | null>(null);
+  const navigate = useNavigate();
 
   //1 Gets all the profilePosts from the user's subcollection.
   const getAllDocs = async () => {
@@ -71,13 +80,14 @@ const Profile = () => {
             firstName={firstName}
             lastName={lastName}
             posts={posts}
+            profilePicture={profilePicture}
           />
         </>
       );
     } else
       return (
         <>
-          <About />;
+          <About />
         </>
       );
   };
@@ -97,20 +107,23 @@ const Profile = () => {
     });
   }, []);
 
+  //1 Allows user to select profile picture. Writes and stores the profile picture in Firebase Storage.
+  //1 Also updates the user in the Firestore database with URL to the photo.
   const profilePictureClicked = async () => {
-    if (profilePictureUpload === null) return;
-    const storageRef = ref(storage, `/profilePictures/${userId}`);
+    if (profilePictureUpload === null) return; // Return if no imagine is uploaded
+    const storageRef = ref(storage, `/profilePictures/${userId}`); // Connect to storage
     try {
-      const uploadedPicture = await uploadBytes(storageRef, profilePictureUpload);
-      const downloadURL = await getDownloadURL(uploadedPicture.ref);
-      setProfilePicture(downloadURL);
-      //2 Need to now write the profile picture to Firestore
+      const uploadedPicture = await uploadBytes(storageRef, profilePictureUpload); // Upload the image
+      const downloadURL = await getDownloadURL(uploadedPicture.ref); // Get the downloadURL for the image
+      setProfilePicture(downloadURL); // Set the downloadURL for the image in state to use across the app.
+      // Update Firestore Database with image:
       const usersCollectionRef = collection(db, "users"); // Grabs the users collection
       const userDocRef = doc(usersCollectionRef, userId); // Grabs the doc where the user is
-      await updateDoc(userDocRef, { profilePicture: downloadURL });
-      console.log("Profile picture uploaded");
+      await updateDoc(userDocRef, { profilePicture: downloadURL }); // Add the image into Firestore
+      alert("Profile picture uploaded"); //6 Should be sexified
     } catch (err) {
       console.error(err);
+      //6 Need a "Something went wrong, please try again"
     }
   };
 
@@ -119,6 +132,7 @@ const Profile = () => {
     signOut(auth).then(() => {
       console.log("Signed out");
     });
+    navigate("/login");
   };
 
   const displayProfilePicture = () => {
