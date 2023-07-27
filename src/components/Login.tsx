@@ -1,20 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
-
 //6 Login user alert error must be sexified later on.
 
 const Login = () => {
-  const navigate = useNavigate();
   const [createNewAccount, setCreateNewAccount] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   //1 Check if user is signed in
   useEffect(() => {
     onAuthStateChanged(getAuth(), async (user) => {
-      if (user) navigate("/profile");
+      if (user) navigate(`/profile/${user.uid}`);
     });
   }, []);
 

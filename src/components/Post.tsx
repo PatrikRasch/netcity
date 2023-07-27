@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 
-import profilePicture2 from "./../assets/images/autumn-girl.jpg";
 import likeIcon from "./../assets/icons/heartPlus.png";
 import heartLiked from "./../assets/icons/heartLiked.png";
 import dislikeIcon from "./../assets/icons/heartMinus.png";
@@ -10,47 +9,61 @@ import commentIcon from "./../assets/icons/comment.png";
 import { db } from "./../config/firebase.config";
 import { doc, getDoc, updateDoc, collection } from "firebase/firestore";
 
-import { PostProp } from "../interfaces";
+import emptyProfilePicture from "./../assets/icons/emptyProfilePicture.jpg";
+
 import { TargetData } from "../interfaces";
+import { useParams } from "react-router-dom";
 
 //6 Have to implement comments into each post
 
 interface Props {
-  postFirstName: PostProp["firstName"];
-  postLastName: PostProp["lastName"];
-  postText: PostProp["postText"];
-  postDate: PostProp["postDate"];
-  postLikes: PostProp["postLikes"];
-  postDislikes: PostProp["postDislikes"];
-  postNumOfComments: PostProp["postNumOfComments"];
-  userId: PostProp["userId"];
-  postId: PostProp["postId"];
+  postFirstName: string;
+  postLastName: string;
+  postText: string;
+  postDate: string;
+  postLikes: object;
+  postDislikes: object;
+  postNumOfComments: number;
+  openProfileId: string;
+  loggedInUserId: string;
+  postId: string;
 }
 
-function Post(props: Props) {
+const Post = ({
+  postFirstName,
+  postLastName,
+  postText,
+  postDate,
+  postLikes,
+  postDislikes,
+  postNumOfComments,
+  openProfileId,
+  loggedInUserId,
+  postId,
+}: Props) => {
   const [liked, setLiked] = useState(false);
   const [disliked, setDisliked] = useState(false);
   const [postNumOfLikes, setPostNumOfLikes] = useState(0);
   const [postNumOfDislikes, setPostNumOfDislikes] = useState(0);
   const [postData, setPostData] = useState<TargetData | null>(null);
-  const { postFirstName } = props;
-  const { postLastName } = props;
-  const { postText } = props;
-  const { postLikes } = props;
-  const { postDislikes } = props;
-  const { postNumOfComments } = props;
-  const { postDate } = props;
-  const { userId } = props;
-  const { postId } = props;
+  const [profilePicture, setProfilePicture] = useState(emptyProfilePicture);
 
   useEffect(() => {
     setPostNumOfLikes(Object.keys(postLikes).length);
     setPostNumOfDislikes(-Object.keys(postDislikes).length);
   }, []);
 
-  const usersDoc = doc(db, "users", userId);
+  useEffect(() => {
+    getPostData();
+  }, []);
+
+  useEffect(() => {
+    getPost();
+  }, []);
+
+  const usersDoc = doc(db, "users", openProfileId);
   const postsProfileCollection = collection(usersDoc, "postsProfile");
-  const postDoc = doc(postsProfileCollection, postId);
+  const postDoc = doc(postsProfileCollection, openProfileId);
 
   //1 Get the data from this post from the backend and store it in the "postData" state
   const getPostData = async () => {
@@ -62,27 +75,24 @@ function Post(props: Props) {
       console.error(err);
     }
   };
-  useEffect(() => {
-    getPostData();
-  }, []);
 
   const addLike = async () => {
     setLiked(true); // Set liked to true, makes heart red
     // Frontend updates:
-    (postLikes as { [key: string]: boolean })[userId] = true; // Add the userId into postLikes as true
+    (postLikes as { [key: string]: boolean })[loggedInUserId] = true; // Add the userId into postLikes as true
     setPostNumOfLikes(Object.keys(postLikes).length); // Update state for number of likes to display
     // Backend updates:
-    const newLikes = { ...postData?.likes, [userId]: true }; // Define new object to hold the likes
+    const newLikes = { ...postData?.likes, [loggedInUserId]: true }; // Define new object to hold the likes
     await updateDoc(postDoc, { likes: newLikes }); // Update the backend with the new likes
   };
 
   const removeLike = async () => {
     setLiked(false); // Set liked to false, makes heart empty
     // Frontend updates
-    delete (postLikes as { [key: string]: boolean })[userId]; // Remove the userId from postLikes
+    delete (postLikes as { [key: string]: boolean })[loggedInUserId]; // Remove the userId from postLikes
     setPostNumOfLikes(Object.keys(postLikes).length); // Update state for number of likes to display
     // Backend updates:
-    delete (postData?.likes as { [key: string]: boolean })[userId]; // Delete the userId from the postData object
+    delete (postData?.likes as { [key: string]: boolean })[loggedInUserId]; // Delete the userId from the postData object
     const newLikes = { ...postData?.likes }; // Define new object to hold the likes
     await updateDoc(postDoc, { likes: newLikes }); // Update the backend with the new likes
   };
@@ -90,20 +100,20 @@ function Post(props: Props) {
   const addDislike = async () => {
     setDisliked(true); // Set disliked to true, makes heart black
     // Frontend updates:
-    (postDislikes as { [key: string]: boolean })[userId] = true; // Add the userId into postDislikes as true
+    (postDislikes as { [key: string]: boolean })[loggedInUserId] = true; // Add the userId into postDislikes as true
     setPostNumOfDislikes(-Object.keys(postDislikes).length); // Update state for number of dislikes to display
     // Backend updates:
-    const newDislikes = { ...postData?.dislikes, [userId]: true }; // Define new object to hold the dislikes
+    const newDislikes = { ...postData?.dislikes, [loggedInUserId]: true }; // Define new object to hold the dislikes
     await updateDoc(postDoc, { dislikes: newDislikes }); // Update the backend with the new dislikes
   };
 
   const removeDislike = async () => {
     setDisliked(false); // Set liked to false, makes heart empty
     // Frontend updates
-    delete (postDislikes as { [key: string]: boolean })[userId]; // Remove the userId from postLikes
+    delete (postDislikes as { [key: string]: boolean })[loggedInUserId]; // Remove the userId from postLikes
     setPostNumOfDislikes(-Object.keys(postDislikes).length); // Update state for number of likes to display
     // Backend updates:
-    delete (postData?.dislikes as { [key: string]: boolean })[userId]; // Delete the userId from the postData object
+    delete (postData?.dislikes as { [key: string]: boolean })[loggedInUserId]; // Delete the userId from the postData object
     const newDislikes = { ...postData?.dislikes }; // Define new object to hold the likes
     await updateDoc(postDoc, { dislikes: newDislikes }); // Update the backend with the new likes
   };
@@ -141,17 +151,24 @@ function Post(props: Props) {
 
   //1 Gets the initial post data from Firebase
   const getPost = async () => {
-    const usersDoc = doc(db, "users", userId);
-    const postsProfileCollection = collection(usersDoc, "postsProfile");
-    const postDoc = doc(postsProfileCollection, postId);
-    const targetDoc = await getDoc(postDoc);
-    const data = targetDoc.data();
-    if (data?.likes?.hasOwnProperty(userId)) setLiked(true);
-    if (data?.dislikes?.hasOwnProperty(userId)) setDisliked(true);
+    const usersDoc = doc(db, "users", openProfileId); // Grab the user
+    const postsProfileCollection = collection(usersDoc, "postsProfile"); // Grab the posts on the user's profile
+    const postDoc = doc(postsProfileCollection, postId); // grab this post
+    const targetDoc = await getDoc(postDoc); // Fetch the data
+    const data = targetDoc.data(); // Store data in "data"
+    if (data?.likes?.hasOwnProperty(loggedInUserId)) setLiked(true);
+    if (data?.dislikes?.hasOwnProperty(loggedInUserId)) setDisliked(true);
+    getPostProfilePicture(data?.userId); // Grab the profile picture of the user who made the post
   };
-  useEffect(() => {
-    getPost();
-  }, []);
+
+  //1 Gets the profile picture of the user who made the post
+  const getPostProfilePicture = async (userId: string) => {
+    const usersDoc = doc(db, "users", userId);
+    const targetUser = await getDoc(usersDoc);
+    const data = targetUser.data();
+    const profilePictureRef = data?.profilePicture;
+    setProfilePicture(profilePictureRef);
+  };
 
   //1 The like icon on each post. Shows if the user has liked a post.
   const showLikedOrNot = () => {
@@ -181,7 +198,7 @@ function Post(props: Props) {
         <div className="flex gap-4 items-center">
           <div className="min-w-[40px] max-w-min">
             <img
-              src={profilePicture2}
+              src={profilePicture === "" ? emptyProfilePicture : profilePicture}
               alt="profile"
               className="rounded-[50%] aspect-square object-cover"
             />
@@ -212,7 +229,7 @@ function Post(props: Props) {
       </div>
     </div>
   );
-}
+};
 
 export default Post;
 
@@ -237,3 +254,7 @@ export default Post;
 
 //3 Posts needs to be populated with data that comes from Firebase.
 //3   When a user makes a post, all of its data should populate a Post component
+
+//3 Need to get profile picture based on userId that made the post.
+//3 Can go into the "users" collection, pick the ID that matches the userId value of the post,
+//3 then take the profilePicture string from the user and display it here.

@@ -4,20 +4,17 @@ import { db } from "./../config/firebase.config";
 import { collection, getDocs } from "firebase/firestore";
 
 import PeopleUser from "./PeopleUser";
-import { UserData, FirstNameProp, LastNameProp } from "../interfaces";
+import { UserData } from "../interfaces";
 
 //1 Feature Work Plan:
 //3 1. Fetch all registered users from Firebase
 //3 2. Make a list of users
 //3 3. Display the people in a list
-//2 4. Make the users clickable
-//2 5. Navigate to the user's profile if clicked
+//3 4. Make the users clickable
+//3 5. Navigate to the user's profile if clicked
 //6. Leave the "Add friend" functionality for later
 
-interface Props {
-  firstName: FirstNameProp["firstName"];
-  lastName: LastNameProp["lastName"];
-}
+interface Props {}
 
 const People = (props: Props) => {
   const [users, setUsers] = useState<UserData[]>([]);
@@ -40,14 +37,19 @@ const People = (props: Props) => {
   const populateUsersOnPage = () => {
     return users.map((user) => (
       <div key={user.id}>
-        <PeopleUser userFirstName={user.firstName} userLastName={user.lastName} />
+        <PeopleUser
+          userId={user.id}
+          userFirstName={user.firstName}
+          userLastName={user.lastName}
+          userProfilePicture={user.profilePicture}
+        />
       </div>
     ));
   };
 
   return (
     <div>
-      <div>{populateUsersOnPage()}</div>
+      <div className="bg-gray-100 min-h-[87svh]">{populateUsersOnPage()}</div>
     </div>
   );
 };

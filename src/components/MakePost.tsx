@@ -1,31 +1,44 @@
 import React, { useState } from "react";
+import { useParams } from "react-router-dom";
 
-import { userIdProp, FirstNameProp, LastNameProp, GetAllDocs, ProfilePicture } from "../interfaces";
+import { GetAllPosts, VisitingUser, LoggedInUserIdProp } from "../interfaces";
+import emptyProfilePicture from "./../assets/icons/emptyProfilePicture.jpg";
 
 import { db } from "./../config/firebase.config";
 import { doc, addDoc, collection } from "firebase/firestore";
 
 interface Props {
-  userId: userIdProp["userId"];
-  setUserId: userIdProp["setUserId"];
-  firstName: FirstNameProp["firstName"];
-  lastName: LastNameProp["lastName"];
-  getAllDocs: GetAllDocs["getAllDocs"];
-  profilePicture: ProfilePicture["profilePicture"];
+  loggedInUserId: LoggedInUserIdProp["loggedInUserId"];
+  setLoggedInUserId: LoggedInUserIdProp["setLoggedInUserId"];
+  getAllPosts: GetAllPosts["getAllPosts"];
+  visitingUser: VisitingUser["visitingUser"];
+  userFirstName: string;
+  userLastName: string;
+  userPicture: string;
 }
 
-function MakePost({ userId, setUserId, firstName, lastName, getAllDocs, profilePicture }: Props) {
+function MakePost({
+  loggedInUserId,
+  setLoggedInUserId,
+  getAllPosts,
+  userPicture,
+  visitingUser,
+  userFirstName,
+  userLastName,
+}: Props) {
   const [postInput, setPostInput] = useState("");
   const [postId, setPostId] = useState("");
+  const { openProfileId } = useParams();
 
   //1 Gets the reference to the postsProfile collection for the user
   const getPostsProfileRef = () => {
-    const targetUser = doc(db, "users", userId);
+    if (!openProfileId) return console.log("No userProfileId"); //6 Need to make this error better later
+    const targetUser = doc(db, "users", openProfileId);
     return collection(targetUser, "postsProfile");
   };
 
   //1 Current problems:
-  //2 Posts don't load in order, need to add a post timestamp to sort posts.
+  //3 Posts don't load in order, need to add a post timestamp to sort posts.
   //2 All posts load together no matter how many when a profile is visited. Need to add some form of lazyloading.
 
   //1 Write the post to Firestore
@@ -38,9 +51,11 @@ function MakePost({ userId, setUserId, firstName, lastName, getAllDocs, profileP
     likes: object;
     dislikes: object;
     comments: number;
+    userId: string;
   }) => {
     try {
       const postsProfileRef = getPostsProfileRef();
+      if (postsProfileRef === undefined) return console.log("postsProfileRef is undefined");
       const newPost = await addDoc(postsProfileRef, data);
       console.log("Post written to Firestore");
       setPostId(newPost.id); // Set the ID of this post to the state newPost
@@ -73,7 +88,7 @@ function MakePost({ userId, setUserId, firstName, lastName, getAllDocs, profileP
         <div className="min-h-[120px] flex p-4 gap-2">
           <div className="min-w-[50px] max-w-min">
             <img
-              src={profilePicture}
+              src={userPicture === "" ? emptyProfilePicture : userPicture}
               alt="profile"
               className="rounded-[50%] aspect-square object-cover"
             />
@@ -93,15 +108,16 @@ function MakePost({ userId, setUserId, firstName, lastName, getAllDocs, profileP
             if (postInput.length === 0) return console.log("add text to input before posting");
             writePost({
               timestamp: date,
-              firstName: firstName,
-              lastName: lastName,
+              firstName: userFirstName,
+              lastName: userLastName,
               text: postInput,
               date: fullDate(date.getMonth() + 1),
               likes: {},
               dislikes: {},
               comments: 0,
+              userId: loggedInUserId,
             });
-            getAllDocs();
+            getAllPosts();
             setPostInput("");
           }}
         >

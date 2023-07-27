@@ -1,22 +1,20 @@
 import React, { useState } from "react";
-
-import Login from "./Login";
-import Register from "./Register";
-import Profile from "./Profile";
-import Header from "./Header";
-import Public from "./Public";
+import { BrowserRouter } from "react-router-dom";
 import RouteSwitch from "./RouteSwitch";
 
 function App() {
+  const [loggedInUserId, setLoggedInUserId] = useState("");
   return (
-    <div className="h-[100svh] bg-gray-100">
-      {/* <Header /> */}
-      {/* <Profile /> */}
-      {/* <Login /> */}
-      {/* <Register /> */}
-      {/* <Public /> */}
+    <div className="">
+      <BrowserRouter>
+        <RouteSwitch loggedInUserId={loggedInUserId} setLoggedInUserId={setLoggedInUserId} />
+      </BrowserRouter>
     </div>
   );
 }
 
 export default App;
+
+//1 Variables naming
+//2 Profile being visited: openProfileId
+//2 Logged in user: loggedInUserId

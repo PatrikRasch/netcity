@@ -1,5 +1,4 @@
 import React from "react";
-import Header from "./Header";
 import AllPosts from "./AllPosts";
 import profilePicture from "./../assets/images/profile-picture.jpg";
 
@@ -12,7 +11,6 @@ import profilePicture from "./../assets/images/profile-picture.jpg";
 function Public() {
   return (
     <div>
-      <Header />
       <div className="grid justify-items-center gap-4 mt-4">
         <img
           src={profilePicture}

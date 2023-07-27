@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { db, storage } from "./../config/firebase.config";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -26,21 +26,75 @@ import { PostData } from "../interfaces";
 //2     Might also be able to use the userId for this, but that might cause security issues.
 //2 When a user visits another user, check if the userId matches the currently signed in user?...
 
-const Profile = () => {
+interface Props {
+  loggedInUserId: string;
+  setLoggedInUserId: (value: string) => void;
+}
+
+const Profile = ({ loggedInUserId, setLoggedInUserId }: Props) => {
+  const [visitingUser, setVisitingUser] = useState(false);
   const [showPosts, setShowPosts] = useState(true);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [userId, setUserId] = useState("");
+
+  const [profileFirstName, setProfileFirstName] = useState("");
+  const [profileLastName, setProfileLastName] = useState("");
   const [profilePicture, setProfilePicture] = useState(emptyProfilePicture);
+
+  const [userFirstName, setUserFirstName] = useState("");
+  const [userLastName, setUserLastName] = useState("");
+  const [userPicture, setUserPicture] = useState(emptyProfilePicture);
+
   const [posts, setPosts] = useState<PostData[]>([]);
   const [profilePictureUpload, setProfilePictureUpload] = useState<File | null>(null);
   const navigate = useNavigate();
+  const { openProfileId } = useParams();
 
-  //1 Gets all the profilePosts from the user's subcollection.
-  const getAllDocs = async () => {
+  //2 Need the following to be fetched based on the userProfileId:
+  //2 - Profile picture and name
+  //2 - MakePost info
+  //2 - Post info
+
+  //3 Have to run a check to see if userProfileId matches logged in userId
+  //2 If it does, display home profile and pass userId to profile
+  //2 If it doesn't, pass userProfileId to the top (profile header), userId to MakePost, and let posts fetch their own
+
+  //1 CHECK IF PROFILE IS OWNED BY VIEWER
+  // - Checks if the user is visiting their own profile or another user's profile
+  useEffect(() => {
+    if (loggedInUserId === openProfileId) setVisitingUser(false);
+    else setVisitingUser(true);
+  }, []);
+
+  //1 GET PROFILE CURRENTLY BEING VIEWED USER INFO
+  // Currently, user and profile information is being fetched separately, with nothing stopping it from fetching twice even if it's for the same user.
+  useEffect(() => {
+    onAuthStateChanged(getAuth(), async (user) => {
+      if (user) {
+        setLoggedInUserId(user.uid);
+        // Get data of profile being viewed
+        if (!openProfileId) return null;
+        const profileTargetUser = doc(db, "users", openProfileId);
+        const profileTargetDoc = await getDoc(profileTargetUser);
+        const profileData = profileTargetDoc.data();
+        setProfileFirstName(profileData?.firstName);
+        setProfileLastName(profileData?.lastName);
+        setProfilePicture(profileData?.profilePicture);
+        // Get data of user viewing
+        const userTargetUser = doc(db, "users", user.uid);
+        const userTargetDoc = await getDoc(userTargetUser);
+        const userData = userTargetDoc.data();
+        setUserFirstName(userData?.firstName);
+        setUserLastName(userData?.lastName);
+        setUserPicture(userData?.profilePicture); //6 Could change profilePicture in Firebase to be "pfPicture" or just "picture" in order to keep naming more concise. Currently it's a bit confusing as we are using "profilePicture" to indicate that it's the picture to be used on the profile being viewing, and "userPicture" to point to the picture of the viewer.
+      }
+    });
+  }, []);
+
+  //1 GET POSTS FOR PROFILE CURRENTLY BEING VIEWED
+  //  - Gets all the posts (profilePosts in Firestore) from the current profile subcollection.
+  const getAllPosts = async () => {
     try {
       const usersCollectionRef = collection(db, "users"); // Grabs the users collection
-      const userDocRef = doc(usersCollectionRef, userId); // Grabs the doc where the user is
+      const userDocRef = doc(usersCollectionRef, openProfileId); // Grabs the doc where the user is
       const postsProfileCollection = collection(userDocRef, "postsProfile"); // Grabs the postsProfile collection
       const sortedPostsProfile = query(postsProfileCollection, orderBy("timestamp", "desc")); // Sorts posts in descending order. "query" and "orderBy" are Firebase/Firestore methods
       const postsProfileDocs = await getDocs(sortedPostsProfile); // Gets all docs from postsProfile collection
@@ -58,29 +112,32 @@ const Profile = () => {
 
   //1 Fetches and sets in state all posts from Firebase.
   useEffect(() => {
-    getAllDocs();
+    getAllPosts();
     console.log("AllPosts: useEffect re-render");
-  }, [userId]); // Get docs when userId state changes
+  }, [loggedInUserId]); // Get docs when userId state changes
+
+  if (openProfileId === undefined) return null; //6. must make this better later
 
   const showPostsOrAbout = () => {
     if (showPosts) {
       return (
         <>
+          {/* //2 We should pass the user information of the currently logged in user, not the one that's being visited, as this info is used to create posts. */}
           <MakePost
-            userId={userId}
-            setUserId={setUserId}
-            firstName={firstName}
-            lastName={lastName}
-            profilePicture={profilePicture}
-            getAllDocs={getAllDocs}
+            loggedInUserId={loggedInUserId}
+            setLoggedInUserId={setLoggedInUserId}
+            userFirstName={userFirstName} // Name of logged in user
+            userLastName={userLastName} // Name of logged in user
+            userPicture={userPicture} // pf Picture og logged in user
+            getAllPosts={getAllPosts}
+            visitingUser={visitingUser}
           />
           <AllPosts
-            userId={userId}
-            setUserId={setUserId}
-            firstName={firstName}
-            lastName={lastName}
+            openProfileId={openProfileId} // Id of profile being viewed
+            firstName={userFirstName}
+            lastName={userLastName}
             posts={posts}
-            profilePicture={profilePicture}
+            loggedInUserId={loggedInUserId} // Id of logged in profile
           />
         </>
       );
@@ -92,33 +149,18 @@ const Profile = () => {
       );
   };
 
-  //1 Get the user ID, first name and last name, and set it all in state.
-  useEffect(() => {
-    onAuthStateChanged(getAuth(), async (user) => {
-      if (user) {
-        setUserId(user.uid);
-        const targetUser = doc(db, "users", user.uid);
-        const targetDoc = await getDoc(targetUser);
-        const data = targetDoc.data();
-        setFirstName(data?.firstName);
-        setLastName(data?.lastName);
-        setProfilePicture(data?.profilePicture);
-      }
-    });
-  }, []);
-
   //1 Allows user to select profile picture. Writes and stores the profile picture in Firebase Storage.
   //1 Also updates the user in the Firestore database with URL to the photo.
   const profilePictureClicked = async () => {
     if (profilePictureUpload === null) return; // Return if no imagine is uploaded
-    const storageRef = ref(storage, `/profilePictures/${userId}`); // Connect to storage
+    const storageRef = ref(storage, `/profilePictures/${loggedInUserId}`); // Connect to storage
     try {
       const uploadedPicture = await uploadBytes(storageRef, profilePictureUpload); // Upload the image
       const downloadURL = await getDownloadURL(uploadedPicture.ref); // Get the downloadURL for the image
       setProfilePicture(downloadURL); // Set the downloadURL for the image in state to use across the app.
       // Update Firestore Database with image:
       const usersCollectionRef = collection(db, "users"); // Grabs the users collection
-      const userDocRef = doc(usersCollectionRef, userId); // Grabs the doc where the user is
+      const userDocRef = doc(usersCollectionRef, loggedInUserId); // Grabs the doc where the user is
       await updateDoc(userDocRef, { profilePicture: downloadURL }); // Add the image into Firestore
       alert("Profile picture uploaded"); //6 Should be sexified
     } catch (err) {
@@ -157,10 +199,11 @@ const Profile = () => {
             id="fileInput"
             className="opacity-0 hidden"
             onChange={(e) => setProfilePictureUpload(e.target.files?.[0] || null)}
+            disabled={visitingUser} // Disables fileInput if it's not your profile
           />
         </div>
         <div className="text-3xl">
-          {firstName} {lastName}
+          {profileFirstName} {profileLastName}
         </div>
       </div>
       {/*//1 Posts/About selection */}

@@ -1,22 +1,22 @@
 import React from "react";
 import Post from "./Post";
 
-import { userIdProp } from "../interfaces";
 import { FirstNameProp } from "../interfaces";
 import { LastNameProp } from "../interfaces";
 import { PostsProp } from "../interfaces";
 
 interface Props {
-  userId: userIdProp["userId"];
-  setUserId: userIdProp["setUserId"];
+  openProfileId: string;
   firstName: FirstNameProp["firstName"];
   lastName: LastNameProp["lastName"];
   posts: PostsProp["posts"];
+  loggedInUserId: string;
 }
 
-const AllPosts = (props: Props) => {
-  const { posts } = props;
-  const { userId } = props;
+const AllPosts = ({ posts, openProfileId, loggedInUserId }: Props) => {
+  //2 We need to use the userId on each post, to fetch the profile picture of the user with that ID.
+  //2 If we add a profilePicture key-value pair to each post, profile pictures won't update across
+  //2 the board when a user changes their profile picture.
 
   //1 Adds all the posts on Firebase onto the page.
   const populatePostsOnPage = () => {
@@ -30,7 +30,8 @@ const AllPosts = (props: Props) => {
           postLikes={post.likes}
           postDislikes={post.dislikes}
           postNumOfComments={post.comments}
-          userId={userId}
+          openProfileId={openProfileId}
+          loggedInUserId={loggedInUserId}
           postId={post.id}
         />
         <div className="w-full h-[15px] bg-gray-100"></div>

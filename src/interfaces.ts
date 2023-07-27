@@ -1,36 +1,15 @@
 import firebase from "firebase/compat/app";
 
-export interface userIdProp {
-  userId: string;
-  setUserId: (value: string) => void;
+export interface LoggedInUserIdProp {
+  loggedInUserId: string;
+  setLoggedInUserId: (value: string) => void;
 }
 
-export interface PostData {
-  id: string;
-  firstName: string;
-  lastName: string;
-  text: string;
-  date: string;
-  likes: object;
-  dislikes: object;
-  comments: number;
-}
 export interface UserData {
   id: string;
   firstName: string;
   lastName: string;
-}
-
-export interface PostProp {
-  firstName: string;
-  lastName: string;
-  postText: string;
-  postDate: string;
-  postLikes: object;
-  postDislikes: object;
-  postNumOfComments: number;
-  userId: string;
-  postId: string;
+  profilePicture: string;
 }
 
 export interface TargetData {
@@ -42,6 +21,23 @@ export interface TargetData {
   dislikes: object;
   text: string;
   timestamp: firebase.firestore.Timestamp;
+}
+
+export interface AllPostsProps {
+  userPicture: string;
+  userPosterId: string;
+}
+
+export interface PostData {
+  posterId: string;
+  firstName: string;
+  lastName: string;
+  text: string;
+  date: string;
+  likes: object;
+  dislikes: object;
+  comments: number;
+  id: string;
 }
 
 export interface FirstNameProp {
@@ -56,10 +52,14 @@ export interface PostsProp {
   posts: PostData[];
 }
 
-export interface GetAllDocs {
-  getAllDocs: () => Promise<void>;
+export interface GetAllPosts {
+  getAllPosts: () => Promise<void>;
 }
 
 export interface ProfilePicture {
   profilePicture: string;
+}
+
+export interface VisitingUser {
+  visitingUser: boolean;
 }
