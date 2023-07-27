@@ -12,7 +12,6 @@ import { doc, getDoc, updateDoc, collection } from "firebase/firestore";
 import emptyProfilePicture from "./../assets/icons/emptyProfilePicture.jpg";
 
 import { TargetData } from "../interfaces";
-import { useParams } from "react-router-dom";
 
 //6 Have to implement comments into each post
 
@@ -49,28 +48,25 @@ const Post = ({
   const [profilePicture, setProfilePicture] = useState(emptyProfilePicture);
 
   useEffect(() => {
-    setPostNumOfLikes(Object.keys(postLikes).length);
-    setPostNumOfDislikes(-Object.keys(postDislikes).length);
+    setPostNumOfLikes(Object.keys(postLikes).length); // Number of likes on post
+    setPostNumOfDislikes(-Object.keys(postDislikes).length); // Number of dislikes on post
+    getPostData(); // Get all the data for this post
   }, []);
 
-  useEffect(() => {
-    getPostData();
-  }, []);
-
-  useEffect(() => {
-    getPost();
-  }, []);
-
-  const usersDoc = doc(db, "users", openProfileId);
-  const postsProfileCollection = collection(usersDoc, "postsProfile");
-  const postDoc = doc(postsProfileCollection, openProfileId);
+  //1 Access this posts document from Firestore
+  const usersDoc = doc(db, "users", openProfileId); // Grab the user
+  const postsProfileCollection = collection(usersDoc, "postsProfile"); // Grab the posts on the user's profile
+  const postDoc = doc(postsProfileCollection, postId); // grab this post
 
   //1 Get the data from this post from the backend and store it in the "postData" state
   const getPostData = async () => {
     try {
-      const targetDoc = await getDoc(postDoc);
-      const targetData = targetDoc.data();
-      setPostData(targetData as TargetData | null);
+      const targetDoc = await getDoc(postDoc); // Fetch the data
+      const data = targetDoc.data();
+      setPostData(data as TargetData | null); // Store the post data in state
+      if (data?.likes?.hasOwnProperty(loggedInUserId)) setLiked(true); // Has the user already liked the post?
+      if (data?.dislikes?.hasOwnProperty(loggedInUserId)) setDisliked(true); // Has the user already disliked the post?
+      getPostProfilePicture(data?.userId); // Grab the profile picture of the user who made the post
     } catch (err) {
       console.error(err);
     }
@@ -147,18 +143,6 @@ const Post = ({
     if (disliked) {
       removeDislike();
     }
-  };
-
-  //1 Gets the initial post data from Firebase
-  const getPost = async () => {
-    const usersDoc = doc(db, "users", openProfileId); // Grab the user
-    const postsProfileCollection = collection(usersDoc, "postsProfile"); // Grab the posts on the user's profile
-    const postDoc = doc(postsProfileCollection, postId); // grab this post
-    const targetDoc = await getDoc(postDoc); // Fetch the data
-    const data = targetDoc.data(); // Store data in "data"
-    if (data?.likes?.hasOwnProperty(loggedInUserId)) setLiked(true);
-    if (data?.dislikes?.hasOwnProperty(loggedInUserId)) setDisliked(true);
-    getPostProfilePicture(data?.userId); // Grab the profile picture of the user who made the post
   };
 
   //1 Gets the profile picture of the user who made the post

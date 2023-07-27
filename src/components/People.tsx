@@ -12,6 +12,7 @@ import { UserData } from "../interfaces";
 //3 3. Display the people in a list
 //3 4. Make the users clickable
 //3 5. Navigate to the user's profile if clicked
+//2 6. Allow liking and disliking on other profiles
 //6. Leave the "Add friend" functionality for later
 
 interface Props {}
