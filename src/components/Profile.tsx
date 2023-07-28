@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { db, storage } from "./../config/firebase.config";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+import { getAuth, signOut } from "firebase/auth";
 import { doc, getDoc, getDocs, updateDoc, collection, query, orderBy } from "firebase/firestore";
 
 import MakePost from "./MakePost";
@@ -13,18 +13,8 @@ import emptyProfilePicture from "./../assets/icons/emptyProfilePicture.jpg";
 
 import { PostData } from "../interfaces";
 
-//2 It's going to be a problem down the line to separate a visiting user from the profile the
-//2 user is viewing. As of now I think it all goes under the same umbrella. We'll see.
-
 //2 Currently, whenever this (Profile) component is navigated to, the getAllDocs(); effect is ran.
 //2   This is not necessary.
-
-//2 When a user visits another user:
-//2   Perhaps having a UUID id for each user which would be
-//2   the route for a users profile would be a good idea.
-//2   So that when a user visits another user, the URL holds their UUID id.
-//2     Might also be able to use the userId for this, but that might cause security issues.
-//2 When a user visits another user, check if the userId matches the currently signed in user?...
 
 interface Props {
   loggedInUserId: string;
@@ -48,46 +38,39 @@ const Profile = ({ loggedInUserId, setLoggedInUserId }: Props) => {
   const navigate = useNavigate();
   const { openProfileId } = useParams();
 
-  //2 Need the following to be fetched based on the userProfileId:
-  //2 - Profile picture and name
-  //2 - MakePost info
-  //2 - Post info
-
-  //3 Have to run a check to see if userProfileId matches logged in userId
-  //2 If it does, display home profile and pass userId to profile
-  //2 If it doesn't, pass userProfileId to the top (profile header), userId to MakePost, and let posts fetch their own
-
   //1 CHECK IF PROFILE IS OWNED BY VIEWER
   // - Checks if the user is visiting their own profile or another user's profile
   useEffect(() => {
+    console.log("use effect");
     if (loggedInUserId === openProfileId) setVisitingUser(false);
     else setVisitingUser(true);
-  }, []);
+  }, [openProfileId]);
 
   //1 GET PROFILE CURRENTLY BEING VIEWED USER INFO
   // Currently, user and profile information is being fetched separately, with nothing stopping it from fetching twice even if it's for the same user.
   useEffect(() => {
-    onAuthStateChanged(getAuth(), async (user) => {
-      if (user) {
-        setLoggedInUserId(user.uid);
-        // Get data of profile being viewed
-        if (!openProfileId) return null;
-        const profileTargetUser = doc(db, "users", openProfileId);
-        const profileTargetDoc = await getDoc(profileTargetUser);
-        const profileData = profileTargetDoc.data();
-        setProfileFirstName(profileData?.firstName);
-        setProfileLastName(profileData?.lastName);
-        setProfilePicture(profileData?.profilePicture);
-        // Get data of user viewing
-        const userTargetUser = doc(db, "users", user.uid);
-        const userTargetDoc = await getDoc(userTargetUser);
-        const userData = userTargetDoc.data();
-        setUserFirstName(userData?.firstName);
-        setUserLastName(userData?.lastName);
-        setUserPicture(userData?.profilePicture); //6 Could change profilePicture in Firebase to be "pfPicture" or just "picture" in order to keep naming more concise. Currently it's a bit confusing as we are using "profilePicture" to indicate that it's the picture to be used on the profile being viewing, and "userPicture" to point to the picture of the viewer.
-      }
-    });
-  }, []);
+    const getProfileData = async () => {
+      console.log("use effect");
+      // Get data of profile being viewed
+      if (!openProfileId) return null;
+      const profileTargetUser = doc(db, "users", openProfileId);
+      const profileTargetDoc = await getDoc(profileTargetUser);
+      const profileData = profileTargetDoc.data();
+      setProfileFirstName(profileData?.firstName);
+      setProfileLastName(profileData?.lastName);
+      setProfilePicture(profileData?.profilePicture);
+      // Get data of user viewing
+      if (!loggedInUserId) return null;
+      const userTargetUser = doc(db, "users", loggedInUserId);
+      console.log(loggedInUserId);
+      const userTargetDoc = await getDoc(userTargetUser);
+      const userData = userTargetDoc.data();
+      setUserFirstName(userData?.firstName);
+      setUserLastName(userData?.lastName);
+      setUserPicture(userData?.profilePicture); //6 Could change profilePicture in Firebase to be "pfPicture" or just "picture" in order to keep naming more concise. Currently it's a bit confusing as we are using "profilePicture" to indicate that it's the picture to be used on the profile being viewing, and "userPicture" to point to the picture of the viewer.
+    };
+    getProfileData();
+  }, [openProfileId]);
 
   //1 GET POSTS FOR PROFILE CURRENTLY BEING VIEWED
   //  - Gets all the posts (profilePosts in Firestore) from the current profile subcollection.
@@ -113,8 +96,8 @@ const Profile = ({ loggedInUserId, setLoggedInUserId }: Props) => {
   //1 Fetches and sets in state all posts from Firebase.
   useEffect(() => {
     getAllPosts();
-    console.log("AllPosts: useEffect re-render");
-  }, [loggedInUserId]); // Get docs when userId state changes
+    console.log("use effect");
+  }, [loggedInUserId, openProfileId]); // Get docs when userId state changes
 
   if (openProfileId === undefined) return null; //6. must make this better later
 
@@ -240,3 +223,17 @@ export default Profile;
 //3 2. Allow user to make post. When text input and post clicked, add post to firebase user's post
 //3 3. Set up routing to about when about it clicked
 //3 4. Set up routing to and from public
+
+//3 It's going to be a problem down the line to separate a visiting user from the profile the
+//3 user is viewing. As of now I think it all goes under the same umbrella. We'll see.
+
+//3 When a user visits another user:
+//3   Perhaps having a UUID id for each user which would be
+//3   the route for a users profile would be a good idea.
+//3   So that when a user visits another user, the URL holds their UUID id.
+//3     Might also be able to use the userId for this, but that might cause security issues.
+//3 When a user visits another user, check if the userId matches the currently signed in user?...
+
+//3 Have to run a check to see if userProfileId matches logged in userId
+//3 If it does, display home profile and pass userId to profile
+//3 If it doesn't, pass userProfileId to the top (profile header), userId to MakePost, and let posts fetch their own
