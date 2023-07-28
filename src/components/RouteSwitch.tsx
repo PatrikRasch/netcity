@@ -1,15 +1,16 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import App from "./App";
 import Login from "./Login";
 import Register from "./Register";
 import Profile from "./Profile";
 import Header from "./Header";
-import Public from "./Public";
-import About from "./About";
-import People from "./People";
 
 import { LoggedInUserIdProp } from "../interfaces";
+
+const People = lazy(() => import("./People"));
+const Public = lazy(() => import("./Public"));
+const About = lazy(() => import("./About"));
 
 interface Props {
   loggedInUserId: LoggedInUserIdProp["loggedInUserId"];
@@ -17,53 +18,31 @@ interface Props {
 }
 
 function RouteSwitch({ loggedInUserId, setLoggedInUserId }: Props) {
-  const HeaderComponent = () => {
-    return <Header loggedInUserId={loggedInUserId} setLoggedInUserId={setLoggedInUserId} />;
-  };
-
-  const ProfileLayout = () => {
+  const HeaderDisplaying = () => {
+    if (!loggedInUserId) return <h1>Loading..</h1>;
     return (
-      <>
-        <HeaderComponent />
-        <Profile loggedInUserId={loggedInUserId} setLoggedInUserId={setLoggedInUserId} />
-      </>
+      <Suspense fallback={<h1>Loading...</h1>}>
+        <Header loggedInUserId={loggedInUserId} setLoggedInUserId={setLoggedInUserId} />
+        <Routes>
+          <Route
+            path="/profile/:openProfileId"
+            element={
+              <Profile loggedInUserId={loggedInUserId} setLoggedInUserId={setLoggedInUserId} />
+            }
+          />
+          <Route path="/about" element={<About />} />
+          <Route path="/people" element={<People />} />
+          <Route path="/public" element={<Public />} />
+        </Routes>
+      </Suspense>
     );
   };
-  const AboutLayout = () => {
-    return (
-      <>
-        <HeaderComponent />
-        <About />
-      </>
-    );
-  };
-  const PeopleLayout = () => {
-    return (
-      <>
-        <HeaderComponent />
-        <People />
-      </>
-    );
-  };
-  const PublicLayout = () => {
-    return (
-      <>
-        <HeaderComponent />
-        <Public />
-      </>
-    );
-  };
-
   return (
     <Routes>
       <Route path="/" element={<App />} />
       <Route path="/register" element={<Register />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/profile/:openProfileId" element={<ProfileLayout />} />
-
-      <Route path="/profile-about" element={<AboutLayout />} />
-      <Route path="/public" element={<PublicLayout />} />
-      <Route path="/people" element={<PeopleLayout />} />
+      <Route path="/*" element={<HeaderDisplaying />} />
     </Routes>
   );
 }
