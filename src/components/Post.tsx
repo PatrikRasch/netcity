@@ -1,17 +1,42 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import AllCommentsOnPost from "./AllCommentsOnPost";
 
 import likeIcon from "./../assets/icons/heartPlus.png";
 import heartLiked from "./../assets/icons/heartLiked.png";
 import dislikeIcon from "./../assets/icons/heartMinus.png";
 import heartDisliked from "./../assets/icons/heartDisliked.png";
 import commentIcon from "./../assets/icons/comment.png";
+import postIcon from "./../assets/icons/post.png";
+import postIcon2 from "./../assets/icons/post2.png";
+import postIcon3 from "./../assets/icons/post3.png";
 
 import { db } from "./../config/firebase.config";
-import { doc, getDoc, updateDoc, collection } from "firebase/firestore";
-
+import {
+  doc,
+  addDoc,
+  getDoc,
+  getDocs,
+  updateDoc,
+  collection,
+  orderBy,
+  query,
+} from "firebase/firestore";
+import { useDateFunctions } from "./custom-hooks/useDateFunctions";
 import emptyProfilePicture from "./../assets/icons/emptyProfilePicture.jpg";
 
 import { TargetData } from "../interfaces";
+
+interface CommentData {
+  posterId: string;
+  firstName: string;
+  lastName: string;
+  text: string;
+  date: string;
+  likes: object;
+  dislikes: object;
+  comments: object;
+  id: string;
+}
 
 //6 Have to implement comments into each post
 
@@ -22,9 +47,11 @@ interface Props {
   postDate: string;
   postLikes: object;
   postDislikes: object;
-  postNumOfComments: number;
+  postComments: object;
   openProfileId: string;
   loggedInUserId: string;
+  // loggedInUserFirstName: string;
+  // loggedInUserLastName: string;
   postId: string;
 }
 
@@ -35,7 +62,7 @@ const Post = ({
   postDate,
   postLikes,
   postDislikes,
-  postNumOfComments,
+  postComments,
   openProfileId,
   loggedInUserId,
   postId,
@@ -44,12 +71,34 @@ const Post = ({
   const [disliked, setDisliked] = useState(false);
   const [postNumOfLikes, setPostNumOfLikes] = useState(0);
   const [postNumOfDislikes, setPostNumOfDislikes] = useState(0);
+  const [postNumOfComments, setPostNumOfComments] = useState(0);
+  const [postCommentInput, setPostCommentInput] = useState("");
   const [postData, setPostData] = useState<TargetData | null>(null);
-  const [profilePicture, setProfilePicture] = useState(emptyProfilePicture);
+  const [postProfilePicture, setPostProfilePicture] = useState(emptyProfilePicture);
+  const [loggedInUserProfilePicture, setLoggedInUserProfilePicture] = useState(emptyProfilePicture);
+  const [loggedInUserFirstName, setLoggedInUserFirstName] = useState("");
+  const [loggedInUserLastName, setLoggedInUserLastName] = useState("");
+  const [comments, setComments] = useState<CommentData[]>([]);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const { fullTimestamp, dateDayMonthYear } = useDateFunctions();
+
+  const getLoggedInUserInformation = async (loggedInUserId: string) => {
+    if (!loggedInUserId) return <h1>Loading...</h1>;
+    const usersDoc = doc(db, "users", loggedInUserId);
+    const targetUser = await getDoc(usersDoc);
+    const data = targetUser.data();
+    setLoggedInUserFirstName(data?.firstName);
+    setLoggedInUserLastName(data?.lastName);
+    const profilePictureRef = data?.profilePicture;
+    setLoggedInUserProfilePicture(profilePictureRef);
+  };
+
+  getLoggedInUserInformation(loggedInUserId);
 
   useEffect(() => {
     setPostNumOfLikes(Object.keys(postLikes).length); // Number of likes on post
     setPostNumOfDislikes(-Object.keys(postDislikes).length); // Number of dislikes on post
+    setPostNumOfComments(Object.keys(postComments).length); // Number of comments on post
     getPostData(); // Get all the data for this post
   }, []);
 
@@ -70,6 +119,15 @@ const Post = ({
     } catch (err) {
       console.error(err);
     }
+  };
+
+  //1 Gets the profile picture of the user who made the post
+  const getPostProfilePicture = async (userId: string) => {
+    const usersDoc = doc(db, "users", userId);
+    const targetUser = await getDoc(usersDoc);
+    const data = targetUser.data();
+    const profilePictureRef = data?.profilePicture;
+    setPostProfilePicture(profilePictureRef);
   };
 
   const addLike = async () => {
@@ -145,15 +203,6 @@ const Post = ({
     }
   };
 
-  //1 Gets the profile picture of the user who made the post
-  const getPostProfilePicture = async (userId: string) => {
-    const usersDoc = doc(db, "users", userId);
-    const targetUser = await getDoc(usersDoc);
-    const data = targetUser.data();
-    const profilePictureRef = data?.profilePicture;
-    setProfilePicture(profilePictureRef);
-  };
-
   //1 The like icon on each post. Shows if the user has liked a post.
   const showLikedOrNot = () => {
     if (!liked) {
@@ -171,10 +220,76 @@ const Post = ({
     }
   };
 
-  //2 Every post needs a subcollection that holds all the comments?
-  //2 Every post needs a way to track which users has liked the post,
-  //2 so that a user can only like a post once.
-  //2 Comments will demand this, but with even more complexity.
+  //1 Changes the height of the comment input field dynamically
+  const handleTextareaChange = () => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    textarea.rows = 1; // Ensures textarea shrinks by trying to set the rows to 1
+    const computedHeight = textarea.scrollHeight; // Sets computedHeight to match scrollheight
+    const rows = Math.ceil(computedHeight / 24); // Find new number of rows to be set. Line height id 24.
+    textarea.rows = rows; // Sets new number of rows
+  };
+
+  // const usersDoc = doc(db, "users", openProfileId); // Grab the user
+  // const postsProfileCollection = collection(usersDoc, "postsProfile"); // Grab the posts on the user's profile
+  // const postDoc = doc(postsProfileCollection, postId); // grab this post
+
+  const postComment = async (commentData: {
+    timestamp: object;
+    firstName: string;
+    lastName: string;
+    text: string;
+    date: string;
+    likes: object;
+    dislikes: object;
+    userId: string;
+  }) => {
+    //2 Start by adding document to the backend
+    try {
+      const newCollection = collection(postDoc, "comments");
+      const newComment = await addDoc(newCollection, commentData);
+      console.log(newComment);
+      console.log("Comment added to Firebase");
+      // const data = targetDoc.data();
+      // const newPost = await addDoc(postsProfileRef, data);
+      // const commentsCollection = await addDoc(collection(targetDoc, "comments"));
+    } catch (err) {
+      console.error(err);
+    }
+
+    //2 Update frontend
+    const newComments = { ...postData?.comments, [loggedInUserId]: postCommentInput };
+    await updateDoc(postDoc, { comments: newComments });
+  };
+
+  //1 GET POSTS FOR PROFILE CURRENTLY BEING VIEWED
+  //  - Gets all the posts (profilePosts in Firestore) from the current profile subcollection.
+  const getAllComments = async () => {
+    try {
+      const usersCollectionRef = collection(db, "users"); // Grabs the users collection
+      const userDocRef = doc(usersCollectionRef, openProfileId); // Grabs the doc where the user is
+      const postsProfileCollection = collection(userDocRef, "postsProfile"); // Grabs the postsProfile collection
+      const postDocRef = doc(postsProfileCollection, postId);
+      const commentsCollection = collection(postDocRef, "comments");
+      const sortedComments = query(commentsCollection, orderBy("timestamp", "desc")); // Sorts comments in descending order. "query" and "orderBy" are Firebase/Firestore methods
+      const commentsPostDocs = await getDocs(sortedComments); // Gets all docs from postsProfile collection
+      const commentsPostDataArray: CommentData[] = []; // Empty array that'll be used for updating state
+      // Push each doc (post) into the postsProfileDataArray array.
+      commentsPostDocs.forEach((doc) => {
+        const postData = doc.data() as CommentData; // "as PostData" is type validation
+        commentsPostDataArray.push({ ...postData, id: doc.id }); // (id: doc.id adds the id of the individual doc)
+      });
+      setComments(commentsPostDataArray); // Update state with all the posts
+    } catch (err) {
+      console.error("Error trying to get all comments:", err);
+    }
+  };
+
+  //1 Fetches and sets in state all posts from Firebase.
+  useEffect(() => {
+    getAllComments();
+    console.log("use effect");
+  }, []);
 
   return (
     <div className="w-full min-h-[150px] bg-white shadow-xl">
@@ -182,7 +297,7 @@ const Post = ({
         <div className="flex gap-4 items-center">
           <div className="min-w-[40px] max-w-min">
             <img
-              src={profilePicture === "" ? emptyProfilePicture : profilePicture}
+              src={postProfilePicture === "" ? emptyProfilePicture : postProfilePicture}
               alt="profile"
               className="rounded-[50%] aspect-square object-cover"
             />
@@ -192,8 +307,8 @@ const Post = ({
         </div>
         <div>{postText}</div>
       </div>
-      <div className="w-full h-[2px] bg-gray-300"></div>
-      <div className="grid grid-cols-[1fr,1fr,2fr] h-[33px] items-center justify-items-center">
+      <div className="w-full h-[1px] bg-gray-300"></div>
+      <div className="grid grid-cols-[1fr,1fr,2fr] h-[33px] mt-1 mb-1 items-center justify-items-center">
         {/*//1 Like/Dislike */}
         {/*//1 Like */}
         <div className="flex gap-2">
@@ -211,6 +326,54 @@ const Post = ({
           <div>{postNumOfComments}</div>
         </div>
       </div>
+      <div className="w-full h-[1px] bg-gray-300"></div>
+      {/* //1 Add comment  */}
+      <div className="grid grid-cols-[1fr,8fr] gap-4 pt-2 pb-2 pl-4 pr-4 items-center">
+        <img
+          src={loggedInUserProfilePicture === "" ? emptyProfilePicture : loggedInUserProfilePicture}
+          alt="logged in user"
+          className="rounded-[50%] max-w-[38px] justify-self-center aspect-square object-cover"
+        />
+        <div className="bg-gray-200 rounded-xl grid grid-cols-[4fr,1fr] gap-4">
+          <textarea
+            ref={textareaRef}
+            // style={{ height: textareaHeight }}
+            placeholder="What do you think?"
+            className="w-full bg-transparent m-2 flex-grow resize-none overflow-y-auto outline-none"
+            maxLength={150}
+            value={postCommentInput}
+            onChange={(e) => {
+              setPostCommentInput(e.target.value);
+              handleTextareaChange();
+            }}
+            rows={1}
+          ></textarea>
+          <button
+            className="justify-self-center"
+            onClick={(e) => {
+              postComment({
+                timestamp: fullTimestamp,
+                firstName: loggedInUserFirstName,
+                lastName: loggedInUserLastName,
+                text: postCommentInput,
+                date: dateDayMonthYear,
+                likes: {},
+                dislikes: {},
+                userId: loggedInUserId,
+              });
+            }}
+          >
+            <img src={postIcon} alt="" className="max-w-[25px]" />
+          </button>
+        </div>
+      </div>
+      {/* //1 Posted comments */}
+      <AllCommentsOnPost
+        openProfileId={openProfileId}
+        comments={comments}
+        loggedInUserId={loggedInUserId}
+        commentId={postId}
+      />
     </div>
   );
 };
@@ -242,3 +405,8 @@ export default Post;
 //3 Need to get profile picture based on userId that made the post.
 //3 Can go into the "users" collection, pick the ID that matches the userId value of the post,
 //3 then take the profilePicture string from the user and display it here.
+
+//3 Every post needs a subcollection that holds all the comments.
+//3 Every post needs a way to track which users has liked the post,
+//3 so that a user can only like a post once.
+//3 Comments will demand this, but with even more complexity.

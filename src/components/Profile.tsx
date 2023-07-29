@@ -62,7 +62,6 @@ const Profile = ({ loggedInUserId, setLoggedInUserId }: Props) => {
       // Get data of user viewing
       if (!loggedInUserId) return null;
       const userTargetUser = doc(db, "users", loggedInUserId);
-      console.log(loggedInUserId);
       const userTargetDoc = await getDoc(userTargetUser);
       const userData = userTargetDoc.data();
       setUserFirstName(userData?.firstName);

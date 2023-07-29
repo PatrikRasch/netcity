@@ -29,7 +29,7 @@ const AllPosts = ({ posts, openProfileId, loggedInUserId }: Props) => {
           postDate={post.date}
           postLikes={post.likes}
           postDislikes={post.dislikes}
-          postNumOfComments={post.comments}
+          postComments={post.comments}
           openProfileId={openProfileId}
           loggedInUserId={loggedInUserId}
           postId={post.id}

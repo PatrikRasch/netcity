@@ -1,46 +1,37 @@
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
-import { useDateFunctions } from "./custom-hooks/useDateFunctions";
+import profilePicture from "./../assets/images/profile-picture.jpg";
 
-import { GetAllPosts, VisitingUser, LoggedInUserIdProp } from "../interfaces";
-import emptyProfilePicture from "./../assets/icons/emptyProfilePicture.jpg";
+import { FirstNameProp } from "../interfaces";
+import { LastNameProp } from "../interfaces";
+import { GetAllPosts } from "../interfaces";
 
 import { db } from "./../config/firebase.config";
 import { doc, addDoc, collection } from "firebase/firestore";
 
 interface Props {
-  loggedInUserId: LoggedInUserIdProp["loggedInUserId"];
-  setLoggedInUserId: LoggedInUserIdProp["setLoggedInUserId"];
+  loggedInUserId: string;
+  setLoggedInUserId: (value: string) => void;
+  firstName: FirstNameProp["firstName"];
+  lastName: LastNameProp["lastName"];
   getAllPosts: GetAllPosts["getAllPosts"];
-  visitingUser: VisitingUser["visitingUser"];
-  userFirstName: string;
-  userLastName: string;
-  userPicture: string;
 }
 
-function MakePost({
-  loggedInUserId,
-  setLoggedInUserId,
-  getAllPosts,
-  userPicture,
-  visitingUser,
-  userFirstName,
-  userLastName,
-}: Props) {
+function MakePost(props: Props) {
   const [postInput, setPostInput] = useState("");
   const [postId, setPostId] = useState("");
-  const { openProfileId } = useParams();
-  const { fullTimestamp, dateDayMonthYear } = useDateFunctions();
+  const { loggedInUserId, setLoggedInUserId } = props;
+  const { firstName } = props;
+  const { lastName } = props;
+  const { getAllPosts } = props;
 
   //1 Gets the reference to the postsProfile collection for the user
   const getPostsProfileRef = () => {
-    if (!openProfileId) return console.log("No userProfileId"); //6 Need to make this error better later
-    const targetUser = doc(db, "users", openProfileId);
+    const targetUser = doc(db, "users", loggedInUserId);
     return collection(targetUser, "postsProfile");
   };
 
   //1 Current problems:
-  //3 Posts don't load in order, need to add a post timestamp to sort posts.
+  //2 Posts don't load in order, need to add a post timestamp to sort posts.
   //2 All posts load together no matter how many when a profile is visited. Need to add some form of lazyloading.
 
   //1 Write the post to Firestore
@@ -52,12 +43,10 @@ function MakePost({
     date: string;
     likes: object;
     dislikes: object;
-    comments: object;
-    userId: string;
+    comments: number;
   }) => {
     try {
       const postsProfileRef = getPostsProfileRef();
-      if (postsProfileRef === undefined) return console.log("postsProfileRef is undefined");
       const newPost = await addDoc(postsProfileRef, data);
       console.log("Post written to Firestore");
       setPostId(newPost.id); // Set the ID of this post to the state newPost
@@ -66,20 +55,38 @@ function MakePost({
     }
   };
 
+  //1 Set up new date
+  const date = new Date();
+
+  //1 Turn month number into text
+  const getMonthName = (monthNumber: number) => {
+    const date = new Date();
+    date.setMonth(monthNumber - 1);
+    return date.toLocaleString("en-US", { month: "long" });
+  };
+
+  //1 Turn all dates into readable text
+  const fullDate = (monthNumber: number) => {
+    const day = date.getDate().toString();
+    const month = getMonthName(monthNumber).toString();
+    const year = date.getFullYear().toString();
+    return day + " " + month + " " + year;
+  };
+
   return (
     <div>
       <div className="w-full min-h-[150px] bg-white shadow-xl">
         <div className="min-h-[120px] flex p-4 gap-2">
           <div className="min-w-[50px] max-w-min">
             <img
-              src={userPicture === "" ? emptyProfilePicture : userPicture}
+              src={profilePicture}
               alt="profile"
               className="rounded-[50%] aspect-square object-cover"
             />
           </div>
           <textarea
             placeholder="Make a post"
-            className="w-full bg-transparent resize-none outline-none"
+            className="w-full bg-transparent resize-none"
             maxLength={150}
             value={postInput}
             onChange={(e) => setPostInput(e.target.value)}
@@ -91,15 +98,14 @@ function MakePost({
           onClick={(e) => {
             if (postInput.length === 0) return console.log("add text to input before posting");
             writePost({
-              timestamp: fullTimestamp,
-              firstName: userFirstName,
-              lastName: userLastName,
+              timestamp: date,
+              firstName: firstName,
+              lastName: lastName,
               text: postInput,
-              date: dateDayMonthYear,
+              date: fullDate(date.getMonth() + 1),
               likes: {},
               dislikes: {},
-              comments: {},
-              userId: loggedInUserId,
+              comments: 0,
             });
             getAllPosts();
             setPostInput("");
