@@ -13,7 +13,7 @@ export interface UserData {
 }
 
 export interface TargetData {
-  comments: number;
+  comments: object;
   date: string;
   firstName: string;
   lastName: string;
@@ -36,7 +36,7 @@ export interface PostData {
   date: string;
   likes: object;
   dislikes: object;
-  comments: number;
+  comments: object;
   id: string;
 }
 
