@@ -14,7 +14,7 @@ const Header = ({ loggedInUserId, setLoggedInUserId }: Props) => {
   const [profilePicture, setProfilePicture] = useState(emptyProfilePicture);
   const navigate = useNavigate();
 
-  const getPostProfilePicture = async (userId: string) => {
+  const getProfilePicture = async (userId: string) => {
     if (!userId) return <h1>Loading...</h1>;
     const usersDoc = doc(db, "users", userId);
     const targetUser = await getDoc(usersDoc);
@@ -23,7 +23,7 @@ const Header = ({ loggedInUserId, setLoggedInUserId }: Props) => {
     setProfilePicture(profilePictureRef);
   };
 
-  getPostProfilePicture(loggedInUserId);
+  getProfilePicture(loggedInUserId);
 
   return (
     <div>

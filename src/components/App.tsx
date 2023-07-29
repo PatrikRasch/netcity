@@ -32,7 +32,7 @@ export default App;
 //2 Logged in user: loggedInUserId
 
 //1 Features to build:
-//2 Header must not reload every time a navigation is made where header still stays on-screen. (Lazyloading React??)
+//3 Header must not reload every time a navigation is made where header still stays on-screen. (Lazyloading React ✓)
 //2 Comments on all posts (should comment input field be visible by default?)
 //2 - Ability to like and dislike comments
 //2 An editable about page on Profile
