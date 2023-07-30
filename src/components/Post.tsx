@@ -351,6 +351,8 @@ const Post = ({
           <button
             className="justify-self-center"
             onClick={(e) => {
+              if (postCommentInput.length === 0)
+                return console.log("add text to input before posting");
               postComment({
                 timestamp: fullTimestamp,
                 firstName: loggedInUserFirstName,
@@ -362,6 +364,8 @@ const Post = ({
                 userId: loggedInUserId,
                 postId: postId,
               });
+              getAllComments();
+              setPostCommentInput("");
             }}
           >
             <img src={postIcon} alt="" className="max-w-[25px]" />

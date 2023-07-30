@@ -81,6 +81,7 @@ const Comment = ({
     getCommentData();
     setCommentNumOfLikes(Object.keys(commentLikes).length);
     setCommentNumOfDislikes(-Object.keys(commentDislikes).length);
+    getCommentProfilePicture(commentById);
   }, []);
 
   const getCommentProfilePicture = async (userId: string) => {
