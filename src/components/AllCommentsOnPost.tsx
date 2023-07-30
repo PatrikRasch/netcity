@@ -5,7 +5,7 @@ interface Props {
   openProfileId: string;
   comments: CommentsData[];
   loggedInUserId: string;
-  commentId: string;
+  postId: string;
 }
 
 interface CommentsData {
@@ -16,11 +16,13 @@ interface CommentsData {
   date: string;
   likes: object;
   dislikes: object;
+  userId: string;
   comments: object;
   id: string;
+  postId: string;
 }
 
-const AllCommentsOnPost = ({ openProfileId, comments, loggedInUserId }: Props) => {
+const AllCommentsOnPost = ({ openProfileId, comments, loggedInUserId, postId }: Props) => {
   const populateCommentsOnPage = () => {
     return comments.map((comment) => (
       <div key={comment.id}>
@@ -31,9 +33,11 @@ const AllCommentsOnPost = ({ openProfileId, comments, loggedInUserId }: Props) =
           commentDate={comment.date}
           commentLikes={comment.likes}
           commentDislikes={comment.dislikes}
+          commentById={comment.userId}
           openProfileId={openProfileId}
           loggedInUserId={loggedInUserId}
           commentId={comment.id}
+          postId={postId}
         />
       </div>
     ));

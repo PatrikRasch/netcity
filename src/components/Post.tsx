@@ -36,6 +36,8 @@ interface CommentData {
   dislikes: object;
   comments: object;
   id: string;
+  userId: string;
+  postId: string;
 }
 
 //6 Have to implement comments into each post
@@ -50,8 +52,6 @@ interface Props {
   postComments: object;
   openProfileId: string;
   loggedInUserId: string;
-  // loggedInUserFirstName: string;
-  // loggedInUserLastName: string;
   postId: string;
 }
 
@@ -243,6 +243,7 @@ const Post = ({
     likes: object;
     dislikes: object;
     userId: string;
+    postId: string;
   }) => {
     //2 Start by adding document to the backend
     try {
@@ -256,7 +257,6 @@ const Post = ({
     } catch (err) {
       console.error(err);
     }
-
     //2 Update frontend
     const newComments = { ...postData?.comments, [loggedInUserId]: postCommentInput };
     await updateDoc(postDoc, { comments: newComments });
@@ -360,6 +360,7 @@ const Post = ({
                 likes: {},
                 dislikes: {},
                 userId: loggedInUserId,
+                postId: postId,
               });
             }}
           >
@@ -372,7 +373,7 @@ const Post = ({
         openProfileId={openProfileId}
         comments={comments}
         loggedInUserId={loggedInUserId}
-        commentId={postId}
+        postId={postId}
       />
     </div>
   );
