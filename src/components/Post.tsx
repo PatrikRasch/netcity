@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import AllCommentsOnPost from "./AllCommentsOnPost";
 import MakeComment from "./MakeComment";
 
@@ -11,6 +11,8 @@ import commentIcon from "./../assets/icons/comment.png";
 import { db } from "./../config/firebase.config";
 import { doc, getDoc, getDocs, updateDoc, collection, orderBy, query } from "firebase/firestore";
 import { useDateFunctions } from "./custom-hooks/useDateFunctions";
+import { useLikingFunctions } from "./custom-hooks/usePostLikingFunctions";
+import { useDislikingFunctions } from "./custom-hooks/usePostDislikingFunctions";
 import emptyProfilePicture from "./../assets/icons/emptyProfilePicture.jpg";
 
 import { TargetData } from "../interfaces";
@@ -56,8 +58,8 @@ const Post = ({
   loggedInUserId,
   postId,
 }: Props) => {
-  const [liked, setLiked] = useState(false);
-  const [disliked, setDisliked] = useState(false);
+  // const [liked, setLiked] = useState(false);
+  // const [disliked, setDisliked] = useState(false);
   const [postNumOfLikes, setPostNumOfLikes] = useState(0);
   const [postNumOfDislikes, setPostNumOfDislikes] = useState(0);
   const [postNumOfComments, setPostNumOfComments] = useState(0);
@@ -69,6 +71,24 @@ const Post = ({
   const [loggedInUserLastName, setLoggedInUserLastName] = useState("");
   const [comments, setComments] = useState<CommentData[]>([]);
   const { fullTimestamp, dateDayMonthYear } = useDateFunctions();
+
+  //1 Access this posts document from Firestore
+  const usersDoc = doc(db, "users", openProfileId); // Grab the user
+  const postsProfileCollection = collection(usersDoc, "postsProfile"); // Grab the posts on the user's profile
+  const postDoc = doc(postsProfileCollection, postId); // grab this post
+
+  const { addLike, removeLike, liked, setLiked } = useLikingFunctions(
+    loggedInUserId,
+    postDoc,
+    postData,
+    setPostNumOfLikes
+  );
+  const { addDislike, removeDislike, disliked, setDisliked } = useDislikingFunctions(
+    loggedInUserId,
+    postDoc,
+    postData,
+    setPostNumOfDislikes
+  );
 
   const getLoggedInUserInformation = async (loggedInUserId: string) => {
     if (!loggedInUserId) return <h1>Loading...</h1>;
@@ -89,11 +109,6 @@ const Post = ({
     setPostNumOfComments(Object.keys(postComments).length); // Number of comments on post
     getPostData(); // Get all the data for this post
   }, []);
-
-  //1 Access this posts document from Firestore
-  const usersDoc = doc(db, "users", openProfileId); // Grab the user
-  const postsProfileCollection = collection(usersDoc, "postsProfile"); // Grab the posts on the user's profile
-  const postDoc = doc(postsProfileCollection, postId); // grab this post
 
   //1 Get the data from this post from the backend and store it in the "postData" state
   const getPostData = async () => {
@@ -116,48 +131,6 @@ const Post = ({
     const data = targetUser.data();
     const profilePictureRef = data?.profilePicture;
     setPostProfilePicture(profilePictureRef);
-  };
-
-  const addLike = async () => {
-    setLiked(true); // Set liked to true, makes heart red
-    // Frontend updates:
-    (postLikes as { [key: string]: boolean })[loggedInUserId] = true; // Add the userId into postLikes as true
-    setPostNumOfLikes(Object.keys(postLikes).length); // Update state for number of likes to display
-    // Backend updates:
-    const newLikes = { ...postData?.likes, [loggedInUserId]: true }; // Define new object to hold the likes
-    await updateDoc(postDoc, { likes: newLikes }); // Update the backend with the new likes
-  };
-
-  const removeLike = async () => {
-    setLiked(false); // Set liked to false, makes heart empty
-    // Frontend updates
-    delete (postLikes as { [key: string]: boolean })[loggedInUserId]; // Remove the userId from postLikes
-    setPostNumOfLikes(Object.keys(postLikes).length); // Update state for number of likes to display
-    // Backend updates:
-    delete (postData?.likes as { [key: string]: boolean })[loggedInUserId]; // Delete the userId from the postData object
-    const newLikes = { ...postData?.likes }; // Define new object to hold the likes
-    await updateDoc(postDoc, { likes: newLikes }); // Update the backend with the new likes
-  };
-
-  const addDislike = async () => {
-    setDisliked(true); // Set disliked to true, makes heart black
-    // Frontend updates:
-    (postDislikes as { [key: string]: boolean })[loggedInUserId] = true; // Add the userId into postDislikes as true
-    setPostNumOfDislikes(-Object.keys(postDislikes).length); // Update state for number of dislikes to display
-    // Backend updates:
-    const newDislikes = { ...postData?.dislikes, [loggedInUserId]: true }; // Define new object to hold the dislikes
-    await updateDoc(postDoc, { dislikes: newDislikes }); // Update the backend with the new dislikes
-  };
-
-  const removeDislike = async () => {
-    setDisliked(false); // Set liked to false, makes heart empty
-    // Frontend updates
-    delete (postDislikes as { [key: string]: boolean })[loggedInUserId]; // Remove the userId from postLikes
-    setPostNumOfDislikes(-Object.keys(postDislikes).length); // Update state for number of likes to display
-    // Backend updates:
-    delete (postData?.dislikes as { [key: string]: boolean })[loggedInUserId]; // Delete the userId from the postData object
-    const newDislikes = { ...postData?.dislikes }; // Define new object to hold the likes
-    await updateDoc(postDoc, { dislikes: newDislikes }); // Update the backend with the new likes
   };
 
   //2 Could potentially add in a revert of the frontend update if the backend update
