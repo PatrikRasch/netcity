@@ -85,7 +85,6 @@ const Comment = ({
   }, []);
 
   const getCommentProfilePicture = async (userId: string) => {
-    console.log(userId);
     if (!userId) return <h1>Loading...</h1>;
     const usersDoc = doc(db, "users", userId);
 

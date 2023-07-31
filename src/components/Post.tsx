@@ -1,26 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import AllCommentsOnPost from "./AllCommentsOnPost";
+import MakeComment from "./MakeComment";
 
 import likeIcon from "./../assets/icons/heartPlus.png";
 import heartLiked from "./../assets/icons/heartLiked.png";
 import dislikeIcon from "./../assets/icons/heartMinus.png";
 import heartDisliked from "./../assets/icons/heartDisliked.png";
 import commentIcon from "./../assets/icons/comment.png";
-import postIcon from "./../assets/icons/post.png";
-import postIcon2 from "./../assets/icons/post2.png";
-import postIcon3 from "./../assets/icons/post3.png";
 
 import { db } from "./../config/firebase.config";
-import {
-  doc,
-  addDoc,
-  getDoc,
-  getDocs,
-  updateDoc,
-  collection,
-  orderBy,
-  query,
-} from "firebase/firestore";
+import { doc, getDoc, getDocs, updateDoc, collection, orderBy, query } from "firebase/firestore";
 import { useDateFunctions } from "./custom-hooks/useDateFunctions";
 import emptyProfilePicture from "./../assets/icons/emptyProfilePicture.jpg";
 
@@ -72,14 +61,13 @@ const Post = ({
   const [postNumOfLikes, setPostNumOfLikes] = useState(0);
   const [postNumOfDislikes, setPostNumOfDislikes] = useState(0);
   const [postNumOfComments, setPostNumOfComments] = useState(0);
-  const [postCommentInput, setPostCommentInput] = useState("");
+
   const [postData, setPostData] = useState<TargetData | null>(null);
   const [postProfilePicture, setPostProfilePicture] = useState(emptyProfilePicture);
   const [loggedInUserProfilePicture, setLoggedInUserProfilePicture] = useState(emptyProfilePicture);
   const [loggedInUserFirstName, setLoggedInUserFirstName] = useState("");
   const [loggedInUserLastName, setLoggedInUserLastName] = useState("");
   const [comments, setComments] = useState<CommentData[]>([]);
-  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const { fullTimestamp, dateDayMonthYear } = useDateFunctions();
 
   const getLoggedInUserInformation = async (loggedInUserId: string) => {
@@ -220,48 +208,6 @@ const Post = ({
     }
   };
 
-  //1 Changes the height of the comment input field dynamically
-  const handleTextareaChange = () => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-    textarea.rows = 1; // Ensures textarea shrinks by trying to set the rows to 1
-    const computedHeight = textarea.scrollHeight; // Sets computedHeight to match scrollheight
-    const rows = Math.ceil(computedHeight / 24); // Find new number of rows to be set. Line height id 24.
-    textarea.rows = rows; // Sets new number of rows
-  };
-
-  // const usersDoc = doc(db, "users", openProfileId); // Grab the user
-  // const postsProfileCollection = collection(usersDoc, "postsProfile"); // Grab the posts on the user's profile
-  // const postDoc = doc(postsProfileCollection, postId); // grab this post
-
-  const postComment = async (commentData: {
-    timestamp: object;
-    firstName: string;
-    lastName: string;
-    text: string;
-    date: string;
-    likes: object;
-    dislikes: object;
-    userId: string;
-    postId: string;
-  }) => {
-    //2 Start by adding document to the backend
-    try {
-      const newCollection = collection(postDoc, "comments");
-      const newComment = await addDoc(newCollection, commentData);
-      console.log(newComment);
-      console.log("Comment added to Firebase");
-      // const data = targetDoc.data();
-      // const newPost = await addDoc(postsProfileRef, data);
-      // const commentsCollection = await addDoc(collection(targetDoc, "comments"));
-    } catch (err) {
-      console.error(err);
-    }
-    //2 Update frontend
-    const newComments = { ...postData?.comments, [loggedInUserId]: postCommentInput };
-    await updateDoc(postDoc, { comments: newComments });
-  };
-
   //1 GET POSTS FOR PROFILE CURRENTLY BEING VIEWED
   //  - Gets all the posts (profilePosts in Firestore) from the current profile subcollection.
   const getAllComments = async () => {
@@ -328,50 +274,18 @@ const Post = ({
       </div>
       <div className="w-full h-[1px] bg-gray-300"></div>
       {/* //1 Add comment  */}
-      <div className="grid grid-cols-[1fr,8fr] gap-4 pt-2 pb-2 pl-4 pr-4 items-center">
-        <img
-          src={loggedInUserProfilePicture === "" ? emptyProfilePicture : loggedInUserProfilePicture}
-          alt="logged in user"
-          className="rounded-[50%] max-w-[38px] justify-self-center aspect-square object-cover"
-        />
-        <div className="bg-gray-200 rounded-xl grid grid-cols-[4fr,1fr] gap-4">
-          <textarea
-            ref={textareaRef}
-            // style={{ height: textareaHeight }}
-            placeholder="What do you think?"
-            className="w-full bg-transparent m-2 flex-grow resize-none overflow-y-auto outline-none"
-            maxLength={150}
-            value={postCommentInput}
-            onChange={(e) => {
-              setPostCommentInput(e.target.value);
-              handleTextareaChange();
-            }}
-            rows={1}
-          ></textarea>
-          <button
-            className="justify-self-center"
-            onClick={(e) => {
-              if (postCommentInput.length === 0)
-                return console.log("add text to input before posting");
-              postComment({
-                timestamp: fullTimestamp,
-                firstName: loggedInUserFirstName,
-                lastName: loggedInUserLastName,
-                text: postCommentInput,
-                date: dateDayMonthYear,
-                likes: {},
-                dislikes: {},
-                userId: loggedInUserId,
-                postId: postId,
-              });
-              getAllComments();
-              setPostCommentInput("");
-            }}
-          >
-            <img src={postIcon} alt="" className="max-w-[25px]" />
-          </button>
-        </div>
-      </div>
+
+      <MakeComment
+        loggedInUserFirstName={postFirstName}
+        loggedInUserLastName={postLastName}
+        loggedInUserProfilePicture={loggedInUserProfilePicture}
+        emptyProfilePicture={emptyProfilePicture}
+        loggedInUserId={loggedInUserId}
+        getAllComments={getAllComments}
+        openProfileId={openProfileId}
+        postId={postId}
+      />
+
       {/* //1 Posted comments */}
       <AllCommentsOnPost
         openProfileId={openProfileId}
