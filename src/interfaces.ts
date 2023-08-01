@@ -23,6 +23,30 @@ export interface TargetData {
   timestamp: firebase.firestore.Timestamp;
 }
 
+export interface TargetCommentData {
+  date: string;
+  firstName: string;
+  lastName: string;
+  likes: object;
+  dislikes: object;
+  text: string;
+  timestamp: firebase.firestore.Timestamp;
+}
+
+export interface CommentData {
+  posterId: string;
+  firstName: string;
+  lastName: string;
+  text: string;
+  date: string;
+  likes: object;
+  dislikes: object;
+  comments: object;
+  id: string;
+  userId: string;
+  postId: string;
+}
+
 export interface AllPostsProps {
   userPicture: string;
   userPosterId: string;
