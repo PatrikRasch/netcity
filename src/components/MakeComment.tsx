@@ -1,10 +1,8 @@
 import React, { useState, useRef } from "react";
 
 import { db } from "./../config/firebase.config";
-import { collection, doc, addDoc, updateDoc } from "firebase/firestore";
+import { collection, doc, addDoc } from "firebase/firestore";
 import { useDateFunctions } from "./custom-hooks/useDateFunctions";
-import { useCommentData } from "./custom-hooks/useCommentData";
-import { useCommentsOnPost } from "./custom-hooks/useCommentsOnPost";
 
 import postIcon from "./../assets/icons/post.png";
 
@@ -16,6 +14,7 @@ interface Props {
   loggedInUserId: string;
   openProfileId: string;
   postId: string;
+  getAllComments: () => Promise<void>;
 }
 
 function MakeComment({
@@ -26,6 +25,7 @@ function MakeComment({
   loggedInUserId,
   openProfileId,
   postId,
+  getAllComments,
 }: Props) {
   const [postCommentInput, setPostCommentInput] = useState("");
   const { fullTimestamp, dateDayMonthYear } = useDateFunctions();
@@ -35,8 +35,6 @@ function MakeComment({
 
   const postsProfileCollection = collection(usersDoc, "postsProfile"); // Grab the posts on the user's profile
   const postDoc = doc(postsProfileCollection, postId); // grab this post
-  const { commentData, setCommentData } = useCommentData();
-  const { comments, setComments } = useCommentsOnPost();
 
   const postComment = async (commentData: {
     timestamp: object;
@@ -52,17 +50,12 @@ function MakeComment({
     //2 Start by adding document to the backend
     try {
       const commentCollection = collection(postDoc, "comments");
-      const newComment = await addDoc(commentCollection, commentData);
+      await addDoc(commentCollection, commentData);
       console.log("Comment added to Firebase");
-      // const data = targetDoc.data();
-      // const newPost = await addDoc(postsProfileRef, data);
-      // const commentsCollection = await addDoc(collection(targetDoc, "comments"));
+      getAllComments();
     } catch (err) {
       console.error(err);
     }
-    //2 Fetch comments from backend
-    const newComments = { ...commentData, [loggedInUserId]: postCommentInput };
-    await updateDoc(postDoc, { comments: newComments });
   };
 
   //1 Gets the reference to the postsProfile collection for the user
@@ -104,7 +97,7 @@ function MakeComment({
           rows={1}
         ></textarea>
         <button
-          className="justify-self-center"
+          className="justify-self-center self-center rounded-[50%]"
           onClick={(e) => {
             if (postCommentInput.length === 0)
               return console.log("add text to input before posting");

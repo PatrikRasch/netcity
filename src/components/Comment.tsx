@@ -27,6 +27,7 @@ interface Props {
   loggedInUserId: string;
   commentId: string;
   postId: string;
+  commentIndex: number;
 }
 
 const Comment = ({
@@ -41,6 +42,7 @@ const Comment = ({
   loggedInUserId,
   commentId,
   postId,
+  commentIndex,
 }: Props) => {
   const [commentNumOfLikes, setCommentNumOfLikes] = useState(0);
   const [commentNumOfDislikes, setCommentNumOfDislikes] = useState(0);
@@ -78,18 +80,10 @@ const Comment = ({
       if (data?.likes?.hasOwnProperty(loggedInUserId)) setLiked(true); // Has the user already liked the comment?
       if (data?.dislikes?.hasOwnProperty(loggedInUserId)) setDisliked(true); // Has the user already disliked the comment?
       getCommentProfilePicture(data?.userId); // Grab the profile picture of the user who made the comment
-      console.log(commentData);
     } catch (err) {
       console.error(err);
     }
   };
-
-  useEffect(() => {
-    getCommentData();
-    setCommentNumOfLikes(Object.keys(commentLikes).length);
-    setCommentNumOfDislikes(-Object.keys(commentDislikes).length);
-    getCommentProfilePicture(commentById);
-  }, []);
 
   const getCommentProfilePicture = async (userId: string) => {
     if (!userId) return <h1>Loading...</h1>;
@@ -145,6 +139,13 @@ const Comment = ({
       return <img src={heartDisliked} alt="" className="max-h-6" />;
     }
   };
+
+  useEffect(() => {
+    getCommentData();
+    setCommentNumOfLikes(Object.keys(commentLikes).length);
+    setCommentNumOfDislikes(-Object.keys(commentDislikes).length);
+    getCommentProfilePicture(commentById);
+  }, []);
 
   return (
     <div className="grid pt-2 pl-4 pr-4">

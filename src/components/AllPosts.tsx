@@ -21,7 +21,6 @@ const AllPosts = ({ posts, openProfileId, loggedInUserId }: Props) => {
   //2 If we add a profilePicture key-value pair to each post, profile pictures won't update across
   //2 the board when a user changes their profile picture.
   const [loggedInUserProfilePicture, setLoggedInUserProfilePicture] = useState(emptyProfilePicture);
-  // const [showMakeComment, setShowMakeComment] = useState(true);
 
   //1 Adds all the posts on Firebase onto the page.
   const populatePostsOnPage = () => {

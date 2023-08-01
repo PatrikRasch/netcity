@@ -54,15 +54,17 @@ const Post = ({
 }: Props) => {
   const [postNumOfLikes, setPostNumOfLikes] = useState(0);
   const [postNumOfDislikes, setPostNumOfDislikes] = useState(0);
-  const [postNumOfComments, setPostNumOfComments] = useState(0);
+  const [postTotalNumOfComments, setPostTotalNumOfComments] = useState(0);
 
   const [postData, setPostData] = useState<TargetData | null>(null);
   const [postProfilePicture, setPostProfilePicture] = useState(emptyProfilePicture);
   const [loggedInUserFirstName, setLoggedInUserFirstName] = useState("");
   const [loggedInUserLastName, setLoggedInUserLastName] = useState("");
   const [showMakeComment, setShowMakeComment] = useState(false);
+  const [numOfCommentsShowing, setNumOfCommentsShowing] = useState(0);
+  const [showLoadMoreCommentsButton, setShowLoadMoreCommentsButton] = useState(true);
+  const [comments, setComments] = useState<CommentData[]>([]);
   const { fullTimestamp, dateDayMonthYear } = useDateFunctions();
-  const { comments, setComments } = useCommentsOnPost();
 
   //1 Access this posts document from Firestore
   const usersDoc = doc(db, "users", openProfileId); // Grab the user
@@ -72,7 +74,7 @@ const Post = ({
   const getNumOfComments = async () => {
     const commentsCollection = collection(postDoc, "comments");
     const commentsDocs = await getDocs(commentsCollection);
-    setPostNumOfComments(commentsDocs.size);
+    setPostTotalNumOfComments(commentsDocs.size);
   };
 
   getNumOfComments();
@@ -107,7 +109,6 @@ const Post = ({
     if (postIndex === 0) setShowMakeComment(true);
     setPostNumOfLikes(Object.keys(postLikes).length); // Number of likes on post
     setPostNumOfDislikes(-Object.keys(postDislikes).length); // Number of dislikes on post
-    setPostNumOfComments(Object.keys(postComments).length); // Number of comments on post
     getPostData(); // Get all the data for this post
   }, []);
 
@@ -223,8 +224,19 @@ const Post = ({
           loggedInUserId={loggedInUserId}
           openProfileId={openProfileId}
           postId={postId}
+          getAllComments={getAllComments}
         />
       );
+  };
+
+  const handleCommentButtonClicked = () => {
+    if (!showMakeComment) {
+      setShowMakeComment(true);
+      setNumOfCommentsShowing(numOfCommentsShowing + 3);
+    } else {
+      setShowMakeComment(false);
+      setNumOfCommentsShowing(0);
+    }
   };
 
   return (
@@ -262,9 +274,9 @@ const Post = ({
             src={commentIcon}
             alt=""
             className="max-h-6"
-            onClick={(e) => setShowMakeComment((prevShowMakeComment) => !prevShowMakeComment)}
+            onClick={(e) => handleCommentButtonClicked()}
           />
-          <div>{postNumOfComments}</div>
+          <div>{postTotalNumOfComments}</div>
         </div>
       </div>
       <div className="w-full h-[1px] bg-gray-300"></div>
@@ -276,8 +288,13 @@ const Post = ({
         comments={comments}
         loggedInUserId={loggedInUserId}
         postId={postId}
-        // commentData={commentData}
-        // setCommentData={setCommentData}
+        postTotalNumOfComments={postTotalNumOfComments}
+        numOfCommentsShowing={numOfCommentsShowing}
+        setNumOfCommentsShowing={setNumOfCommentsShowing}
+        showMakeComment={showMakeComment}
+        showLoadMoreCommentsButton={showLoadMoreCommentsButton}
+        setShowLoadMoreCommentsButton={setShowLoadMoreCommentsButton}
+        setShowMakeComment={setShowMakeComment}
       />
     </div>
   );
