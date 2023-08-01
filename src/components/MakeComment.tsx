@@ -3,6 +3,8 @@ import React, { useState, useRef } from "react";
 import { db } from "./../config/firebase.config";
 import { collection, doc, addDoc, updateDoc } from "firebase/firestore";
 import { useDateFunctions } from "./custom-hooks/useDateFunctions";
+import { useCommentData } from "./custom-hooks/useCommentData";
+import { useCommentsOnPost } from "./custom-hooks/useCommentsOnPost";
 
 import postIcon from "./../assets/icons/post.png";
 
@@ -12,7 +14,6 @@ interface Props {
   loggedInUserProfilePicture: string;
   emptyProfilePicture: string;
   loggedInUserId: string;
-  getAllComments: () => Promise<void>;
   openProfileId: string;
   postId: string;
 }
@@ -23,7 +24,6 @@ function MakeComment({
   loggedInUserProfilePicture,
   emptyProfilePicture,
   loggedInUserId,
-  getAllComments,
   openProfileId,
   postId,
 }: Props) {
@@ -35,6 +35,8 @@ function MakeComment({
 
   const postsProfileCollection = collection(usersDoc, "postsProfile"); // Grab the posts on the user's profile
   const postDoc = doc(postsProfileCollection, postId); // grab this post
+  const { commentData, setCommentData } = useCommentData();
+  const { comments, setComments } = useCommentsOnPost();
 
   const postComment = async (commentData: {
     timestamp: object;
@@ -58,8 +60,7 @@ function MakeComment({
     } catch (err) {
       console.error(err);
     }
-    //2 Update frontend
-    console.log(commentData);
+    //2 Fetch comments from backend
     const newComments = { ...commentData, [loggedInUserId]: postCommentInput };
     await updateDoc(postDoc, { comments: newComments });
   };
@@ -92,7 +93,7 @@ function MakeComment({
         <textarea
           ref={textareaRef}
           // style={{ height: textareaHeight }}
-          placeholder="What do you think?"
+          placeholder="Write a comment"
           className="w-full bg-transparent m-2 flex-grow resize-none overflow-y-auto outline-none"
           maxLength={150}
           value={postCommentInput}
@@ -118,7 +119,6 @@ function MakeComment({
               userId: loggedInUserId,
               postId: postId,
             });
-            getAllComments();
             setPostCommentInput("");
           }}
         >

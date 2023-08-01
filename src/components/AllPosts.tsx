@@ -1,5 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import Post from "./Post";
+import MakeComment from "./MakeComment";
+
+import emptyProfilePicture from "./../assets/icons/emptyProfilePicture.jpg";
 
 import { FirstNameProp } from "../interfaces";
 import { LastNameProp } from "../interfaces";
@@ -17,23 +20,33 @@ const AllPosts = ({ posts, openProfileId, loggedInUserId }: Props) => {
   //2 We need to use the userId on each post, to fetch the profile picture of the user with that ID.
   //2 If we add a profilePicture key-value pair to each post, profile pictures won't update across
   //2 the board when a user changes their profile picture.
+  const [loggedInUserProfilePicture, setLoggedInUserProfilePicture] = useState(emptyProfilePicture);
+  // const [showMakeComment, setShowMakeComment] = useState(true);
 
   //1 Adds all the posts on Firebase onto the page.
   const populatePostsOnPage = () => {
-    return posts.map((post) => (
+    if (!posts) return;
+    return posts.map((post, index) => (
       <div key={post.id}>
-        <Post
-          postFirstName={post.firstName}
-          postLastName={post.lastName}
-          postText={post.text}
-          postDate={post.date}
-          postLikes={post.likes}
-          postDislikes={post.dislikes}
-          postComments={post.comments}
-          openProfileId={openProfileId}
-          loggedInUserId={loggedInUserId}
-          postId={post.id}
-        />
+        <div>
+          <Post
+            postFirstName={post.firstName}
+            postLastName={post.lastName}
+            postText={post.text}
+            postDate={post.date}
+            postLikes={post.likes}
+            postDislikes={post.dislikes}
+            postComments={post.comments}
+            openProfileId={openProfileId}
+            loggedInUserId={loggedInUserId}
+            loggedInUserProfilePicture={loggedInUserProfilePicture}
+            setLoggedInUserProfilePicture={setLoggedInUserProfilePicture}
+            emptyProfilePicture={emptyProfilePicture}
+            postId={post.id}
+            postIndex={index}
+          />
+        </div>
+
         <div className="w-full h-[15px] bg-gray-100"></div>
       </div>
     ));

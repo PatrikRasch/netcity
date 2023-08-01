@@ -13,23 +13,9 @@ import { doc, getDoc, getDocs, updateDoc, collection, orderBy, query } from "fir
 import { useDateFunctions } from "./custom-hooks/useDateFunctions";
 import { useLikingFunctions } from "./custom-hooks/usePostLikingFunctions";
 import { useDislikingFunctions } from "./custom-hooks/usePostDislikingFunctions";
-import emptyProfilePicture from "./../assets/icons/emptyProfilePicture.jpg";
+import { useCommentsOnPost } from "./custom-hooks/useCommentsOnPost";
 
-import { TargetData } from "../interfaces";
-
-interface CommentData {
-  posterId: string;
-  firstName: string;
-  lastName: string;
-  text: string;
-  date: string;
-  likes: object;
-  dislikes: object;
-  comments: object;
-  id: string;
-  userId: string;
-  postId: string;
-}
+import { TargetData, CommentData } from "../interfaces";
 
 //6 Have to implement comments into each post
 
@@ -43,7 +29,11 @@ interface Props {
   postComments: object;
   openProfileId: string;
   loggedInUserId: string;
+  loggedInUserProfilePicture: string;
+  setLoggedInUserProfilePicture: (value: string) => void;
+  emptyProfilePicture: string;
   postId: string;
+  postIndex: number;
 }
 
 const Post = ({
@@ -56,26 +46,36 @@ const Post = ({
   postComments,
   openProfileId,
   loggedInUserId,
+  loggedInUserProfilePicture,
+  setLoggedInUserProfilePicture,
+  emptyProfilePicture,
   postId,
+  postIndex,
 }: Props) => {
-  // const [liked, setLiked] = useState(false);
-  // const [disliked, setDisliked] = useState(false);
   const [postNumOfLikes, setPostNumOfLikes] = useState(0);
   const [postNumOfDislikes, setPostNumOfDislikes] = useState(0);
   const [postNumOfComments, setPostNumOfComments] = useState(0);
 
   const [postData, setPostData] = useState<TargetData | null>(null);
   const [postProfilePicture, setPostProfilePicture] = useState(emptyProfilePicture);
-  const [loggedInUserProfilePicture, setLoggedInUserProfilePicture] = useState(emptyProfilePicture);
   const [loggedInUserFirstName, setLoggedInUserFirstName] = useState("");
   const [loggedInUserLastName, setLoggedInUserLastName] = useState("");
-  const [comments, setComments] = useState<CommentData[]>([]);
+  const [showMakeComment, setShowMakeComment] = useState(false);
   const { fullTimestamp, dateDayMonthYear } = useDateFunctions();
+  const { comments, setComments } = useCommentsOnPost();
 
   //1 Access this posts document from Firestore
   const usersDoc = doc(db, "users", openProfileId); // Grab the user
   const postsProfileCollection = collection(usersDoc, "postsProfile"); // Grab the posts on the user's profile
   const postDoc = doc(postsProfileCollection, postId); // grab this post
+
+  const getNumOfComments = async () => {
+    const commentsCollection = collection(postDoc, "comments");
+    const commentsDocs = await getDocs(commentsCollection);
+    setPostNumOfComments(commentsDocs.size);
+  };
+
+  getNumOfComments();
 
   const { addLike, removeLike, liked, setLiked } = useLikingFunctions(
     loggedInUserId,
@@ -104,6 +104,7 @@ const Post = ({
   getLoggedInUserInformation(loggedInUserId);
 
   useEffect(() => {
+    if (postIndex === 0) setShowMakeComment(true);
     setPostNumOfLikes(Object.keys(postLikes).length); // Number of likes on post
     setPostNumOfDislikes(-Object.keys(postDislikes).length); // Number of dislikes on post
     setPostNumOfComments(Object.keys(postComments).length); // Number of comments on post
@@ -210,6 +211,22 @@ const Post = ({
     console.log("use effect");
   }, []);
 
+  //1 Determines if the comment input field is to be displayed on the post
+  const displayMakeComment = () => {
+    if (showMakeComment === true)
+      return (
+        <MakeComment
+          loggedInUserFirstName={postFirstName}
+          loggedInUserLastName={postLastName}
+          loggedInUserProfilePicture={loggedInUserProfilePicture}
+          emptyProfilePicture={emptyProfilePicture}
+          loggedInUserId={loggedInUserId}
+          openProfileId={openProfileId}
+          postId={postId}
+        />
+      );
+  };
+
   return (
     <div className="w-full min-h-[150px] bg-white shadow-xl">
       <div className="min-h-[120px] p-4 gap-2">
@@ -241,30 +258,26 @@ const Post = ({
         </div>
         {/* //1 Comment */}
         <div className="flex gap-2">
-          <img src={commentIcon} alt="" className="max-h-6" />
+          <img
+            src={commentIcon}
+            alt=""
+            className="max-h-6"
+            onClick={(e) => setShowMakeComment((prevShowMakeComment) => !prevShowMakeComment)}
+          />
           <div>{postNumOfComments}</div>
         </div>
       </div>
       <div className="w-full h-[1px] bg-gray-300"></div>
       {/* //1 Add comment  */}
-
-      <MakeComment
-        loggedInUserFirstName={postFirstName}
-        loggedInUserLastName={postLastName}
-        loggedInUserProfilePicture={loggedInUserProfilePicture}
-        emptyProfilePicture={emptyProfilePicture}
-        loggedInUserId={loggedInUserId}
-        getAllComments={getAllComments}
-        openProfileId={openProfileId}
-        postId={postId}
-      />
-
+      {displayMakeComment()}
       {/* //1 Posted comments */}
       <AllCommentsOnPost
         openProfileId={openProfileId}
         comments={comments}
         loggedInUserId={loggedInUserId}
         postId={postId}
+        // commentData={commentData}
+        // setCommentData={setCommentData}
       />
     </div>
   );

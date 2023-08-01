@@ -4,24 +4,16 @@ import likeIcon from "./../assets/icons/heartPlus.png";
 import heartLiked from "./../assets/icons/heartLiked.png";
 import dislikeIcon from "./../assets/icons/heartMinus.png";
 import heartDisliked from "./../assets/icons/heartDisliked.png";
-import emptyProfilePicture from "./../assets/icons/emptyProfilePicture.jpg";
 
 import { db } from "./../config/firebase.config";
 import { collection, doc, getDoc, updateDoc } from "firebase/firestore";
-import firebase from "firebase/compat/app";
+import emptyProfilePicture from "./../assets/icons/emptyProfilePicture.jpg";
 
 import { useCommentLikingFunctions } from "./custom-hooks/useCommentLikingFunctions";
 import { useCommentDislikingFunctions } from "./custom-hooks/useCommentDislikingFunctions";
+import { useCommentData } from "./custom-hooks/useCommentData";
 
-export interface TargetCommentData {
-  date: string;
-  firstName: string;
-  lastName: string;
-  likes: object;
-  dislikes: object;
-  text: string;
-  timestamp: firebase.firestore.Timestamp;
-}
+import { TargetCommentData } from "../interfaces";
 
 interface Props {
   commentFirstName: string;
@@ -53,7 +45,7 @@ const Comment = ({
   const [commentNumOfLikes, setCommentNumOfLikes] = useState(0);
   const [commentNumOfDislikes, setCommentNumOfDislikes] = useState(0);
   const [profilePicture, setProfilePicture] = useState("");
-  const [commentData, setCommentData] = useState<TargetCommentData | null>(null);
+  const { commentData, setCommentData } = useCommentData();
 
   //2 Do we have to get comment data in this manner here?
 
@@ -86,6 +78,7 @@ const Comment = ({
       if (data?.likes?.hasOwnProperty(loggedInUserId)) setLiked(true); // Has the user already liked the comment?
       if (data?.dislikes?.hasOwnProperty(loggedInUserId)) setDisliked(true); // Has the user already disliked the comment?
       getCommentProfilePicture(data?.userId); // Grab the profile picture of the user who made the comment
+      console.log(commentData);
     } catch (err) {
       console.error(err);
     }
