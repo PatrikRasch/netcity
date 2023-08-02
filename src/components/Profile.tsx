@@ -38,6 +38,8 @@ const Profile = ({ loggedInUserId, setLoggedInUserId }: Props) => {
   const navigate = useNavigate();
   const { openProfileId } = useParams();
 
+  const [bioText, setBioText] = useState("");
+
   //1 CHECK IF PROFILE IS OWNED BY VIEWER
   // - Checks if the user is visiting their own profile or another user's profile
   useEffect(() => {
@@ -67,6 +69,7 @@ const Profile = ({ loggedInUserId, setLoggedInUserId }: Props) => {
       setUserFirstName(userData?.firstName);
       setUserLastName(userData?.lastName);
       setUserPicture(userData?.profilePicture); //6 Could change profilePicture in Firebase to be "pfPicture" or just "picture" in order to keep naming more concise. Currently it's a bit confusing as we are using "profilePicture" to indicate that it's the picture to be used on the profile being viewing, and "userPicture" to point to the picture of the viewer.
+      setBioText(userData?.bio);
     };
     getProfileData();
   }, [openProfileId]);
@@ -126,7 +129,13 @@ const Profile = ({ loggedInUserId, setLoggedInUserId }: Props) => {
     } else
       return (
         <>
-          <About />
+          <About
+            loggedInUserId={loggedInUserId}
+            openProfileId={openProfileId} // Id of profile being viewed
+            visitingUser={visitingUser}
+            bioText={bioText}
+            setBioText={setBioText}
+          />
         </>
       );
   };
