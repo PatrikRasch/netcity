@@ -2,19 +2,20 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { db, storage } from "./../config/firebase.config";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { getAuth, signOut } from "firebase/auth";
 import { doc, getDoc, getDocs, updateDoc, collection, query, orderBy } from "firebase/firestore";
+import { getAuth, signOut } from "firebase/auth";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 import MakePost from "./MakePost";
 import AllPosts from "./AllPosts";
 import About from "./About";
-import emptyProfilePicture from "./../assets/icons/emptyProfilePicture.jpg";
+
+import { useEmptyProfilePicture } from "./context/EmptyProfilePictureContextProvider";
+// import { useLoadingScreen } from "./context/LoadingContextProvider";
 
 import { PostData } from "../interfaces";
 
-//2 Currently, whenever this (Profile) component is navigated to, the getAllDocs(); effect is ran.
-//2   This is not necessary.
+//2 Ideally posts are lazyloaded with 5-10 at a time instead of all at the same time
 
 interface Props {
   loggedInUserId: string;
@@ -22,6 +23,8 @@ interface Props {
 }
 
 const Profile = ({ loggedInUserId, setLoggedInUserId }: Props) => {
+  const emptyProfilePicture = useEmptyProfilePicture();
+
   const [visitingUser, setVisitingUser] = useState(false);
   const [showPosts, setShowPosts] = useState(true);
 
@@ -33,12 +36,36 @@ const Profile = ({ loggedInUserId, setLoggedInUserId }: Props) => {
   const [userLastName, setUserLastName] = useState("");
   const [userPicture, setUserPicture] = useState(emptyProfilePicture);
 
-  const [posts, setPosts] = useState<PostData[]>([]);
   const [profilePictureUpload, setProfilePictureUpload] = useState<File | null>(null);
   const navigate = useNavigate();
   const { openProfileId } = useParams();
 
+  const postsProfileLocalStorage = window.localStorage.getItem(
+    `NETCITY_postsProfile_${loggedInUserId}`
+  );
+
+  const [posts, setPosts] = useState<PostData[]>(
+    postsProfileLocalStorage && loggedInUserId === openProfileId
+      ? JSON.parse(postsProfileLocalStorage)
+      : []
+  );
+
   const [bioText, setBioText] = useState("");
+  // const { isLoading, setIsLoading } = useLoadingScreen();
+
+  const [initialProfileLoadCompleted, setInitialProfileLoadCompleted] = useState(false);
+
+  useEffect(() => {
+    console.log("use effect");
+    const isFirstLoadCompleted = localStorage.getItem("NETCITY_initialProfileLoadCompleted");
+    if (isFirstLoadCompleted === "true" && !visitingUser) return;
+    console.log("loading posts");
+    getAllPosts();
+    window.localStorage.setItem(
+      "NETCITY_initialProfileLoadCompleted",
+      JSON.stringify(initialProfileLoadCompleted)
+    );
+  }, [initialProfileLoadCompleted, openProfileId, loggedInUserId]); // Get docs when userId state changes
 
   //1 CHECK IF PROFILE IS OWNED BY VIEWER
   // - Checks if the user is visiting their own profile or another user's profile
@@ -70,6 +97,7 @@ const Profile = ({ loggedInUserId, setLoggedInUserId }: Props) => {
       setUserLastName(userData?.lastName);
       setUserPicture(userData?.profilePicture); //6 Could change profilePicture in Firebase to be "pfPicture" or just "picture" in order to keep naming more concise. Currently it's a bit confusing as we are using "profilePicture" to indicate that it's the picture to be used on the profile being viewing, and "userPicture" to point to the picture of the viewer.
       setBioText(userData?.bio);
+      setInitialProfileLoadCompleted(true);
     };
     getProfileData();
   }, [openProfileId]);
@@ -90,16 +118,17 @@ const Profile = ({ loggedInUserId, setLoggedInUserId }: Props) => {
         postsProfileDataArray.push({ ...postData, id: doc.id }); // (id: doc.id adds the id of the individual doc)
       });
       setPosts(postsProfileDataArray); // Update state with all the posts
+      // Updates localStorage with the posts on the logged in user's profile
+      if (loggedInUserId === openProfileId) {
+        window.localStorage.setItem(
+          `NETCITY_postsProfile_${loggedInUserId}`,
+          JSON.stringify(postsProfileDataArray)
+        );
+      }
     } catch (err) {
       console.error("Error trying to get all docs:", err);
     }
   };
-
-  //1 Fetches and sets in state all posts from Firebase.
-  useEffect(() => {
-    getAllPosts();
-    console.log("use effect");
-  }, [loggedInUserId, openProfileId]); // Get docs when userId state changes
 
   if (openProfileId === undefined) return null; //6. must make this better later
 
@@ -201,13 +230,17 @@ const Profile = ({ loggedInUserId, setLoggedInUserId }: Props) => {
       <div className="grid w-[100svw] justify-center">
         <div className="flex w-[65svw] rounded-lg h-12 border-2 border-black">
           <button
-            className="bg-[#00A7E1] text-white w-[100%] h-[100%] flex justify-center items-center"
+            className={`${
+              showPosts ? "bg-[#00A7E1] text-white" : ""
+            }  w-[100%] h-[100%] flex justify-center items-center`}
             onClick={() => setShowPosts(true)}
           >
             Posts
           </button>
           <button
-            className="w-[100%] flex justify-center items-center"
+            className={`${
+              !showPosts ? "bg-[#00A7E1] text-white" : ""
+            } w-[100%] flex justify-center items-center`}
             onClick={() => setShowPosts(false)}
           >
             About
@@ -245,3 +278,12 @@ export default Profile;
 //3 Have to run a check to see if userProfileId matches logged in userId
 //3 If it does, display home profile and pass userId to profile
 //3 If it doesn't, pass userProfileId to the top (profile header), userId to MakePost, and let posts fetch their own
+
+//3 Currently, whenever this (Profile) component is navigated to, the getAllPosts(); effect is ran.
+//3 This is not necessary.
+
+//3 Only want getAllPosts() to run on initial load and when "posts" state changes
+//3 Store an "initialLoadCompleted: true" in localStorage after posts have been fetched
+//3 If there isn't any "initialLoadCompleted: true" in localStorage, run getAllPosts()
+//3 Run getAllPosts() whenever a post is altered or a new post is added.
+//3   Have a useEffect that only runs if there is no initialLoadCompleted on mount
