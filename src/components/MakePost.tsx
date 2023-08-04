@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { useDateFunctions } from "./custom-hooks/useDateFunctions";
 
 import { GetAllPosts, VisitingUser, LoggedInUserIdProp } from "../interfaces";
-import emptyProfilePicture from "./../assets/icons/emptyProfilePicture.jpg";
+import { useEmptyProfilePicture } from "./context/EmptyProfilePictureContextProvider";
 
 import { db } from "./../config/firebase.config";
 import { doc, addDoc, collection } from "firebase/firestore";
@@ -30,7 +30,9 @@ function MakePost({
   const [postInput, setPostInput] = useState("");
   const [postId, setPostId] = useState("");
   const { openProfileId } = useParams();
-  const { fullTimestamp, dateDayMonthYear } = useDateFunctions();
+  const { dateDayMonthYear } = useDateFunctions();
+  const [fullTimestamp, setFullTimestamp] = useState({});
+  const emptyProfilePicture = useEmptyProfilePicture();
 
   //1 Gets the reference to the postsProfile collection for the user
   const getPostsProfileRef = () => {
@@ -82,7 +84,10 @@ function MakePost({
             className="w-full bg-transparent resize-none outline-none"
             maxLength={150}
             value={postInput}
-            onChange={(e) => setPostInput(e.target.value)}
+            onChange={(e) => {
+              setPostInput(e.target.value);
+              setFullTimestamp(new Date());
+            }}
           />
         </div>
         {/* <div className="w-full h-[2px] bg-gray-300"></div> */}
@@ -90,6 +95,7 @@ function MakePost({
           className="min-h-[30px] w-full bg-[#00A7E1] text-white"
           onClick={(e) => {
             if (postInput.length === 0) return console.log("add text to input before posting");
+            setFullTimestamp(new Date());
             writePost({
               timestamp: fullTimestamp,
               firstName: userFirstName,

@@ -7,14 +7,24 @@ import heartLiked from "./../assets/icons/heartLiked.png";
 import dislikeIcon from "./../assets/icons/heartMinus.png";
 import heartDisliked from "./../assets/icons/heartDisliked.png";
 import commentIcon from "./../assets/icons/comment.png";
+import deleteIcon from "./../assets/icons/delete.png";
+import deleteRedIcon from "./../assets/icons/delete-red.png";
 
 import { db } from "./../config/firebase.config";
-import { doc, getDoc, getDocs, updateDoc, collection, orderBy, query } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  getDocs,
+  updateDoc,
+  deleteDoc,
+  collection,
+  orderBy,
+  query,
+} from "firebase/firestore";
 import { useDateFunctions } from "./custom-hooks/useDateFunctions";
 import { useLikingFunctions } from "./custom-hooks/usePostLikingFunctions";
 import { useDislikingFunctions } from "./custom-hooks/usePostDislikingFunctions";
-import { useCommentsOnPost } from "./custom-hooks/useCommentsOnPost";
-
+import { useEmptyProfilePicture } from "./context/EmptyProfilePictureContextProvider";
 import { TargetData, CommentData } from "../interfaces";
 
 //6 Have to implement comments into each post
@@ -31,9 +41,9 @@ interface Props {
   loggedInUserId: string;
   loggedInUserProfilePicture: string;
   setLoggedInUserProfilePicture: (value: string) => void;
-  emptyProfilePicture: string;
   postId: string;
   postIndex: number;
+  postUserId: string;
 }
 
 const Post = ({
@@ -48,10 +58,11 @@ const Post = ({
   loggedInUserId,
   loggedInUserProfilePicture,
   setLoggedInUserProfilePicture,
-  emptyProfilePicture,
   postId,
   postIndex,
+  postUserId,
 }: Props) => {
+  const emptyProfilePicture = useEmptyProfilePicture();
   const [postNumOfLikes, setPostNumOfLikes] = useState(0);
   const [postNumOfDislikes, setPostNumOfDislikes] = useState(0);
   const [postTotalNumOfComments, setPostTotalNumOfComments] = useState(0);
@@ -66,13 +77,13 @@ const Post = ({
   const [comments, setComments] = useState<CommentData[]>([]);
   const { fullTimestamp, dateDayMonthYear } = useDateFunctions();
 
-  //1 Access this posts document from Firestore
-  const usersDoc = doc(db, "users", openProfileId); // Grab the user
-  const postsProfileCollection = collection(usersDoc, "postsProfile"); // Grab the posts on the user's profile
-  const postDoc = doc(postsProfileCollection, postId); // grab this post
+  //1 Access this posts document from Firestore. postDocRef used throughout component.
+  const usersDocRef = doc(db, "users", openProfileId); // Grab the user
+  const postsProfileCollection = collection(usersDocRef, "postsProfile"); // Grab the posts on the user's profile
+  const postDocRef = doc(postsProfileCollection, postId); // grab this post
 
   const getNumOfComments = async () => {
-    const commentsCollection = collection(postDoc, "comments");
+    const commentsCollection = collection(postDocRef, "comments");
     const commentsDocs = await getDocs(commentsCollection);
     setPostTotalNumOfComments(commentsDocs.size);
   };
@@ -81,13 +92,13 @@ const Post = ({
 
   const { addLike, removeLike, liked, setLiked } = useLikingFunctions(
     loggedInUserId,
-    postDoc,
+    postDocRef,
     postData,
     setPostNumOfLikes
   );
   const { addDislike, removeDislike, disliked, setDisliked } = useDislikingFunctions(
     loggedInUserId,
-    postDoc,
+    postDocRef,
     postData,
     setPostNumOfDislikes
   );
@@ -115,7 +126,7 @@ const Post = ({
   //1 Get the data from this post from the backend and store it in the "postData" state
   const getPostData = async () => {
     try {
-      const targetDoc = await getDoc(postDoc); // Fetch the data
+      const targetDoc = await getDoc(postDocRef); // Fetch the data
       const data = targetDoc.data();
       setPostData(data as TargetData | null); // Store the post data in state
       if (data?.likes?.hasOwnProperty(loggedInUserId)) setLiked(true); // Has the user already liked the post?
@@ -187,10 +198,6 @@ const Post = ({
   //  - Gets all the posts (profilePosts in Firestore) from the current profile subcollection.
   const getAllComments = async () => {
     try {
-      const usersCollectionRef = collection(db, "users"); // Grabs the users collection
-      const userDocRef = doc(usersCollectionRef, openProfileId); // Grabs the doc where the user is
-      const postsProfileCollection = collection(userDocRef, "postsProfile"); // Grabs the postsProfile collection
-      const postDocRef = doc(postsProfileCollection, postId);
       const commentsCollection = collection(postDocRef, "comments");
       const sortedComments = query(commentsCollection, orderBy("timestamp", "desc")); // Sorts comments in descending order. "query" and "orderBy" are Firebase/Firestore methods
       const commentsPostDocs = await getDocs(sortedComments); // Gets all docs from postsProfile collection
@@ -209,7 +216,7 @@ const Post = ({
   //1 Fetches and sets in state all posts from Firebase.
   useEffect(() => {
     getAllComments();
-    console.log("use effect");
+    // console.log("use effect");
   }, []);
 
   //1 Determines if the comment input field is to be displayed on the post
@@ -220,38 +227,77 @@ const Post = ({
           loggedInUserFirstName={postFirstName}
           loggedInUserLastName={postLastName}
           loggedInUserProfilePicture={loggedInUserProfilePicture}
-          emptyProfilePicture={emptyProfilePicture}
           loggedInUserId={loggedInUserId}
           openProfileId={openProfileId}
           postId={postId}
           getAllComments={getAllComments}
+          numOfCommentsShowing={numOfCommentsShowing}
+          setNumOfCommentsShowing={setNumOfCommentsShowing}
         />
       );
   };
 
   const handleCommentButtonClicked = () => {
+    if (showMakeComment && numOfCommentsShowing === 0) {
+      setNumOfCommentsShowing(numOfCommentsShowing + 3);
+      setShowLoadMoreCommentsButton(true);
+      return;
+    }
     if (!showMakeComment) {
       setShowMakeComment(true);
       setNumOfCommentsShowing(numOfCommentsShowing + 3);
+      setShowLoadMoreCommentsButton(true);
     } else {
       setShowMakeComment(false);
       setNumOfCommentsShowing(0);
     }
   };
 
+  const showDeletePostOrNot = () => {
+    if (loggedInUserId === postUserId) {
+      return (
+        <div>
+          <img
+            src={deleteIcon}
+            alt=""
+            className="max-h-[18px] cursor-pointer"
+            onClick={() => deletePostClicked()}
+          />
+        </div>
+      );
+    } else return <div></div>;
+  };
+
+  const deletePostClicked = async () => {
+    try {
+      await deleteDoc(postDocRef);
+      console.log("Doc deleted");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  //2 Get id of post
+  //2 Get reference to post in Firestore
+  //2 Remove post from Firestore
+  //2 Update the posts on the page by fetching and setting in state
+
   return (
     <div className="w-full min-h-[150px] bg-white shadow-xl">
       <div className="min-h-[120px] p-4 gap-2">
-        <div className="flex gap-4 items-center">
-          <div className="min-w-[40px] max-w-min">
-            <img
-              src={postProfilePicture === "" ? emptyProfilePicture : postProfilePicture}
-              alt="profile"
-              className="rounded-[50%] aspect-square object-cover"
-            />
+        <div className="grid grid-cols-[20fr,1fr] items-center">
+          <div className="flex gap-4 items-center">
+            <div className="min-w-[40px] max-w-min">
+              <img
+                src={postProfilePicture === "" ? emptyProfilePicture : postProfilePicture}
+                alt="profile"
+                className="rounded-[50%] aspect-square object-cover"
+              />
+            </div>
+            <div>{postFirstName + " " + postLastName}</div>
+            <div className="opacity-50 text-sm">{postDate}</div>
           </div>
-          <div>{postFirstName + " " + postLastName}</div>
-          <div className="opacity-50 text-sm">{postDate}</div>
+          {showDeletePostOrNot()}
         </div>
         <div>{postText}</div>
       </div>

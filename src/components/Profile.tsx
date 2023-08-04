@@ -2,7 +2,16 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { db, storage } from "./../config/firebase.config";
-import { doc, getDoc, getDocs, updateDoc, collection, query, orderBy } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  getDocs,
+  updateDoc,
+  collection,
+  query,
+  orderBy,
+  onSnapshot,
+} from "firebase/firestore";
 import { getAuth, signOut } from "firebase/auth";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
@@ -23,108 +32,117 @@ interface Props {
 }
 
 const Profile = ({ loggedInUserId, setLoggedInUserId }: Props) => {
+  //- Context declarations:
   const emptyProfilePicture = useEmptyProfilePicture();
-
+  //- State declarations:
   const [visitingUser, setVisitingUser] = useState(false);
   const [showPosts, setShowPosts] = useState(true);
-
   const [profileFirstName, setProfileFirstName] = useState("");
   const [profileLastName, setProfileLastName] = useState("");
   const [profilePicture, setProfilePicture] = useState(emptyProfilePicture);
-
   const [userFirstName, setUserFirstName] = useState("");
   const [userLastName, setUserLastName] = useState("");
   const [userPicture, setUserPicture] = useState(emptyProfilePicture);
-
   const [profilePictureUpload, setProfilePictureUpload] = useState<File | null>(null);
+  const [bioText, setBioText] = useState("");
+  //- Navigation declarations:
   const navigate = useNavigate();
+  //- useParams:
   const { openProfileId } = useParams();
-
+  //- localStorage state:
+  const [initialProfileLoadCompleted, setInitialProfileLoadCompleted] = useState(false);
   const postsProfileLocalStorage = window.localStorage.getItem(
     `NETCITY_postsProfile_${loggedInUserId}`
   );
-
   const [posts, setPosts] = useState<PostData[]>(
     postsProfileLocalStorage && loggedInUserId === openProfileId
       ? JSON.parse(postsProfileLocalStorage)
       : []
   );
 
-  const [bioText, setBioText] = useState("");
-  // const { isLoading, setIsLoading } = useLoadingScreen();
-
-  const [initialProfileLoadCompleted, setInitialProfileLoadCompleted] = useState(false);
-
   useEffect(() => {
-    console.log("use effect");
-    const isFirstLoadCompleted = localStorage.getItem("NETCITY_initialProfileLoadCompleted");
-    if (isFirstLoadCompleted === "true" && !visitingUser) return;
-    console.log("loading posts");
-    getAllPosts();
-    window.localStorage.setItem(
-      "NETCITY_initialProfileLoadCompleted",
-      JSON.stringify(initialProfileLoadCompleted)
-    );
-  }, [initialProfileLoadCompleted, openProfileId, loggedInUserId]); // Get docs when userId state changes
+    if (loggedInUserId === openProfileId) setVisitingUser(false); // Viewing own profile
+    if (loggedInUserId !== openProfileId) setVisitingUser(true); // Viewing someone else's profile
 
-  //1 CHECK IF PROFILE IS OWNED BY VIEWER
-  // - Checks if the user is visiting their own profile or another user's profile
-  useEffect(() => {
-    console.log("use effect");
-    if (loggedInUserId === openProfileId) setVisitingUser(false);
-    else setVisitingUser(true);
-  }, [openProfileId]);
+    const getLoggedInUserProfilePosts = () => {
+      const isFirstLoadCompleted = localStorage.getItem("NETCITY_initialProfileLoadCompleted");
+      if (isFirstLoadCompleted === "true" && !visitingUser) return;
+      console.log("Running getAllPosts in Profile");
+      getAllPosts();
+      window.localStorage.setItem(
+        "NETCITY_initialProfileLoadCompleted",
+        JSON.stringify(initialProfileLoadCompleted)
+      );
+    };
+    getLoggedInUserProfilePosts();
 
-  //1 GET PROFILE CURRENTLY BEING VIEWED USER INFO
-  // Currently, user and profile information is being fetched separately, with nothing stopping it from fetching twice even if it's for the same user.
-  useEffect(() => {
+    //1 Profile data includes all profile data but the posts
     const getProfileData = async () => {
-      console.log("use effect");
-      // Get data of profile being viewed
+      // console.log("use effect");
       if (!openProfileId) return null;
-      const profileTargetUser = doc(db, "users", openProfileId);
-      const profileTargetDoc = await getDoc(profileTargetUser);
-      const profileData = profileTargetDoc.data();
-      setProfileFirstName(profileData?.firstName);
-      setProfileLastName(profileData?.lastName);
-      setProfilePicture(profileData?.profilePicture);
-      // Get data of user viewing
-      if (!loggedInUserId) return null;
-      const userTargetUser = doc(db, "users", loggedInUserId);
-      const userTargetDoc = await getDoc(userTargetUser);
-      const userData = userTargetDoc.data();
-      setUserFirstName(userData?.firstName);
-      setUserLastName(userData?.lastName);
-      setUserPicture(userData?.profilePicture); //6 Could change profilePicture in Firebase to be "pfPicture" or just "picture" in order to keep naming more concise. Currently it's a bit confusing as we are using "profilePicture" to indicate that it's the picture to be used on the profile being viewing, and "userPicture" to point to the picture of the viewer.
-      setBioText(userData?.bio);
-      setInitialProfileLoadCompleted(true);
+      try {
+        // Step 1: Get data for the open profile
+        const profileTargetUser = doc(db, "users", openProfileId);
+        const profileTargetDoc = await getDoc(profileTargetUser);
+        const profileData = profileTargetDoc.data();
+        setProfileFirstName(profileData?.firstName);
+        setProfileLastName(profileData?.lastName);
+        setProfilePicture(profileData?.profilePicture);
+        // Step 2: Get data of the viewer
+        if (!loggedInUserId) return null;
+        // If the viewer owns the profile, use the same data
+        if (!visitingUser) {
+          setUserFirstName(profileData?.firstName);
+          setUserLastName(profileData?.lastName);
+          setUserPicture(profileData?.profilePicture);
+          setBioText(profileData?.bio);
+          setInitialProfileLoadCompleted(true); // Update localStorage boolean if the user is viewing their own profile
+          return;
+        }
+        const userTargetUser = doc(db, "users", loggedInUserId);
+        const userTargetDoc = await getDoc(userTargetUser);
+        const userData = userTargetDoc.data();
+        setUserFirstName(userData?.firstName);
+        setUserLastName(userData?.lastName);
+        setUserPicture(userData?.profilePicture);
+        setBioText(userData?.bio);
+      } catch (err) {
+        console.error(err);
+      }
     };
     getProfileData();
-  }, [openProfileId]);
+  }, [initialProfileLoadCompleted, openProfileId, loggedInUserId]); // Get docs when userId state changes
+
+  // const unsub = onSnapshot(doc(db, "cities", "SF"), (doc) => {
+  //     console.log("Current data: ", doc.data());
+  // });
 
   //1 GET POSTS FOR PROFILE CURRENTLY BEING VIEWED
   //  - Gets all the posts (profilePosts in Firestore) from the current profile subcollection.
   const getAllPosts = async () => {
     try {
+      console.log("getting all posts");
       const usersCollectionRef = collection(db, "users"); // Grabs the users collection
       const userDocRef = doc(usersCollectionRef, openProfileId); // Grabs the doc where the user is
       const postsProfileCollection = collection(userDocRef, "postsProfile"); // Grabs the postsProfile collection
       const sortedPostsProfile = query(postsProfileCollection, orderBy("timestamp", "desc")); // Sorts posts in descending order. "query" and "orderBy" are Firebase/Firestore methods
-      const postsProfileDocs = await getDocs(sortedPostsProfile); // Gets all docs from postsProfile collection
-      const postsProfileDataArray: PostData[] = []; // Empty array that'll be used for updating state
-      // Push each doc (post) into the postsProfileDataArray array.
-      postsProfileDocs.forEach((doc) => {
-        const postData = doc.data() as PostData; // "as PostData" is type validation
-        postsProfileDataArray.push({ ...postData, id: doc.id }); // (id: doc.id adds the id of the individual doc)
-      });
-      setPosts(postsProfileDataArray); // Update state with all the posts
-      // Updates localStorage with the posts on the logged in user's profile
-      if (loggedInUserId === openProfileId) {
-        window.localStorage.setItem(
-          `NETCITY_postsProfile_${loggedInUserId}`,
-          JSON.stringify(postsProfileDataArray)
-        );
-      }
+      const unsubscribe = onSnapshot(sortedPostsProfile, (snapshot) => {
+        console.log("here");
+        const postsProfileDataArray: PostData[] = []; // Empty array that'll be used for updating state
+        // Push each doc (post) into the postsProfileDataArray array.
+        snapshot.forEach((doc) => {
+          const postData = doc.data() as PostData; // "as PostData" is type validation
+          postsProfileDataArray.push({ ...postData, id: doc.id }); // (id: doc.id adds the id of the individual doc)
+        });
+        setPosts(postsProfileDataArray); // Update state with all the posts
+        // Updates localStorage with the posts on the logged in user's profile
+        if (loggedInUserId === openProfileId) {
+          window.localStorage.setItem(
+            `NETCITY_postsProfile_${loggedInUserId}`,
+            JSON.stringify(postsProfileDataArray)
+          );
+        }
+      }); // Gets all docs from postsProfile collection
     } catch (err) {
       console.error("Error trying to get all docs:", err);
     }
@@ -257,6 +275,8 @@ const Profile = ({ loggedInUserId, setLoggedInUserId }: Props) => {
 };
 
 export default Profile;
+
+//6 Could change profilePicture in Firebase to be "pfPicture" or just "picture" in order to keep naming more concise. Currently it's a bit confusing as we are using "profilePicture" to indicate that it's the picture to be used on the profile being viewing, and "userPicture" to point to the picture of the viewer.
 
 //1 Feature work plan:
 //3 1. Fetch the data from firestore and display firstname + lastname
