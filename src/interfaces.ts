@@ -62,6 +62,7 @@ export interface PostData {
   dislikes: object;
   comments: object;
   id: string;
+  userId: string;
 }
 
 export interface FirstNameProp {
