@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
 import AllCommentsOnPost from "./AllCommentsOnPost";
 import MakeComment from "./MakeComment";
+import Likes from "./Likes";
+import Dislikes from "./Dislikes";
 
-import likeIcon from "./../assets/icons/heartPlus.png";
-import heartLiked from "./../assets/icons/heartLiked.png";
-import dislikeIcon from "./../assets/icons/heartMinus.png";
-import heartDisliked from "./../assets/icons/heartDisliked.png";
 import commentIcon from "./../assets/icons/comment.png";
 import deleteIcon from "./../assets/icons/delete.png";
 import deleteRedIcon from "./../assets/icons/delete-red.png";
@@ -20,10 +18,9 @@ import {
   collection,
   orderBy,
   query,
+  onSnapshot,
 } from "firebase/firestore";
 import { useDateFunctions } from "./custom-hooks/useDateFunctions";
-import { useLikingFunctions } from "./custom-hooks/usePostLikingFunctions";
-import { useDislikingFunctions } from "./custom-hooks/usePostDislikingFunctions";
 import { useEmptyProfilePicture } from "./context/EmptyProfilePictureContextProvider";
 import { TargetData, CommentData } from "../interfaces";
 
@@ -63,7 +60,9 @@ const Post = ({
   postUserId,
 }: Props) => {
   const emptyProfilePicture = useEmptyProfilePicture();
+  const [liked, setLiked] = useState(false);
   const [postNumOfLikes, setPostNumOfLikes] = useState(0);
+  const [disliked, setDisliked] = useState(false);
   const [postNumOfDislikes, setPostNumOfDislikes] = useState(0);
   const [postTotalNumOfComments, setPostTotalNumOfComments] = useState(0);
 
@@ -90,19 +89,6 @@ const Post = ({
 
   getNumOfComments();
 
-  const { addLike, removeLike, liked, setLiked } = useLikingFunctions(
-    loggedInUserId,
-    postDocRef,
-    postData,
-    setPostNumOfLikes
-  );
-  const { addDislike, removeDislike, disliked, setDisliked } = useDislikingFunctions(
-    loggedInUserId,
-    postDocRef,
-    postData,
-    setPostNumOfDislikes
-  );
-
   const getLoggedInUserInformation = async (loggedInUserId: string) => {
     if (!loggedInUserId) return <h1>Loading...</h1>;
     const usersDoc = doc(db, "users", loggedInUserId);
@@ -117,7 +103,10 @@ const Post = ({
   getLoggedInUserInformation(loggedInUserId);
 
   useEffect(() => {
+    // console.log("use effect");
     if (postIndex === 0) setShowMakeComment(true);
+    // console.log("Post likes:", postLikes);
+    // console.log("Post dislikes:", postDislikes);
     setPostNumOfLikes(Object.keys(postLikes).length); // Number of likes on post
     setPostNumOfDislikes(-Object.keys(postDislikes).length); // Number of dislikes on post
     getPostData(); // Get all the data for this post
@@ -129,6 +118,7 @@ const Post = ({
       const targetDoc = await getDoc(postDocRef); // Fetch the data
       const data = targetDoc.data();
       setPostData(data as TargetData | null); // Store the post data in state
+      console.log(data?.likes);
       if (data?.likes?.hasOwnProperty(loggedInUserId)) setLiked(true); // Has the user already liked the post?
       if (data?.dislikes?.hasOwnProperty(loggedInUserId)) setDisliked(true); // Has the user already disliked the post?
       getPostProfilePicture(data?.userId); // Grab the profile picture of the user who made the post
@@ -149,49 +139,26 @@ const Post = ({
   //2 Could potentially add in a revert of the frontend update if the backend update
   //2 was to fail for whatever reason, and then alert the user of the issue. Optimistic UI, that is.
 
-  const handleClickLike = async () => {
-    // If post not liked
-    if (!liked) {
-      if (disliked) {
-        removeDislike();
-      }
-      addLike();
-    }
-    // If post already liked
-    if (liked) {
-      removeLike();
-    }
+  const removeLike = async () => {
+    setLiked(false); // Set liked to false, makes heart empty
+    // Frontend updates
+    delete (postLikes as { [key: string]: boolean })[loggedInUserId]; // Remove the userId from postLikes
+    setPostNumOfLikes(Object.keys(postLikes).length); // Update state for number of likes to display
+    // Backend updates:
+    delete (postData?.likes as { [key: string]: boolean })[loggedInUserId]; // Delete the userId from the postData object
+    const newLikes = { ...postData?.likes }; // Define new object to hold the likes
+    await updateDoc(postDocRef, { likes: newLikes }); // Update the backend with the new likes
   };
 
-  const handleClickDislike = async () => {
-    // If post not disliked
-    if (!disliked) {
-      if (liked) {
-        removeLike();
-      }
-      addDislike();
-    }
-    // If post already liked
-    if (disliked) {
-      removeDislike();
-    }
-  };
-
-  //1 The like icon on each post. Shows if the user has liked a post.
-  const showLikedOrNot = () => {
-    if (!liked) {
-      return <img src={likeIcon} alt="" className="max-h-6" />;
-    } else {
-      return <img src={heartLiked} alt="" className="max-h-6" />;
-    }
-  };
-  //1 The dislike icon on each post. Shows if the user has disliked a post.
-  const showDislikedOrNot = () => {
-    if (!disliked) {
-      return <img src={dislikeIcon} alt="" className="max-h-6" />;
-    } else {
-      return <img src={heartDisliked} alt="" className="max-h-6" />;
-    }
+  const removeDislike = async () => {
+    setDisliked(false); // Set liked to false, makes heart empty
+    // Frontend updates
+    delete (postDislikes as { [key: string]: boolean })[loggedInUserId]; // Remove the userId from postLikes
+    setPostNumOfDislikes(-Object.keys(postDislikes).length); // Update state for number of likes to display
+    // Backend updates:
+    delete (postData?.dislikes as { [key: string]: boolean })[loggedInUserId]; // Delete the userId from the postData object
+    const newDislikes = { ...postData?.dislikes }; // Define new object to hold the likes
+    await updateDoc(postDocRef, { dislikes: newDislikes }); // Update the backend with the new likes
   };
 
   //1 GET POSTS FOR PROFILE CURRENTLY BEING VIEWED
@@ -200,14 +167,15 @@ const Post = ({
     try {
       const commentsCollection = collection(postDocRef, "comments");
       const sortedComments = query(commentsCollection, orderBy("timestamp", "desc")); // Sorts comments in descending order. "query" and "orderBy" are Firebase/Firestore methods
-      const commentsPostDocs = await getDocs(sortedComments); // Gets all docs from postsProfile collection
-      const commentsPostDataArray: CommentData[] = []; // Empty array that'll be used for updating state
-      // Push each doc (post) into the postsProfileDataArray array.
-      commentsPostDocs.forEach((doc) => {
-        const postData = doc.data() as CommentData; // "as PostData" is type validation
-        commentsPostDataArray.push({ ...postData, id: doc.id }); // (id: doc.id adds the id of the individual doc)
+      const unsubscribe = onSnapshot(sortedComments, (snapshot) => {
+        const commentsPostDataArray: CommentData[] = []; // Empty array that'll be used for updating state
+        // Push each doc (comment) into the commentsPostDataArray array.
+        snapshot.forEach((doc) => {
+          const commentData = doc.data() as CommentData; // "as CommentData" is type validation
+          commentsPostDataArray.push({ ...commentData, id: doc.id }); // (id: doc.id adds the id of the individual doc)
+        });
+        setComments(commentsPostDataArray); // Update state with all the comments
       });
-      setComments(commentsPostDataArray); // Update state with all the posts
     } catch (err) {
       console.error("Error trying to get all comments:", err);
     }
@@ -304,16 +272,36 @@ const Post = ({
       <div className="w-full h-[1px] bg-gray-300"></div>
       <div className="grid grid-cols-[1fr,1fr,2fr] h-[33px] mt-1 mb-1 items-center justify-items-center">
         {/*//1 Like/Dislike */}
-        {/*//1 Like */}
-        <div className="flex gap-2">
-          <button onClick={() => handleClickLike()}>{showLikedOrNot()}</button>
-          <div>{postNumOfLikes}</div>
-        </div>
-        {/*//1 Dislike */}
-        <div className="flex gap-2">
-          <button onClick={() => handleClickDislike()}>{showDislikedOrNot()}</button>
-          <div>{postNumOfDislikes}</div>
-        </div>
+        {
+          <Likes
+            liked={liked}
+            disliked={disliked}
+            setLiked={setLiked}
+            loggedInUserId={loggedInUserId}
+            openProfileId={openProfileId}
+            postDocRef={postDocRef}
+            postData={postData}
+            postNumOfLikes={postNumOfLikes}
+            setPostNumOfLikes={setPostNumOfLikes}
+            removeLike={removeLike}
+            removeDislike={removeDislike}
+            postLikes={postLikes}
+          />
+        }
+        <Dislikes
+          liked={liked}
+          disliked={disliked}
+          setDisliked={setDisliked}
+          loggedInUserId={loggedInUserId}
+          openProfileId={openProfileId}
+          postDocRef={postDocRef}
+          postData={postData}
+          postNumOfDislikes={postNumOfDislikes}
+          setPostNumOfDislikes={setPostNumOfDislikes}
+          removeLike={removeLike}
+          removeDislike={removeDislike}
+          postDislikes={postDislikes}
+        />
         {/* //1 Comment */}
         <div className="flex gap-2">
           <img
