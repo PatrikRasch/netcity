@@ -5,30 +5,35 @@ import { collection, doc, addDoc } from "firebase/firestore";
 import { useDateFunctions } from "./custom-hooks/useDateFunctions";
 
 import postIcon from "./../assets/icons/post.png";
+import { useEmptyProfilePicture } from "./context/EmptyProfilePictureContextProvider";
 
 interface Props {
   loggedInUserFirstName: string;
   loggedInUserLastName: string;
   loggedInUserProfilePicture: string;
-  emptyProfilePicture: string;
   loggedInUserId: string;
   openProfileId: string;
   postId: string;
   getAllComments: () => Promise<void>;
+  numOfCommentsShowing: number;
+  setNumOfCommentsShowing: (value: number) => void;
 }
 
 function MakeComment({
   loggedInUserFirstName,
   loggedInUserLastName,
   loggedInUserProfilePicture,
-  emptyProfilePicture,
   loggedInUserId,
   openProfileId,
   postId,
+  numOfCommentsShowing,
+  setNumOfCommentsShowing,
   getAllComments,
 }: Props) {
+  const emptyProfilePicture = useEmptyProfilePicture();
   const [postCommentInput, setPostCommentInput] = useState("");
-  const { fullTimestamp, dateDayMonthYear } = useDateFunctions();
+  const [fullTimestamp, setFullTimestamp] = useState({});
+  const { dateDayMonthYear } = useDateFunctions();
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const usersDoc = doc(db, "users", openProfileId); // Grab the user
@@ -52,6 +57,7 @@ function MakeComment({
       const commentCollection = collection(postDoc, "comments");
       await addDoc(commentCollection, commentData);
       console.log("Comment added to Firebase");
+      setNumOfCommentsShowing(numOfCommentsShowing + 1);
       getAllComments();
     } catch (err) {
       console.error(err);
@@ -93,6 +99,7 @@ function MakeComment({
           onChange={(e) => {
             setPostCommentInput(e.target.value);
             handleTextareaChange();
+            setFullTimestamp(new Date());
           }}
           rows={1}
         ></textarea>
