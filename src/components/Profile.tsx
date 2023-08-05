@@ -49,36 +49,20 @@ const Profile = ({ loggedInUserId, setLoggedInUserId }: Props) => {
   const navigate = useNavigate();
   //- useParams:
   const { openProfileId } = useParams();
-  //- localStorage state:
-  const [initialProfileLoadCompleted, setInitialProfileLoadCompleted] = useState(false);
-  const postsProfileLocalStorage = window.localStorage.getItem(
-    `NETCITY_postsProfile_${loggedInUserId}`
-  );
-  const [posts, setPosts] = useState<PostData[]>(
-    postsProfileLocalStorage && loggedInUserId === openProfileId
-      ? JSON.parse(postsProfileLocalStorage)
-      : []
-  );
+  const [posts, setPosts] = useState<PostData[]>([]);
 
   useEffect(() => {
     if (loggedInUserId === openProfileId) setVisitingUser(false); // Viewing own profile
     if (loggedInUserId !== openProfileId) setVisitingUser(true); // Viewing someone else's profile
 
     const getLoggedInUserProfilePosts = () => {
-      const isFirstLoadCompleted = localStorage.getItem("NETCITY_initialProfileLoadCompleted");
-      if (isFirstLoadCompleted === "true" && !visitingUser) return;
       console.log("Running getAllPosts in Profile");
       getAllPosts();
-      window.localStorage.setItem(
-        "NETCITY_initialProfileLoadCompleted",
-        JSON.stringify(initialProfileLoadCompleted)
-      );
     };
     getLoggedInUserProfilePosts();
 
     //1 Profile data includes all profile data but the posts
     const getProfileData = async () => {
-      // console.log("use effect");
       if (!openProfileId) return null;
       try {
         // Step 1: Get data for the open profile
@@ -96,7 +80,6 @@ const Profile = ({ loggedInUserId, setLoggedInUserId }: Props) => {
           setUserLastName(profileData?.lastName);
           setUserPicture(profileData?.profilePicture);
           setBioText(profileData?.bio);
-          setInitialProfileLoadCompleted(true); // Update localStorage boolean if the user is viewing their own profile
           return;
         }
         const userTargetUser = doc(db, "users", loggedInUserId);
@@ -111,7 +94,7 @@ const Profile = ({ loggedInUserId, setLoggedInUserId }: Props) => {
       }
     };
     getProfileData();
-  }, [initialProfileLoadCompleted, openProfileId, loggedInUserId]); // Get docs when userId state changes
+  }, [openProfileId, loggedInUserId]); // Get docs when userId state changes
 
   // const unsub = onSnapshot(doc(db, "cities", "SF"), (doc) => {
   //     console.log("Current data: ", doc.data());
@@ -127,7 +110,6 @@ const Profile = ({ loggedInUserId, setLoggedInUserId }: Props) => {
       const postsProfileCollection = collection(userDocRef, "postsProfile"); // Grabs the postsProfile collection
       const sortedPostsProfile = query(postsProfileCollection, orderBy("timestamp", "desc")); // Sorts posts in descending order. "query" and "orderBy" are Firebase/Firestore methods
       const unsubscribe = onSnapshot(sortedPostsProfile, (snapshot) => {
-        console.log("here");
         const postsProfileDataArray: PostData[] = []; // Empty array that'll be used for updating state
         // Push each doc (post) into the postsProfileDataArray array.
         snapshot.forEach((doc) => {
@@ -135,13 +117,6 @@ const Profile = ({ loggedInUserId, setLoggedInUserId }: Props) => {
           postsProfileDataArray.push({ ...postData, id: doc.id }); // (id: doc.id adds the id of the individual doc)
         });
         setPosts(postsProfileDataArray); // Update state with all the posts
-        // Updates localStorage with the posts on the logged in user's profile
-        if (loggedInUserId === openProfileId) {
-          window.localStorage.setItem(
-            `NETCITY_postsProfile_${loggedInUserId}`,
-            JSON.stringify(postsProfileDataArray)
-          );
-        }
       }); // Gets all docs from postsProfile collection
     } catch (err) {
       console.error("Error trying to get all docs:", err);
