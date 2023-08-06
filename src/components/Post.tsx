@@ -22,6 +22,7 @@ import {
 } from "firebase/firestore";
 import { useDateFunctions } from "./custom-hooks/useDateFunctions";
 import { useEmptyProfilePicture } from "./context/EmptyProfilePictureContextProvider";
+import { useLoggedInUserId } from "./context/LoggedInUserProfileDataContextProvider";
 import { TargetData, CommentData } from "../interfaces";
 
 //6 Have to implement comments into each post
@@ -35,7 +36,6 @@ interface Props {
   postDislikes: object;
   postComments: object;
   openProfileId: string;
-  loggedInUserId: string;
   loggedInUserProfilePicture: string;
   setLoggedInUserProfilePicture: (value: string) => void;
   postId: string;
@@ -52,7 +52,6 @@ const Post = ({
   postDislikes,
   postComments,
   openProfileId,
-  loggedInUserId,
   loggedInUserProfilePicture,
   setLoggedInUserProfilePicture,
   postId,
@@ -60,6 +59,7 @@ const Post = ({
   postUserId,
 }: Props) => {
   const emptyProfilePicture = useEmptyProfilePicture();
+  const { loggedInUserId } = useLoggedInUserId();
   const [liked, setLiked] = useState(false);
   const [postNumOfLikes, setPostNumOfLikes] = useState(0);
   const [disliked, setDisliked] = useState(false);
@@ -74,7 +74,6 @@ const Post = ({
   const [numOfCommentsShowing, setNumOfCommentsShowing] = useState(0);
   const [showLoadMoreCommentsButton, setShowLoadMoreCommentsButton] = useState(true);
   const [comments, setComments] = useState<CommentData[]>([]);
-  const { fullTimestamp, dateDayMonthYear } = useDateFunctions();
 
   //1 Access this posts document from Firestore. postDocRef used throughout component.
   const usersDocRef = doc(db, "users", openProfileId); // Grab the user

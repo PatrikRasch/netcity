@@ -4,10 +4,12 @@ import likeIcon from "./../assets/icons/heartPlus.png";
 import heartLiked from "./../assets/icons/heartLiked.png";
 import dislikeIcon from "./../assets/icons/heartMinus.png";
 import heartDisliked from "./../assets/icons/heartDisliked.png";
+import deleteIcon from "./../assets/icons/delete.png";
+import deleteRedIcon from "./../assets/icons/delete-red.png";
 
 import { db } from "./../config/firebase.config";
-import { collection, doc, getDoc, updateDoc } from "firebase/firestore";
-import emptyProfilePicture from "./../assets/icons/emptyProfilePicture.jpg";
+import { collection, doc, getDoc, deleteDoc } from "firebase/firestore";
+import { useEmptyProfilePicture } from "./context/EmptyProfilePictureContextProvider";
 
 import { useCommentLikingFunctions } from "./custom-hooks/useCommentLikingFunctions";
 import { useCommentDislikingFunctions } from "./custom-hooks/useCommentDislikingFunctions";
@@ -49,24 +51,24 @@ const Comment = ({
   const [profilePicture, setProfilePicture] = useState("");
   const { commentData, setCommentData } = useCommentData();
 
-  //2 Do we have to get comment data in this manner here?
-
   // //1 Access this comment document from Firestore
   const usersDoc = doc(db, "users", openProfileId); // Grab the user
   const postsProfileCollection = collection(usersDoc, "postsProfile"); // Grab the posts on the user's profile
   const postDoc = doc(postsProfileCollection, postId); // grab this post
   const commentsCollection = collection(postDoc, "comments");
-  const commentDoc = doc(commentsCollection, commentId);
+  const commentDocRef = doc(commentsCollection, commentId);
+
+  const emptyProfilePicture = useEmptyProfilePicture();
 
   const { addLike, removeLike, liked, setLiked } = useCommentLikingFunctions(
     loggedInUserId,
-    commentDoc,
+    commentDocRef,
     commentData,
     setCommentNumOfLikes
   );
   const { addDislike, removeDislike, disliked, setDisliked } = useCommentDislikingFunctions(
     loggedInUserId,
-    commentDoc,
+    commentDocRef,
     commentData,
     setCommentNumOfDislikes
   );
@@ -74,7 +76,7 @@ const Comment = ({
   // //1 Get the data from this comment from the backend and store it in the "commentData" state
   const getCommentData = async () => {
     try {
-      const targetComment = await getDoc(commentDoc); // Fetch the data
+      const targetComment = await getDoc(commentDocRef); // Fetch the data
       const data = targetComment.data();
       setCommentData(data as TargetCommentData | null); // Store the comment data in state
       if (data?.likes?.hasOwnProperty(loggedInUserId)) setLiked(true); // Has the user already liked the comment?
@@ -141,11 +143,37 @@ const Comment = ({
   };
 
   useEffect(() => {
+    console.log("mount");
+    console.log(Object.keys(commentLikes).length);
     getCommentData();
     setCommentNumOfLikes(Object.keys(commentLikes).length);
     setCommentNumOfDislikes(-Object.keys(commentDislikes).length);
     getCommentProfilePicture(commentById);
   }, []);
+
+  const showDeleteCommentOrNot = () => {
+    if (loggedInUserId === commentById) {
+      return (
+        <div>
+          <img
+            src={deleteIcon}
+            alt=""
+            className="max-h-[15px] cursor-pointer"
+            onClick={() => deletePostClicked()}
+          />
+        </div>
+      );
+    } else return <div></div>;
+  };
+
+  const deletePostClicked = async () => {
+    try {
+      await deleteDoc(commentDocRef);
+      console.log("Doc deleted");
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <div className="grid pt-2 pl-4 pr-4">
@@ -156,11 +184,17 @@ const Comment = ({
           className="rounded-[50%] max-w-[38px] self-start aspect-square object-cover"
         />
         <div className="flex flex-col">
-          <div className="bg-gray-200  rounded-xl p-2">
-            <div className="text-[12px] font-bold">{commentFirstName + " " + commentLastName}</div>
+          <div className="bg-gray-200 rounded-xl p-2">
+            <div className="grid grid-cols-[20fr,2fr] text-[12px]">
+              <div className="flex gap-4">
+                <div className="font-bold">{commentFirstName + " " + commentLastName}</div>
+                <div className="opacity-50 text-[10px] self-center">{commentDate}</div>
+              </div>
+              <div>{showDeleteCommentOrNot()}</div>
+            </div>
+
             <div className=" grid grid-cols-[4fr,1fr] gap-4">{commentText}</div>
           </div>
-
           <div className="grid grid-cols-[50px,50px] h-max mt-1 mb-1 items-start justify-items-start">
             <div className="flex gap-1">
               <button onClick={() => handleClickLike()}>{showLikedOrNot()}</button>

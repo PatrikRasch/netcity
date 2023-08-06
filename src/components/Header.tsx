@@ -1,16 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import emptyProfilePicture from "./../assets/icons/emptyProfilePicture.jpg";
-import { LoggedInUserIdProp } from "../interfaces";
+import { useEmptyProfilePicture } from "./context/EmptyProfilePictureContextProvider";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../config/firebase.config";
+import { useLoggedInUserId } from "./context/LoggedInUserProfileDataContextProvider";
 
-interface Props {
-  loggedInUserId: LoggedInUserIdProp["loggedInUserId"];
-  setLoggedInUserId: LoggedInUserIdProp["setLoggedInUserId"];
-}
-
-const Header = ({ loggedInUserId, setLoggedInUserId }: Props) => {
+const Header = () => {
+  const emptyProfilePicture = useEmptyProfilePicture();
+  const { loggedInUserId } = useLoggedInUserId();
   const [profilePicture, setProfilePicture] = useState(emptyProfilePicture);
   const navigate = useNavigate();
 

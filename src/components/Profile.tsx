@@ -20,20 +20,19 @@ import AllPosts from "./AllPosts";
 import About from "./About";
 
 import { useEmptyProfilePicture } from "./context/EmptyProfilePictureContextProvider";
+import { useLoggedInUserFirstName } from "./context/LoggedInUserProfileDataContextProvider";
+import { useLoggedInUserId } from "./context/LoggedInUserProfileDataContextProvider";
 // import { useLoadingScreen } from "./context/LoadingContextProvider";
 
 import { PostData } from "../interfaces";
 
 //2 Ideally posts are lazyloaded with 5-10 at a time instead of all at the same time
 
-interface Props {
-  loggedInUserId: string;
-  setLoggedInUserId: (value: string) => void;
-}
-
-const Profile = ({ loggedInUserId, setLoggedInUserId }: Props) => {
+const Profile = () => {
   //- Context declarations:
   const emptyProfilePicture = useEmptyProfilePicture();
+  const loggedInUserFirstName = useLoggedInUserFirstName();
+  const { loggedInUserId, setLoggedInUserId } = useLoggedInUserId();
   //- State declarations:
   const [visitingUser, setVisitingUser] = useState(false);
   const [showPosts, setShowPosts] = useState(true);
@@ -131,8 +130,6 @@ const Profile = ({ loggedInUserId, setLoggedInUserId }: Props) => {
         <>
           {/* //2 We should pass the user information of the currently logged in user, not the one that's being visited, as this info is used to create posts. */}
           <MakePost
-            loggedInUserId={loggedInUserId}
-            setLoggedInUserId={setLoggedInUserId}
             userFirstName={userFirstName} // Name of logged in user
             userLastName={userLastName} // Name of logged in user
             userPicture={userPicture} // pf Picture og logged in user
@@ -144,7 +141,6 @@ const Profile = ({ loggedInUserId, setLoggedInUserId }: Props) => {
             firstName={userFirstName}
             lastName={userLastName}
             posts={posts}
-            loggedInUserId={loggedInUserId} // Id of logged in profile
           />
         </>
       );
@@ -152,7 +148,6 @@ const Profile = ({ loggedInUserId, setLoggedInUserId }: Props) => {
       return (
         <>
           <About
-            loggedInUserId={loggedInUserId}
             openProfileId={openProfileId} // Id of profile being viewed
             visitingUser={visitingUser}
             bioText={bioText}

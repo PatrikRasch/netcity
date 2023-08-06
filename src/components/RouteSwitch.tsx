@@ -6,31 +6,23 @@ import Register from "./Register";
 import Profile from "./Profile";
 import Header from "./Header";
 
-import { LoggedInUserIdProp } from "../interfaces";
+import { useLoggedInUserId } from "./context/LoggedInUserProfileDataContextProvider";
 
 const People = lazy(() => import("./People"));
 const Public = lazy(() => import("./Public"));
-const About = lazy(() => import("./About"));
+// const About = lazy(() => import("./About"));
 
-interface Props {
-  loggedInUserId: LoggedInUserIdProp["loggedInUserId"];
-  setLoggedInUserId: LoggedInUserIdProp["setLoggedInUserId"];
-}
+function RouteSwitch() {
+  const { loggedInUserId } = useLoggedInUserId();
 
-function RouteSwitch({ loggedInUserId, setLoggedInUserId }: Props) {
   const HeaderDisplaying = () => {
     if (!loggedInUserId) return <h1>Loading..</h1>;
     return (
       <Suspense fallback={<h1>Loading...</h1>}>
-        <Header loggedInUserId={loggedInUserId} setLoggedInUserId={setLoggedInUserId} />
+        <Header />
         <Routes>
-          <Route
-            path="/profile/:openProfileId"
-            element={
-              <Profile loggedInUserId={loggedInUserId} setLoggedInUserId={setLoggedInUserId} />
-            }
-          />
-          <Route path="/about" element={<About />} />
+          <Route path="/profile/:openProfileId" element={<Profile />} />
+          {/* <Route path="/about" element={<About />} /> */}
           <Route path="/people" element={<People />} />
           <Route path="/public" element={<Public />} />
         </Routes>

@@ -2,15 +2,14 @@ import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDateFunctions } from "./custom-hooks/useDateFunctions";
 
-import { GetAllPosts, VisitingUser, LoggedInUserIdProp } from "../interfaces";
+import { GetAllPosts, VisitingUser } from "../interfaces";
 import { useEmptyProfilePicture } from "./context/EmptyProfilePictureContextProvider";
+import { useLoggedInUserId } from "./context/LoggedInUserProfileDataContextProvider";
 
 import { db } from "./../config/firebase.config";
 import { doc, addDoc, collection } from "firebase/firestore";
 
 interface Props {
-  loggedInUserId: LoggedInUserIdProp["loggedInUserId"];
-  setLoggedInUserId: LoggedInUserIdProp["setLoggedInUserId"];
   getAllPosts: GetAllPosts["getAllPosts"];
   visitingUser: VisitingUser["visitingUser"];
   userFirstName: string;
@@ -18,21 +17,14 @@ interface Props {
   userPicture: string;
 }
 
-function MakePost({
-  loggedInUserId,
-  setLoggedInUserId,
-  getAllPosts,
-  userPicture,
-  visitingUser,
-  userFirstName,
-  userLastName,
-}: Props) {
+function MakePost({ getAllPosts, userPicture, visitingUser, userFirstName, userLastName }: Props) {
   const [postInput, setPostInput] = useState("");
   const [postId, setPostId] = useState("");
   const { openProfileId } = useParams();
   const { dateDayMonthYear } = useDateFunctions();
   const [fullTimestamp, setFullTimestamp] = useState({});
   const emptyProfilePicture = useEmptyProfilePicture();
+  const { loggedInUserId, setLoggedInUserId } = useLoggedInUserId();
 
   //1 Gets the reference to the postsProfile collection for the user
   const getPostsProfileRef = () => {

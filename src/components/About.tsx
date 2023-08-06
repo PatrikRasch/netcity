@@ -7,8 +7,9 @@ import { updateDoc, doc, getDoc } from "firebase/firestore";
 //2 The edit button also turns into a "save" button
 //2 When the save button is clicked, state is updated to reflect the changes
 
+import { useLoggedInUserId } from "./context/LoggedInUserProfileDataContextProvider";
+
 interface Props {
-  loggedInUserId: string;
   openProfileId: string;
   visitingUser: boolean;
   bioText: string;
@@ -18,7 +19,8 @@ interface Props {
 //2 Have to update bio in the backend and fetch it from there when loading the component
 //2 Need to fetch bio from profile that is currently open (can use the URL for that)
 
-const About = ({ loggedInUserId, openProfileId, visitingUser, bioText, setBioText }: Props) => {
+const About = ({ openProfileId, visitingUser, bioText, setBioText }: Props) => {
+  const { loggedInUserId } = useLoggedInUserId();
   const [editButtonText, setEditButtonText] = useState("");
   const [editMode, setEditMode] = useState(false);
 

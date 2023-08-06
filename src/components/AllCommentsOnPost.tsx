@@ -79,29 +79,28 @@ const AllCommentsOnPost = ({
   };
 
   const populateCommentsOnPage = () => {
+    const commentsToRender = comments.filter((_, index) => index < numOfCommentsShowing);
     return (
       <div>
-        {comments.map((comment, index) => {
-          if (index < numOfCommentsShowing) {
-            return (
-              <div key={comment.id}>
-                <Comment
-                  commentFirstName={comment.firstName}
-                  commentLastName={comment.lastName}
-                  commentText={comment.text}
-                  commentDate={comment.date}
-                  commentLikes={comment.likes}
-                  commentDislikes={comment.dislikes}
-                  commentById={comment.userId}
-                  openProfileId={openProfileId}
-                  loggedInUserId={loggedInUserId}
-                  commentId={comment.id}
-                  postId={postId}
-                  commentIndex={index}
-                />
-              </div>
-            );
-          }
+        {commentsToRender.map((comment, index) => {
+          return (
+            <div key={comment.id}>
+              <Comment
+                commentFirstName={comment.firstName}
+                commentLastName={comment.lastName}
+                commentText={comment.text}
+                commentDate={comment.date}
+                commentLikes={comment.likes}
+                commentDislikes={comment.dislikes}
+                commentById={comment.userId}
+                openProfileId={openProfileId}
+                loggedInUserId={loggedInUserId}
+                commentId={comment.id}
+                postId={postId}
+                commentIndex={index}
+              />
+            </div>
+          );
         })}
         {showMoreCommentsButton()}
       </div>
