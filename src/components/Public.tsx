@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import PublicPosts from "./PublicPosts";
 
 import { db } from "../config/firebase.config";
-import { collection, doc, addDoc, query, orderBy, onSnapshot } from "firebase/firestore";
+import { collection, doc, addDoc, query, orderBy, onSnapshot, limit } from "firebase/firestore";
 
 import { useLoggedInUserId } from "./context/LoggedInUserProfileDataContextProvider";
 import { useLoggedInUserFirstName } from "./context/LoggedInUserProfileDataContextProvider";
@@ -40,13 +40,43 @@ function Public() {
   const [postId, setPostId] = useState("");
   const [publicPosts, setPublicPosts] = useState<PublicPostData[]>([]);
   const [fullTimestamp, setFullTimestamp] = useState({});
+  const [fetchingMorePosts, setFetchingMorePosts] = useState(false);
+  const [postsLoaded, setPostsLoaded] = useState(10);
+  const [lastExecutionTime, setLastExecutionTime] = useState(0);
 
   //1 Gets the reference to the publicPosts collection
   const publicPostsCollection = collection(db, "publicPosts");
 
+  //1 Adds a scroll eventListener to the page
   useEffect(() => {
-    getAllPublicPosts();
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
+
+  //1 Activates the useEffect below which initiates the fetching of 10 more posts
+  const handleScroll = () => {
+    if (
+      window.innerHeight + window.scrollY >= document.body.scrollHeight - 100 &&
+      !fetchingMorePosts
+    ) {
+      setFetchingMorePosts(true);
+    }
+  };
+
+  //1 Adds 10 more posts for the useEffect below to load
+  useEffect(() => {
+    if (fetchingMorePosts) {
+      setPostsLoaded((prevPostsLoaded) => prevPostsLoaded + 10);
+      setFetchingMorePosts(false);
+    }
+  }, [fetchingMorePosts]);
+
+  //1 Loads 10 posts from the feed. Loads whatever value postsLoaded holds
+  useEffect(() => {
+    getPublicPosts();
+  }, [postsLoaded]);
 
   const writePost = async (data: {
     userId: string;
@@ -72,10 +102,13 @@ function Public() {
 
   //1 GET POSTS FOR PROFILE CURRENTLY BEING VIEWED
   //  - Gets all the posts (profilePosts in Firestore) from the current profile subcollection.
-  const getAllPublicPosts = async () => {
+  const getPublicPosts = async () => {
     try {
-      console.log("getting all posts");
-      const sortedPublicPosts = query(publicPostsCollection, orderBy("timestamp", "desc")); // Sorts posts in descending order
+      const sortedPublicPosts = query(
+        publicPostsCollection,
+        orderBy("timestamp", "desc"),
+        limit(postsLoaded)
+      ); // Sorts posts in descending order
       const unsubscribe = onSnapshot(sortedPublicPosts, (snapshot) => {
         const publicPostsDataArray: PublicPostData[] = []; // Empty array that'll be used for updating state
         // Push each doc (post) into the publicPostsDataArray array.
@@ -125,7 +158,7 @@ function Public() {
             comments: {},
             userId: loggedInUserId,
           });
-          getAllPublicPosts();
+          getPublicPosts();
           setPostInput("");
         }}
       >
