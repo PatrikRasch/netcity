@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from "react";
+import Likes from "./Likes";
+import Dislikes from "./Dislikes";
+import { useParams } from "react-router-dom";
 
 import likeIcon from "./../assets/icons/heartPlus.png";
 import heartLiked from "./../assets/icons/heartLiked.png";
@@ -8,11 +11,11 @@ import deleteIcon from "./../assets/icons/delete.png";
 import deleteRedIcon from "./../assets/icons/delete-red.png";
 
 import { db } from "./../config/firebase.config";
-import { collection, doc, getDoc, deleteDoc } from "firebase/firestore";
+import { collection, doc, getDoc, deleteDoc, updateDoc } from "firebase/firestore";
 import { useEmptyProfilePicture } from "./context/EmptyProfilePictureContextProvider";
 
-import { useCommentLikingFunctions } from "./custom-hooks/useCommentLikingFunctions";
-import { useCommentDislikingFunctions } from "./custom-hooks/useCommentDislikingFunctions";
+// import { useCommentLikingFunctions } from "./custom-hooks/useCommentLikingFunctions";
+// import { useCommentDislikingFunctions } from "./custom-hooks/useCommentDislikingFunctions";
 import { useCommentData } from "./custom-hooks/useCommentData";
 
 import { TargetCommentData } from "../interfaces";
@@ -25,7 +28,6 @@ interface Props {
   commentLikes: object;
   commentDislikes: object;
   commentById: string;
-  openProfileId: string;
   loggedInUserId: string;
   commentId: string;
   postId: string;
@@ -40,38 +42,74 @@ const Comment = ({
   commentLikes,
   commentDislikes,
   commentById,
-  openProfileId,
   loggedInUserId,
   commentId,
   postId,
   commentIndex,
 }: Props) => {
+  const { openProfileId } = useParams();
+
+  const [liked, setLiked] = useState(false);
+  const [disliked, setDisliked] = useState(false);
   const [commentNumOfLikes, setCommentNumOfLikes] = useState(0);
   const [commentNumOfDislikes, setCommentNumOfDislikes] = useState(0);
   const [profilePicture, setProfilePicture] = useState("");
   const { commentData, setCommentData } = useCommentData();
+  // const [commentDocRef, setCommentDocRef] = useState("");
 
   // //1 Access this comment document from Firestore
-  const usersDoc = doc(db, "users", openProfileId); // Grab the user
-  const postsProfileCollection = collection(usersDoc, "postsProfile"); // Grab the posts on the user's profile
-  const postDoc = doc(postsProfileCollection, postId); // grab this post
-  const commentsCollection = collection(postDoc, "comments");
-  const commentDocRef = doc(commentsCollection, commentId);
+  const getCommentDocRef = () => {
+    if (!openProfileId) {
+      const publicPostsCollection = collection(db, "publicPosts");
+      const targetPostDocRef = doc(publicPostsCollection, postId); // grab this post
+      const targetCommentDocRef = doc(targetPostDocRef, "comments", commentId);
+      return targetCommentDocRef;
+    } else {
+      const targetUserDocRef = doc(db, "users", openProfileId);
+      const targetPostDocRef = doc(targetUserDocRef, "postsProfile", postId); // grab this post
+      const targetCommentDocRef = doc(targetPostDocRef, "comments", commentId);
+      return targetCommentDocRef;
+    }
+  };
+
+  const commentDocRef = getCommentDocRef();
 
   const emptyProfilePicture = useEmptyProfilePicture();
 
-  const { addLike, removeLike, liked, setLiked } = useCommentLikingFunctions(
-    loggedInUserId,
-    commentDocRef,
-    commentData,
-    setCommentNumOfLikes
-  );
-  const { addDislike, removeDislike, disliked, setDisliked } = useCommentDislikingFunctions(
-    loggedInUserId,
-    commentDocRef,
-    commentData,
-    setCommentNumOfDislikes
-  );
+  // const { addLike, removeLike, liked, setLiked } = useCommentLikingFunctions(
+  //   loggedInUserId,
+  //   commentDocRef,
+  //   commentData,
+  //   setCommentNumOfLikes
+  // );
+  // const { addDislike, removeDislike, disliked, setDisliked } = useCommentDislikingFunctions(
+  //   loggedInUserId,
+  //   commentDocRef,
+  //   commentData,
+  //   setCommentNumOfDislikes
+  // );
+
+  const removeLike = async () => {
+    setLiked(false); // Set liked to false, makes heart empty
+    // Frontend updates
+    delete (commentLikes as { [key: string]: boolean })[loggedInUserId]; // Remove the userId from postLikes
+    setCommentNumOfLikes(Object.keys(commentLikes).length); // Update state for number of likes to display
+    // Backend updates:
+    delete (commentData?.likes as { [key: string]: boolean })[loggedInUserId]; // Delete the userId from the postData object
+    const newLikes = { ...commentData?.likes }; // Define new object to hold the likes
+    await updateDoc(commentDocRef, { likes: newLikes }); // Update the backend with the new likes
+  };
+
+  const removeDislike = async () => {
+    setDisliked(false); // Set liked to false, makes heart empty
+    // Frontend updates
+    delete (commentDislikes as { [key: string]: boolean })[loggedInUserId]; // Remove the userId from postLikes
+    setCommentNumOfDislikes(-Object.keys(commentDislikes).length); // Update state for number of likes to display
+    // Backend updates:
+    delete (commentData?.dislikes as { [key: string]: boolean })[loggedInUserId]; // Delete the userId from the postData object
+    const newDislikes = { ...commentData?.dislikes }; // Define new object to hold the likes
+    await updateDoc(commentDocRef, { dislikes: newDislikes }); // Update the backend with the new likes
+  };
 
   // //1 Get the data from this comment from the backend and store it in the "commentData" state
   const getCommentData = async () => {
@@ -90,39 +128,10 @@ const Comment = ({
   const getCommentProfilePicture = async (userId: string) => {
     if (!userId) return <h1>Loading...</h1>;
     const usersDoc = doc(db, "users", userId);
-
     const targetUser = await getDoc(usersDoc);
     const data = targetUser.data();
     const profilePictureRef = data?.profilePicture;
     setProfilePicture(profilePictureRef);
-  };
-
-  const handleClickLike = async () => {
-    // If comment not liked
-    if (!liked) {
-      if (disliked) {
-        removeDislike();
-      }
-      addLike();
-    }
-    // If comment already liked
-    if (liked) {
-      removeLike();
-    }
-  };
-
-  const handleClickDislike = async () => {
-    // If comment not disliked
-    if (!disliked) {
-      if (liked) {
-        removeLike();
-      }
-      addDislike();
-    }
-    // If comment already liked
-    if (disliked) {
-      removeDislike();
-    }
   };
 
   //1 The like icon on each comment. Shows if the user has liked a comment.
@@ -143,8 +152,6 @@ const Comment = ({
   };
 
   useEffect(() => {
-    console.log("mount");
-    console.log(Object.keys(commentLikes).length);
     getCommentData();
     setCommentNumOfLikes(Object.keys(commentLikes).length);
     setCommentNumOfDislikes(-Object.keys(commentDislikes).length);
@@ -196,15 +203,35 @@ const Comment = ({
             <div className=" grid grid-cols-[4fr,1fr] gap-4">{commentText}</div>
           </div>
           <div className="grid grid-cols-[50px,50px] h-max mt-1 mb-1 items-start justify-items-start">
-            <div className="flex gap-1">
-              <button onClick={() => handleClickLike()}>{showLikedOrNot()}</button>
-              <div>{commentNumOfLikes}</div>
-            </div>
-            {/*//1 Dislike */}
-            <div className="flex gap-1">
-              <button onClick={() => handleClickDislike()}>{showDislikedOrNot()}</button>
-              <div>{commentNumOfDislikes}</div>
-            </div>
+            {/*//1 Like/Dislike */}
+            {
+              <Likes
+                totalLikes={commentLikes}
+                liked={liked}
+                disliked={disliked}
+                setLiked={setLiked}
+                numOfLikes={commentNumOfLikes}
+                setNumOfLikes={setCommentNumOfLikes}
+                removeLike={removeLike}
+                removeDislike={removeDislike}
+                loggedInUserId={loggedInUserId}
+                docRef={commentDocRef}
+                data={commentData}
+              />
+            }
+            <Dislikes
+              totalDislikes={commentDislikes}
+              liked={liked}
+              disliked={disliked}
+              setDisliked={setDisliked}
+              numOfDislikes={commentNumOfDislikes}
+              setNumOfDislikes={setCommentNumOfDislikes}
+              removeLike={removeLike}
+              removeDislike={removeDislike}
+              loggedInUserId={loggedInUserId}
+              docRef={commentDocRef}
+              data={commentData}
+            />
           </div>
         </div>
       </div>
