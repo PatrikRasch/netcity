@@ -1,26 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useEmptyProfilePicture } from "./context/EmptyProfilePictureContextProvider";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../config/firebase.config";
+
 import { useLoggedInUserId } from "./context/LoggedInUserProfileDataContextProvider";
+import { useLoggedInUserProfilePicture } from "./context/LoggedInUserProfileDataContextProvider";
 
 const Header = () => {
   const emptyProfilePicture = useEmptyProfilePicture();
+  const loggedInUserProfilePicture = useLoggedInUserProfilePicture();
   const { loggedInUserId } = useLoggedInUserId();
-  const [profilePicture, setProfilePicture] = useState(emptyProfilePicture);
   const navigate = useNavigate();
-
-  const getProfilePicture = async (userId: string) => {
-    if (!userId) return <h1>Loading...</h1>;
-    const usersDoc = doc(db, "users", userId);
-    const targetUser = await getDoc(usersDoc);
-    const data = targetUser.data();
-    const profilePictureRef = data?.profilePicture;
-    setProfilePicture(profilePictureRef);
-  };
-
-  getProfilePicture(loggedInUserId);
 
   return (
     <div>
@@ -32,7 +21,7 @@ const Header = () => {
           Public
         </div>
         <img
-          src={profilePicture}
+          src={loggedInUserProfilePicture === "" ? emptyProfilePicture : loggedInUserProfilePicture}
           alt=""
           className="rounded-[50px] justify-self-center cursor-pointer aspect-square object-cover max-h-[65px]"
           onClick={() => navigate(`/profile/${loggedInUserId}`)}
