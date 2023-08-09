@@ -3,7 +3,7 @@ import { updateDoc, DocumentReference } from "firebase/firestore";
 
 import { TargetData } from "../../interfaces";
 
-export function useLikingFunctions(
+export function usePostLikingFunctions(
   loggedInUserId: string,
   postDoc: DocumentReference,
   postData: TargetData | null,
@@ -12,6 +12,10 @@ export function useLikingFunctions(
   const [liked, setLiked] = useState(false);
   const [postLikes, setPostLikes] = useState({});
 
+  //2 It can't add the likes correctly because they aren't being fetched from the backend properly when a like is added?
+  //2 The addLike function only knows about the like that has just now been added?
+  //2 That's because postLikes is declared within this custom hook as an empty object
+  //2 Instead, it should base its state on what it gets from the backend
   const addLike = async () => {
     setLiked(true); // Set liked to true, makes heart red
     // Frontend updates:
@@ -19,7 +23,11 @@ export function useLikingFunctions(
     setPostNumOfLikes(Object.keys(postLikes).length); // Update state for number of likes to display
     // Backend updates:
     const newLikes = { ...postData?.likes, [loggedInUserId]: true }; // Define new object to hold the likes
-    await updateDoc(postDoc, { likes: newLikes }); // Update the backend with the new likes
+    try {
+      await updateDoc(postDoc, { likes: newLikes }); // Update the backend with the new likes
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const removeLike = async () => {
