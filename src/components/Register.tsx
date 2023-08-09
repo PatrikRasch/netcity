@@ -37,6 +37,9 @@ const Register = () => {
           lastName: lastName,
           bio: "",
           profilePicture: "",
+          friends: {},
+          currentReceivedFriendRequests: {},
+          currentSentFriendRequests: {},
         };
         const docToBeAdded = doc(usersCollection, userId); // Document that is to be added into Firestore
         await setDoc(docToBeAdded, dataToAdd); // Set the document and add it into Firestore
