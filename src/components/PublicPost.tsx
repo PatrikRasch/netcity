@@ -239,12 +239,14 @@ const PublicPost = ({
                 className="rounded-[50%] aspect-square object-cover"
               />
             </div>
-            <div>{postFirstName + " " + postLastName}</div>
-            <div className="opacity-50 text-sm">{postDate}</div>
+            <div className="flex flex-col">
+              <div>{postFirstName + " " + postLastName}</div>
+              <div className="opacity-50 text-sm">{postDate}</div>
+            </div>
           </div>
           {showDeletePostOrNot()}
         </div>
-        <div>{postText}</div>
+        <div className="pt-2">{postText}</div>
       </div>
       <div className="w-full h-[1px] bg-gray-300"></div>
       <div className="grid grid-cols-[1fr,1fr,2fr] h-[33px] mt-1 mb-1 items-center justify-items-center">

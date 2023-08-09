@@ -76,19 +76,6 @@ const Comment = ({
 
   const emptyProfilePicture = useEmptyProfilePicture();
 
-  // const { addLike, removeLike, liked, setLiked } = useCommentLikingFunctions(
-  //   loggedInUserId,
-  //   commentDocRef,
-  //   commentData,
-  //   setCommentNumOfLikes
-  // );
-  // const { addDislike, removeDislike, disliked, setDisliked } = useCommentDislikingFunctions(
-  //   loggedInUserId,
-  //   commentDocRef,
-  //   commentData,
-  //   setCommentNumOfDislikes
-  // );
-
   const removeLike = async () => {
     setLiked(false); // Set liked to false, makes heart empty
     // Frontend updates

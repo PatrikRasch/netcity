@@ -5,6 +5,9 @@ import { useDateFunctions } from "./custom-hooks/useDateFunctions";
 import { GetAllPosts, VisitingUser } from "../interfaces";
 import { useEmptyProfilePicture } from "./context/EmptyProfilePictureContextProvider";
 import { useLoggedInUserId } from "./context/LoggedInUserProfileDataContextProvider";
+import { useLoggedInUserFirstName } from "./context/LoggedInUserProfileDataContextProvider";
+import { useLoggedInUserLastName } from "./context/LoggedInUserProfileDataContextProvider";
+import { useLoggedInUserProfilePicture } from "./context/LoggedInUserProfileDataContextProvider";
 
 import { db } from "./../config/firebase.config";
 import { doc, addDoc, collection } from "firebase/firestore";
@@ -12,12 +15,10 @@ import { doc, addDoc, collection } from "firebase/firestore";
 interface Props {
   getAllPosts: GetAllPosts["getAllPosts"];
   visitingUser: VisitingUser["visitingUser"];
-  userFirstName: string;
-  userLastName: string;
   userPicture: string;
 }
 
-function MakePost({ getAllPosts, userPicture, visitingUser, userFirstName, userLastName }: Props) {
+function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
   const [postInput, setPostInput] = useState("");
   const [postId, setPostId] = useState("");
   const { openProfileId } = useParams();
@@ -25,6 +26,9 @@ function MakePost({ getAllPosts, userPicture, visitingUser, userFirstName, userL
   const [fullTimestamp, setFullTimestamp] = useState({});
   const emptyProfilePicture = useEmptyProfilePicture();
   const { loggedInUserId, setLoggedInUserId } = useLoggedInUserId();
+  const { loggedInUserFirstName, setLoggedInUserFirstName } = useLoggedInUserFirstName();
+  const { loggedInUserLastName, setLoggedInUserLastName } = useLoggedInUserLastName();
+  const loggedInUserProfilePicture = useLoggedInUserProfilePicture();
 
   //1 Gets the reference to the postsProfile collection for the user
   const getPostsProfileRef = () => {
@@ -66,7 +70,9 @@ function MakePost({ getAllPosts, userPicture, visitingUser, userFirstName, userL
         <div className="min-h-[120px] flex p-4 gap-2">
           <div className="min-w-[50px] max-w-min">
             <img
-              src={userPicture === "" ? emptyProfilePicture : userPicture}
+              src={
+                loggedInUserProfilePicture === "" ? emptyProfilePicture : loggedInUserProfilePicture
+              }
               alt="profile"
               className="rounded-[50%] aspect-square object-cover"
             />
@@ -90,8 +96,8 @@ function MakePost({ getAllPosts, userPicture, visitingUser, userFirstName, userL
             setFullTimestamp(new Date());
             writePost({
               timestamp: fullTimestamp,
-              firstName: userFirstName,
-              lastName: userLastName,
+              firstName: loggedInUserFirstName,
+              lastName: loggedInUserLastName,
               text: postInput,
               date: dateDayMonthYear,
               likes: {},

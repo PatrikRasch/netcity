@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 
 export function useDateFunctions() {
   const [dateDayMonthYear, setDateDayMonthYear] = useState("");
-  const [fullTimestamp, setFullTimestamp] = useState({});
 
   //1 Set up new date
   const date = new Date();
@@ -24,9 +23,9 @@ export function useDateFunctions() {
 
   //1 Take snapshot of dates
   useEffect(() => {
-    setFullTimestamp(date);
+    // console.log("use effect");
     setDateDayMonthYear(fullDate(date.getMonth() + 1));
   }, []);
 
-  return { fullTimestamp, dateDayMonthYear };
+  return { dateDayMonthYear };
 }

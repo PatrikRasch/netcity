@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import Comment from "./Comment";
 
+import { useLoggedInUserId } from "./context/LoggedInUserProfileDataContextProvider";
+
 interface Props {
-  openProfileId: string;
   comments: CommentsData[];
-  loggedInUserId: string;
   postId: string;
   postTotalNumOfComments: number;
   numOfCommentsShowing: number;
@@ -30,9 +30,7 @@ interface CommentsData {
 }
 
 const AllCommentsOnPost = ({
-  openProfileId,
   comments,
-  loggedInUserId,
   postId,
   postTotalNumOfComments,
   numOfCommentsShowing,
@@ -42,6 +40,7 @@ const AllCommentsOnPost = ({
   setShowLoadMoreCommentsButton,
   setShowMakeComment,
 }: Props) => {
+  const { loggedInUserId } = useLoggedInUserId();
   if (numOfCommentsShowing === 0) setShowLoadMoreCommentsButton(false);
   if (postTotalNumOfComments > numOfCommentsShowing && numOfCommentsShowing !== 0) {
     setShowLoadMoreCommentsButton(true);
@@ -93,7 +92,6 @@ const AllCommentsOnPost = ({
                 commentLikes={comment.likes}
                 commentDislikes={comment.dislikes}
                 commentById={comment.userId}
-                openProfileId={openProfileId}
                 loggedInUserId={loggedInUserId}
                 commentId={comment.id}
                 postId={postId}

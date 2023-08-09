@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 import { db } from "./../config/firebase.config";
 import { collection, getDocs } from "firebase/firestore";
 
+import { useLoggedInUserId } from "./context/LoggedInUserProfileDataContextProvider";
+
 import PeopleUser from "./PeopleUser";
 import { UserData } from "../interfaces";
 
@@ -12,13 +14,12 @@ import { UserData } from "../interfaces";
 //3 3. Display the people in a list
 //3 4. Make the users clickable
 //3 5. Navigate to the user's profile if clicked
-//2 6. Allow liking and disliking on other profiles
-//6. Leave the "Add friend" functionality for later
+//3 6. Allow liking and disliking on other profiles
+//2 7. Ability to add friends
 
-interface Props {}
-
-const People = (props: Props) => {
+const People = () => {
   const [users, setUsers] = useState<UserData[]>([]);
+  const { loggedInUserId } = useLoggedInUserId();
 
   //1 Get the user ID, first name and last name, and set it all in state.
   useEffect(() => {
@@ -27,6 +28,7 @@ const People = (props: Props) => {
       const allUsers = await getDocs(usersCollection);
       const userDataArray: UserData[] = [];
       allUsers.forEach((doc) => {
+        if (doc.id === loggedInUserId) return; // Remove logged in user from the list of users
         const userData = doc.data() as UserData;
         userDataArray.push({ ...userData, id: doc.id });
       });

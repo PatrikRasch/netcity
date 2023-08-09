@@ -3,16 +3,11 @@ import Post from "./Post";
 import MakeComment from "./MakeComment";
 
 import { useEmptyProfilePicture } from "./context/EmptyProfilePictureContextProvider";
-import { useLoggedInUserId } from "./context/LoggedInUserProfileDataContextProvider";
 
-import { FirstNameProp } from "../interfaces";
-import { LastNameProp } from "../interfaces";
 import { PostsProp } from "../interfaces";
 
 interface Props {
   openProfileId: string;
-  firstName: FirstNameProp["firstName"];
-  lastName: LastNameProp["lastName"];
   posts: PostsProp["posts"];
 }
 
@@ -21,7 +16,6 @@ const AllPosts = ({ posts, openProfileId }: Props) => {
   //2 If we add a profilePicture key-value pair to each post, profile pictures won't update across
   //2 the board when a user changes their profile picture.
   const emptyProfilePicture = useEmptyProfilePicture();
-  const { loggedInUserId } = useLoggedInUserId();
   const [loggedInUserProfilePicture, setLoggedInUserProfilePicture] = useState(emptyProfilePicture);
 
   //1 Adds all the posts on Firebase onto the page.

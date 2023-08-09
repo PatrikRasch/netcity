@@ -45,7 +45,6 @@ const About = ({ openProfileId, visitingUser, bioText, setBioText }: Props) => {
 
   const saveAboutInput = async () => {
     if (!editMode) return;
-    console.log("true now!");
     //2 Write bioText to logged in user profile bio
     const loggedInUserDoc = doc(db, "users", loggedInUserId);
     await updateDoc(loggedInUserDoc, { bio: bioText });

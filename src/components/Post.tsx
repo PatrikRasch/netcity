@@ -261,45 +261,45 @@ const Post = ({
                 className="rounded-[50%] aspect-square object-cover"
               />
             </div>
-            <div>{postFirstName + " " + postLastName}</div>
-            <div className="opacity-50 text-sm">{postDate}</div>
+            <div className="flex flex-col">
+              <div>{postFirstName + " " + postLastName}</div>
+              <div className="opacity-50 text-sm">{postDate}</div>
+            </div>
           </div>
           {showDeletePostOrNot()}
         </div>
-        <div>{postText}</div>
+        <div className="pt-2">{postText}</div>
       </div>
       <div className="w-full h-[1px] bg-gray-300"></div>
       <div className="grid grid-cols-[1fr,1fr,2fr] h-[33px] mt-1 mb-1 items-center justify-items-center">
         {/*//1 Like/Dislike */}
         {
           <Likes
+            totalLikes={postLikes}
             liked={liked}
             disliked={disliked}
             setLiked={setLiked}
-            loggedInUserId={loggedInUserId}
-            openProfileId={openProfileId}
-            postDocRef={postDocRef}
-            postData={postData}
-            postNumOfLikes={postNumOfLikes}
-            setPostNumOfLikes={setPostNumOfLikes}
+            numOfLikes={postNumOfLikes}
+            setNumOfLikes={setPostNumOfLikes}
             removeLike={removeLike}
             removeDislike={removeDislike}
-            postLikes={postLikes}
+            loggedInUserId={loggedInUserId}
+            docRef={postDocRef}
+            data={postData}
           />
         }
         <Dislikes
+          totalDislikes={postDislikes}
           liked={liked}
           disliked={disliked}
           setDisliked={setDisliked}
           loggedInUserId={loggedInUserId}
-          openProfileId={openProfileId}
-          postDocRef={postDocRef}
-          postData={postData}
-          postNumOfDislikes={postNumOfDislikes}
-          setPostNumOfDislikes={setPostNumOfDislikes}
+          numOfDislikes={postNumOfDislikes}
+          setNumOfDislikes={setPostNumOfDislikes}
           removeLike={removeLike}
           removeDislike={removeDislike}
-          postDislikes={postDislikes}
+          docRef={postDocRef}
+          data={postData}
         />
         {/* //1 Comment */}
         <div className="flex gap-2">
@@ -317,9 +317,7 @@ const Post = ({
       {displayMakeComment()}
       {/* //1 Posted comments */}
       <AllCommentsOnPost
-        openProfileId={openProfileId}
         comments={comments}
-        loggedInUserId={loggedInUserId}
         postId={postId}
         postTotalNumOfComments={postTotalNumOfComments}
         numOfCommentsShowing={numOfCommentsShowing}

@@ -2,16 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { db, storage } from "./../config/firebase.config";
-import {
-  doc,
-  getDoc,
-  getDocs,
-  updateDoc,
-  collection,
-  query,
-  orderBy,
-  onSnapshot,
-} from "firebase/firestore";
+import { doc, getDoc, updateDoc, collection, query, orderBy, onSnapshot } from "firebase/firestore";
 import { getAuth, signOut } from "firebase/auth";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
@@ -20,8 +11,12 @@ import AllPosts from "./AllPosts";
 import About from "./About";
 
 import { useEmptyProfilePicture } from "./context/EmptyProfilePictureContextProvider";
-import { useLoggedInUserFirstName } from "./context/LoggedInUserProfileDataContextProvider";
 import { useLoggedInUserId } from "./context/LoggedInUserProfileDataContextProvider";
+import { useLoggedInUserFirstName } from "./context/LoggedInUserProfileDataContextProvider";
+import { useLoggedInUserLastName } from "./context/LoggedInUserProfileDataContextProvider";
+import { useLoggedInUserProfilePicture } from "./context/LoggedInUserProfileDataContextProvider";
+// import { useLoggedInUserBio } from "./context/LoggedInUserProfileDataContextProvider";
+
 // import { useLoadingScreen } from "./context/LoadingContextProvider";
 
 import { PostData } from "../interfaces";
@@ -31,69 +26,61 @@ import { PostData } from "../interfaces";
 const Profile = () => {
   //- Context declarations:
   const emptyProfilePicture = useEmptyProfilePicture();
-  const loggedInUserFirstName = useLoggedInUserFirstName();
+
   const { loggedInUserId, setLoggedInUserId } = useLoggedInUserId();
+  const { loggedInUserFirstName, setLoggedInUserFirstName } = useLoggedInUserFirstName();
+  const { loggedInUserLastName, setLoggedInUserLastName } = useLoggedInUserLastName();
+  const loggedInUserProfilePicture = useLoggedInUserProfilePicture();
   //- State declarations:
   const [visitingUser, setVisitingUser] = useState(false);
   const [showPosts, setShowPosts] = useState(true);
-  const [profileFirstName, setProfileFirstName] = useState("");
-  const [profileLastName, setProfileLastName] = useState("");
-  const [profilePicture, setProfilePicture] = useState(emptyProfilePicture);
-  const [userFirstName, setUserFirstName] = useState("");
-  const [userLastName, setUserLastName] = useState("");
-  const [userPicture, setUserPicture] = useState(emptyProfilePicture);
+  const [otherFirstName, setOtherFirstName] = useState("");
+  const [otherLastName, setOtherLastName] = useState("");
+  const [otherProfilePicture, setOtherProfilePicture] = useState(emptyProfilePicture);
+
+  const [dataLoaded, setDataLoaded] = useState(false);
+
   const [profilePictureUpload, setProfilePictureUpload] = useState<File | null>(null);
   const [bioText, setBioText] = useState("");
   //- Navigation declarations:
   const navigate = useNavigate();
   //- useParams:
   const { openProfileId } = useParams();
+
   const [posts, setPosts] = useState<PostData[]>([]);
 
   useEffect(() => {
+    console.log("lol", openProfileId);
     if (loggedInUserId === openProfileId) setVisitingUser(false); // Viewing own profile
     if (loggedInUserId !== openProfileId) setVisitingUser(true); // Viewing someone else's profile
+    //1 Profile data includes all profile data but the posts
+    const getOtherProfileData = async () => {
+      if (!openProfileId) return null;
+      if (openProfileId !== loggedInUserId) {
+        try {
+          // Get data for otherProfile (profile who's not logged in)
+          const profileTargetUser = doc(db, "users", openProfileId);
+          const profileTargetDoc = await getDoc(profileTargetUser);
+          const profileData = profileTargetDoc.data();
+          setOtherFirstName(profileData?.firstName);
+          setOtherLastName(profileData?.lastName);
+          setOtherProfilePicture(profileData?.profilePicture);
+          setDataLoaded(true);
+        } catch (err) {
+          console.error(err);
+        }
+      }
+    };
+    getOtherProfileData();
+  }, [openProfileId]);
 
+  useEffect(() => {
     const getLoggedInUserProfilePosts = () => {
       console.log("Running getAllPosts in Profile");
       getAllPosts();
     };
     getLoggedInUserProfilePosts();
-
-    //1 Profile data includes all profile data but the posts
-    const getProfileData = async () => {
-      if (!openProfileId) return null;
-      try {
-        // Step 1: Get data for the open profile
-        const profileTargetUser = doc(db, "users", openProfileId);
-        const profileTargetDoc = await getDoc(profileTargetUser);
-        const profileData = profileTargetDoc.data();
-        setProfileFirstName(profileData?.firstName);
-        setProfileLastName(profileData?.lastName);
-        setProfilePicture(profileData?.profilePicture);
-        // Step 2: Get data of the viewer
-        if (!loggedInUserId) return null;
-        // If the viewer owns the profile, use the same data
-        if (!visitingUser) {
-          setUserFirstName(profileData?.firstName);
-          setUserLastName(profileData?.lastName);
-          setUserPicture(profileData?.profilePicture);
-          setBioText(profileData?.bio);
-          return;
-        }
-        const userTargetUser = doc(db, "users", loggedInUserId);
-        const userTargetDoc = await getDoc(userTargetUser);
-        const userData = userTargetDoc.data();
-        setUserFirstName(userData?.firstName);
-        setUserLastName(userData?.lastName);
-        setUserPicture(userData?.profilePicture);
-        setBioText(userData?.bio);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    getProfileData();
-  }, [openProfileId, loggedInUserId]); // Get docs when userId state changes
+  }, [openProfileId]); // Get docs when userId state changes
 
   // const unsub = onSnapshot(doc(db, "cities", "SF"), (doc) => {
   //     console.log("Current data: ", doc.data());
@@ -130,16 +117,12 @@ const Profile = () => {
         <>
           {/* //2 We should pass the user information of the currently logged in user, not the one that's being visited, as this info is used to create posts. */}
           <MakePost
-            userFirstName={userFirstName} // Name of logged in user
-            userLastName={userLastName} // Name of logged in user
-            userPicture={userPicture} // pf Picture og logged in user
+            userPicture={otherProfilePicture} // pf Picture og logged in user
             getAllPosts={getAllPosts}
             visitingUser={visitingUser}
           />
           <AllPosts
             openProfileId={openProfileId} // Id of profile being viewed
-            firstName={userFirstName}
-            lastName={userLastName}
             posts={posts}
           />
         </>
@@ -165,7 +148,7 @@ const Profile = () => {
     try {
       const uploadedPicture = await uploadBytes(storageRef, profilePictureUpload); // Upload the image
       const downloadURL = await getDownloadURL(uploadedPicture.ref); // Get the downloadURL for the image
-      setProfilePicture(downloadURL); // Set the downloadURL for the image in state to use across the app.
+      setOtherProfilePicture(downloadURL); // Set the downloadURL for the image in state to use across the app.
       // Update Firestore Database with image:
       const usersCollectionRef = collection(db, "users"); // Grabs the users collection
       const userDocRef = doc(usersCollectionRef, loggedInUserId); // Grabs the doc where the user is
@@ -186,14 +169,30 @@ const Profile = () => {
   };
 
   const displayProfilePicture = () => {
-    return (
-      <img
-        src={profilePicture === "" ? emptyProfilePicture : profilePicture}
-        alt="profile"
-        className="rounded-[50%] aspect-square object-cover"
-        onClick={() => profilePictureClicked()}
-      />
-    );
+    if (!visitingUser) {
+      return (
+        <img
+          src={loggedInUserProfilePicture === "" ? emptyProfilePicture : loggedInUserProfilePicture}
+          alt="profile"
+          className="rounded-[50%] aspect-square object-cover"
+          onClick={() => profilePictureClicked()}
+        />
+      );
+    }
+    if (visitingUser) {
+      return (
+        <img
+          src={otherProfilePicture === "" ? emptyProfilePicture : otherProfilePicture}
+          alt="profile"
+          className="rounded-[50%] aspect-square object-cover"
+        />
+      );
+    }
+  };
+
+  const displayUserName = () => {
+    if (!visitingUser) return loggedInUserFirstName + " " + loggedInUserLastName;
+    if (visitingUser) return otherFirstName + " " + otherLastName;
   };
 
   return (
@@ -210,10 +209,9 @@ const Profile = () => {
             disabled={visitingUser} // Disables fileInput if it's not your profile
           />
         </div>
-        <div className="text-3xl">
-          {profileFirstName} {profileLastName}
-        </div>
+        <div className="text-3xl">{displayUserName()}</div>
       </div>
+
       {/*//1 Posts/About selection */}
       <div className="grid w-[100svw] justify-center">
         <div className="flex w-[65svw] rounded-lg h-12 border-2 border-black">

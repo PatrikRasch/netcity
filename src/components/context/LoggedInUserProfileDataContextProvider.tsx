@@ -1,20 +1,34 @@
 import React, { useState, ReactNode, createContext, useContext, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useEmptyProfilePicture } from "./EmptyProfilePictureContextProvider";
+import { useImage } from "react-image";
 
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { db } from "./../../config/firebase.config";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, onSnapshot } from "firebase/firestore";
 
 //1 Create context
 const LoggedInUserId = createContext<{
   loggedInUserId: string;
   setLoggedInUserId: React.Dispatch<string>;
 }>({ loggedInUserId: "", setLoggedInUserId: () => {} });
-const LoggedInUserFirstName = createContext("");
-const LoggedInUserLastName = createContext("");
-const LoggedInUserProfilePicture = createContext("");
-const LoggedInUserBio = createContext("");
+
+const LoggedInUserFirstName = createContext<{
+  loggedInUserFirstName: string;
+  setLoggedInUserFirstName: React.Dispatch<string>;
+}>({ loggedInUserFirstName: "", setLoggedInUserFirstName: () => {} });
+
+const LoggedInUserLastName = createContext<{
+  loggedInUserLastName: string;
+  setLoggedInUserLastName: React.Dispatch<string>;
+}>({ loggedInUserLastName: "", setLoggedInUserLastName: () => {} });
+
+const LoggedInUserProfilePicture = createContext<string>("");
+
+// const LoggedInUserBio = createContext<{
+//   loggedInUserBio: string;
+//   setLoggedInUserBio: React.Dispatch<string>;
+// }>({ loggedInUserBio: "", setLoggedInUserBio: () => {} });
 
 //1 Custom Hook to abstract away "useContext"
 export function useLoggedInUserId() {
@@ -29,24 +43,31 @@ export function useLoggedInUserLastName() {
 export function useLoggedInUserProfilePicture() {
   return useContext(LoggedInUserProfilePicture);
 }
-export function useLoggedInUserBio() {
-  return useContext(LoggedInUserBio);
-}
+// export function useLoggedInUserBio() {
+//   return useContext(LoggedInUserBio);
+// }
 
 //1 Interface
 interface Props {
   children: ReactNode;
 }
 
+// const LoggedInUserProfilePictureComponent = () => {
+//   const {src} = useImage({
+//     srcList: LoggedInUserProfilePicture
+//   })
+//   return <img src={src}/>
+// }
+
 //1 Actual function which returns the provider
 const LoggedInUserProfileDataProvider = ({ children }: Props) => {
+  const { openProfileId } = useParams();
   const emptyProfilePicture = useEmptyProfilePicture();
   const [loggedInUserId, setLoggedInUserId] = useState("");
   const [loggedInUserFirstName, setLoggedInUserFirstName] = useState("");
   const [loggedInUserLastName, setLoggedInUserLastName] = useState("");
   const [loggedInUserProfilePicture, setLoggedInUserProfilePicture] = useState(emptyProfilePicture);
-  const [loggedInUserBioText, setLoggedInUserBioText] = useState("");
-  const { openProfileId } = useParams();
+  const [loggedInUserBio, setLoggedInUserBio] = useState("");
 
   useEffect(() => {
     const getLoggedInUserId = () => {
@@ -56,39 +77,40 @@ const LoggedInUserProfileDataProvider = ({ children }: Props) => {
         }
       });
     };
-
     const getLoggedInUserProfileData = async () => {
-      if (!openProfileId) return null;
+      if (!loggedInUserId) return null;
       try {
         // Step 1: Get data for the open profile
-        const profileTargetUser = doc(db, "users", openProfileId);
+        const profileTargetUser = doc(db, "users", loggedInUserId);
         const profileTargetDoc = await getDoc(profileTargetUser);
         const profileData = profileTargetDoc.data();
         setLoggedInUserFirstName(profileData?.firstName);
         setLoggedInUserLastName(profileData?.lastName);
         setLoggedInUserProfilePicture(profileData?.profilePicture);
-        setLoggedInUserBioText(profileData?.bio);
+
+        const unsubscribe = onSnapshot(profileTargetUser, (snapshot) => {
+          const updatedProfileData = snapshot.data();
+          if (updatedProfileData) {
+            setLoggedInUserProfilePicture(updatedProfileData.profilePicture);
+          }
+        });
+        return () => unsubscribe();
       } catch (err) {
         console.error(err);
       }
     };
-    getLoggedInUserProfileData();
     getLoggedInUserId();
-  }, [openProfileId]);
-
-  useEffect(() => {
-    console.log("In the custom hook!", "font-size:26px");
-    console.log(loggedInUserId);
-  }, [loggedInUserId]);
+    getLoggedInUserProfileData();
+  }, [loggedInUserId, openProfileId]);
 
   return (
     <LoggedInUserId.Provider value={{ loggedInUserId, setLoggedInUserId }}>
-      <LoggedInUserFirstName.Provider value={loggedInUserFirstName}>
-        <LoggedInUserLastName.Provider value={loggedInUserLastName}>
+      <LoggedInUserFirstName.Provider value={{ loggedInUserFirstName, setLoggedInUserFirstName }}>
+        <LoggedInUserLastName.Provider value={{ loggedInUserLastName, setLoggedInUserLastName }}>
           <LoggedInUserProfilePicture.Provider value={loggedInUserProfilePicture}>
-            <LoggedInUserBio.Provider value={loggedInUserBioText}>
-              {children}
-            </LoggedInUserBio.Provider>
+            {/* <LoggedInUserBio.Provider value={{ loggedInUserBio, setLoggedInUserBio }}> */}
+            {children}
+            {/* </LoggedInUserBio.Provider> */}
           </LoggedInUserProfilePicture.Provider>
         </LoggedInUserLastName.Provider>
       </LoggedInUserFirstName.Provider>
