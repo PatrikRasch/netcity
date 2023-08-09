@@ -4,36 +4,34 @@ import { updateDoc, DocumentReference } from "firebase/firestore";
 import likeIcon from "./../assets/icons/heartPlus.png";
 import heartLiked from "./../assets/icons/heartLiked.png";
 
-import { TargetData } from "../interfaces";
+import { TargetData, TargetCommentData } from "../interfaces";
 
 interface Props {
+  totalLikes: object;
   liked: boolean;
   disliked: boolean;
   setLiked: (value: boolean) => void;
-  loggedInUserId: string;
-  openProfileId: string;
-  postDocRef: DocumentReference;
-  postData: TargetData | null;
-  postNumOfLikes: number;
-  setPostNumOfLikes: (value: number) => void;
+  numOfLikes: number;
+  setNumOfLikes: (value: number) => void;
   removeLike: () => Promise<void>;
   removeDislike: () => Promise<void>;
-  postLikes: object;
+  loggedInUserId: string;
+  docRef: DocumentReference;
+  data: TargetData | TargetCommentData | null;
 }
 
 function Likes({
+  totalLikes,
   liked,
   disliked,
   setLiked,
-  loggedInUserId,
-  openProfileId,
-  postDocRef,
-  postData,
-  postNumOfLikes,
-  setPostNumOfLikes,
+  numOfLikes,
+  setNumOfLikes,
   removeLike,
   removeDislike,
-  postLikes,
+  loggedInUserId,
+  docRef,
+  data,
 }: Props) {
   //2 It can't add the likes correctly because they aren't being fetched from the backend properly when a like is added?
   //2 The addLike function only knows about the like that has just now been added?
@@ -43,13 +41,12 @@ function Likes({
   const addLike = async () => {
     setLiked(true); // Set liked to true, makes heart red
     // Frontend updates:
-    (postLikes as { [key: string]: boolean })[loggedInUserId] = true; // Add the userId into postLikes as true
-    // console.log(postLikes);
-    setPostNumOfLikes(Object.keys(postLikes).length); // Update state for number of likes to display
+    (totalLikes as { [key: string]: boolean })[loggedInUserId] = true; // Add the userId into postLikes as true
+    setNumOfLikes(Object.keys(totalLikes).length); // Update state for number of likes to display
     // Backend updates:
-    const newLikes = { ...postData?.likes, [loggedInUserId]: true }; // Define new object to hold the likes
+    const newLikes = { ...data?.likes, [loggedInUserId]: true }; // Define new object to hold the likes
     try {
-      await updateDoc(postDocRef, { likes: newLikes }); // Update the backend with the new likes
+      await updateDoc(docRef, { likes: newLikes }); // Update the backend with the new likes
     } catch (err) {
       console.error(err);
     }
@@ -83,7 +80,7 @@ function Likes({
       {/* <button>pic</button> */}
       <button onClick={() => handleClickLike()}>{showLikedOrNot()}</button>
       {/* <div>5</div> */}
-      <div>{postNumOfLikes}</div>
+      <div>{numOfLikes}</div>
     </div>
   );
 }

@@ -4,45 +4,43 @@ import { updateDoc, DocumentReference } from "firebase/firestore";
 import dislikeIcon from "./../assets/icons/heartMinus.png";
 import heartDisliked from "./../assets/icons/heartDisliked.png";
 
-import { TargetData } from "../interfaces";
+import { TargetData, TargetCommentData } from "../interfaces";
 
 interface Props {
+  totalDislikes: object;
   liked: boolean;
   disliked: boolean;
   setDisliked: (value: boolean) => void;
-  loggedInUserId: string;
-  openProfileId: string;
-  postDocRef: DocumentReference;
-  postData: TargetData | null;
-  postNumOfDislikes: number;
-  setPostNumOfDislikes: (value: number) => void;
+  numOfDislikes: number;
+  setNumOfDislikes: (value: number) => void;
   removeLike: () => Promise<void>;
   removeDislike: () => Promise<void>;
-  postDislikes: object;
+  loggedInUserId: string;
+  docRef: DocumentReference;
+  data: TargetData | TargetCommentData | null;
 }
 
 function Dislikes({
+  totalDislikes,
   liked,
   disliked,
   setDisliked,
-  loggedInUserId,
-  openProfileId,
-  postDocRef,
-  postData,
-  postNumOfDislikes,
-  setPostNumOfDislikes,
+  numOfDislikes,
+  setNumOfDislikes,
   removeLike,
   removeDislike,
-  postDislikes,
+  loggedInUserId,
+  docRef,
+  data,
 }: Props) {
   const addDislike = async () => {
     setDisliked(true); // Set disliked to true, makes heart black
     // Frontend updates:
-    (postDislikes as { [key: string]: boolean })[loggedInUserId] = true; // Add the userId into postDislikes as true
-    setPostNumOfDislikes(-Object.keys(postDislikes).length); // Update state for number of dislikes to display
+    (totalDislikes as { [key: string]: boolean })[loggedInUserId] = true; // Add the userId into postDislikes as true
+    setNumOfDislikes(-Object.keys(totalDislikes).length); // Update state for number of dislikes to display
     // Backend updates:
-    const newDislikes = { ...postData?.dislikes, [loggedInUserId]: true }; // Define new object to hold the dislikes
-    await updateDoc(postDocRef, { dislikes: newDislikes }); // Update the backend with the new dislikes
+    const newDislikes = { ...data?.dislikes, [loggedInUserId]: true }; // Define new object to hold the dislikes
+    await updateDoc(docRef, { dislikes: newDislikes }); // Update the backend with the new dislikes
   };
 
   const handleClickDislike = async () => {
@@ -71,7 +69,7 @@ function Dislikes({
   return (
     <div className="flex gap-2">
       <button onClick={() => handleClickDislike()}>{showDislikedOrNot()}</button>
-      <div>{postNumOfDislikes}</div>
+      <div>{numOfDislikes}</div>
     </div>
   );
 }
