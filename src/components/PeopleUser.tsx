@@ -14,34 +14,34 @@ interface Props {
   userLastName: LastNameProp["lastName"];
   userProfilePicture: ProfilePicture["profilePicture"];
   userId: UserData["id"];
+  alreadyFriends: boolean;
+  sentFriendRequest: boolean;
+  receivedFriendRequest: boolean;
 }
 
-//3 Begin code day by writing list of tasks to be achieved in order.
-//2 Already done: passing profile pictures to individual posts and MakePost
-//2               Displaying profile pictures in the "People" tab
-
-//3 1. Make each user a "card" that is separated from the one below. Add shadow and separation colour
-//2 2. Work on allowing users to enter other user's profiles and see their posts
-
-function PeopleUser({ userFirstName, userLastName, userProfilePicture, userId }: Props) {
+function PeopleUser({
+  userFirstName,
+  userLastName,
+  userProfilePicture,
+  userId,
+  alreadyFriends,
+  sentFriendRequest,
+  receivedFriendRequest,
+}: Props) {
   const navigate = useNavigate();
   const emptyProfilePicture = useEmptyProfilePicture();
   const { loggedInUserId } = useLoggedInUserId();
-  const [friendRequestSent, setFriendRequestSent] = useState(false);
-  const [alreadyFriends, setAlreadyFriends] = useState(false);
 
   const navigateToUser = () => {
     navigate(`/profile/${userId}`);
   };
 
-  useEffect(() => {
-    //2 Scan through the user to see if they are already friends or if they have received or sent a request
-  }, []);
+  const userDocRef = doc(db, "users", userId); // Used throughout component
+  const loggedInUserDocRef = doc(db, "users", loggedInUserId); // Used throughout component
 
   //1 Adds loggedInUserId into the received friend requests object of the user receiving the friend request
   const sendFriendRequest = async () => {
     // Update the user receiving the request
-    const userDocRef = doc(db, "users", userId);
     try {
       const userDoc = await getDoc(userDocRef);
       const userData = userDoc.data();
@@ -67,7 +67,7 @@ function PeopleUser({ userFirstName, userLastName, userProfilePicture, userId }:
       await updateDoc(loggedInUserDocRef, {
         currentSentFriendRequests: newCurrentSentFriendRequests,
       });
-      setFriendRequestSent(true);
+      // setFriendRequestSent(true);
     } catch (err) {
       console.error(err);
     }
@@ -103,7 +103,6 @@ function PeopleUser({ userFirstName, userLastName, userProfilePicture, userId }:
     } catch (err) {
       console.error(err);
     }
-    setFriendRequestSent(false);
   };
 
   //2 When friend request sent, "Friend request sent".
@@ -115,48 +114,95 @@ function PeopleUser({ userFirstName, userLastName, userProfilePicture, userId }:
     console.log("Accepted");
   };
 
-  const showFriendRequestSentOrNot = () => {
-    if (friendRequestSent)
+  const friendStatusText = () => {
+    if (alreadyFriends)
       return (
-        <button className="cursor-pointer" onClick={() => removeFriendRequest()}>
-          <div className="bg-gray-400 text-white rounded-md p-1">
-            <div>Request Sent</div>
-          </div>
-        </button>
+        <div className="bg-green-400 text-white rounded-md p-1">
+          <div>Friends</div>
+        </div>
+      );
+    if (sentFriendRequest)
+      return (
+        <div className="bg-gray-400 text-white rounded-md p-1">
+          <div>Friends Request Sent</div>
+        </div>
       );
     else
       return (
-        <button className="cursor-pointer" onClick={() => sendFriendRequest()}>
-          <div className="bg-[#00A7E1] text-white rounded-md p-1">
-            <div>Add Friend</div>
-          </div>
-        </button>
+        <div className="bg-[#00A7E1] text-white rounded-md p-1">
+          <div>Add Friend</div>
+        </div>
       );
   };
 
-  return (
-    <div className="pl-4 pr-4 pt-2 pb-2">
-      <div className="p-4 grid grid-cols-[10fr,10fr,13fr] gap-[20px] items-center rounded-lg bg-white shadow-md">
-        <img
-          src={userProfilePicture === "" ? emptyProfilePicture : userProfilePicture}
-          alt=""
-          className="rounded-[50%] aspect-square object-cover cursor-pointer"
-          onClick={() => {
-            navigateToUser();
-          }}
-        />
-        <div
-          className="flex cursor-pointer"
-          onClick={() => {
-            navigateToUser();
-          }}
-        >
-          {userFirstName} {userLastName}
+  const friendStatus = () => {
+    if (!receivedFriendRequest)
+      return (
+        <div className="p-4 grid grid-cols-[10fr,10fr,13fr] gap-[20px] items-center rounded-lg bg-white shadow-md">
+          <img
+            src={userProfilePicture === "" ? emptyProfilePicture : userProfilePicture}
+            alt=""
+            className="rounded-[50%] aspect-square object-cover cursor-pointer"
+            onClick={() => {
+              navigateToUser();
+            }}
+          />
+          <div
+            className="flex cursor-pointer"
+            onClick={() => {
+              navigateToUser();
+            }}
+          >
+            {userFirstName} {userLastName}
+          </div>
+          <button className="cursor-pointer" onClick={() => removeFriendRequest()}>
+            <div>{friendStatusText()}</div>
+          </button>
         </div>
-        {showFriendRequestSentOrNot()}
-      </div>
-    </div>
-  );
+      );
+    if (receivedFriendRequest)
+      return (
+        <div className="rounded-lg bg-white shadow-md p-4">
+          <div className="grid grid-cols-[1fr,10fr] gap-[20px] items-center">
+            <img
+              src={userProfilePicture === "" ? emptyProfilePicture : userProfilePicture}
+              alt=""
+              className="rounded-[50%] aspect-square object-cover cursor-pointer max-w-[100px]"
+              onClick={() => {
+                navigateToUser();
+              }}
+            />
+            <div
+              className="flex cursor-pointer"
+              onClick={() => {
+                navigateToUser();
+              }}
+            >
+              {userFirstName} {userLastName}
+            </div>
+          </div>
+          <div className="grid grid-cols-[1fr,1fr] gap-2 justify-center mt-4">
+            <div className="justify-self-center self-center">Reply to request</div>
+            <div className="flex gap-3">
+              <button
+                className="cursor-pointer bg-[#00A7E1] text-white rounded-md p-2 w-[85px]"
+                onClick={() => console.log("Accepted")}
+              >
+                Accept
+              </button>
+              <button
+                className="cursor-pointer bg-red-300 text-white rounded-md p-2 w-[85px]"
+                onClick={() => console.log("Declined")}
+              >
+                Decline
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+  };
+
+  return <div className="pl-4 pr-4 pt-2 pb-2">{friendStatus()}</div>;
 }
 
 export default PeopleUser;
