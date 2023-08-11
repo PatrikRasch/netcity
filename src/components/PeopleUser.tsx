@@ -72,10 +72,6 @@ function PeopleUser({
     }
   };
 
-  // alreadyFriends
-  // sentFriendRequest
-  // receivedFriendRequest
-
   //1 Removes the friend requests from the objects
   const removeFriendRequest = async () => {
     // Update the user receiving the request
@@ -108,44 +104,62 @@ function PeopleUser({
     }
   };
 
-  //2 When friend request sent, "Friend request sent".
-  //2 If this is clicked, the friend request is cancelled
-
+  //2 Ability to accept and/or reject friend requests
   //2 If already friends, show option to remove friend
 
   const acceptFriendRequest = () => {
     console.log("Accepted");
   };
 
-  const friendStatusText = () => {
+  //2 Will this function be virtually the same as the removeFriendRequest function?
+  const declineFriendRequest = () => {
+    console.log("Declined");
+  };
+
+  const friendStatusButton = () => {
     if (alreadyFriends)
       return (
-        <div className="bg-green-400 text-white rounded-md p-1">
-          <div>Friends</div>
-        </div>
+        <button
+          className="cursor-pointer"
+          onClick={() => {
+            sendFriendRequest();
+          }}
+        >
+          <div className="bg-green-400 text-white rounded-md p-1">
+            <div>Friends</div>
+          </div>
+        </button>
       );
     if (sentFriendRequest)
       return (
-        <div className="bg-gray-400 text-white rounded-md p-1">
-          <div>Friends Request Sent</div>
-        </div>
+        <button
+          className="cursor-pointer"
+          onClick={() => {
+            removeFriendRequest();
+          }}
+        >
+          <div className="bg-gray-400 text-white rounded-md p-1">
+            <div>Friend Request Sent</div>
+          </div>
+        </button>
       );
     else
       return (
-        <div className="bg-[#00A7E1] text-white rounded-md p-1">
-          <div>Add Friend</div>
-        </div>
+        <button
+          className="cursor-pointer"
+          onClick={() => {
+            sendFriendRequest();
+          }}
+        >
+          <div className="bg-[#00A7E1] text-white rounded-md p-1">
+            <div>Add Friend</div>
+          </div>
+        </button>
       );
   };
 
   //2 Need to build a system for allowing different text for all state
   //2 While also allowing a different structure for received friend requests
-
-  //1 friendStatus
-  // - Either render receivedFriendRequest set up, else renders the base set up
-  //1 friendStatusText
-
-  // const;
 
   const friendStatus = () => {
     // - Renders receivedFriendRequest set up
@@ -209,14 +223,7 @@ function PeopleUser({
           >
             {userFirstName} {userLastName}
           </div>
-          <button
-            className="cursor-pointer"
-            onClick={() => {
-              sendFriendRequest();
-            }}
-          >
-            <div>{friendStatusText()}</div>
-          </button>
+          {friendStatusButton()}
         </div>
       );
     }
