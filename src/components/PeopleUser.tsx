@@ -67,11 +67,14 @@ function PeopleUser({
       await updateDoc(loggedInUserDocRef, {
         currentSentFriendRequests: newCurrentSentFriendRequests,
       });
-      // setFriendRequestSent(true);
     } catch (err) {
       console.error(err);
     }
   };
+
+  // alreadyFriends
+  // sentFriendRequest
+  // receivedFriendRequest
 
   //1 Removes the friend requests from the objects
   const removeFriendRequest = async () => {
@@ -135,31 +138,17 @@ function PeopleUser({
       );
   };
 
+  //2 Need to build a system for allowing different text for all state
+  //2 While also allowing a different structure for received friend requests
+
+  //1 friendStatus
+  // - Either render receivedFriendRequest set up, else renders the base set up
+  //1 friendStatusText
+
+  // const;
+
   const friendStatus = () => {
-    if (!receivedFriendRequest)
-      return (
-        <div className="p-4 grid grid-cols-[10fr,10fr,13fr] gap-[20px] items-center rounded-lg bg-white shadow-md">
-          <img
-            src={userProfilePicture === "" ? emptyProfilePicture : userProfilePicture}
-            alt=""
-            className="rounded-[50%] aspect-square object-cover cursor-pointer"
-            onClick={() => {
-              navigateToUser();
-            }}
-          />
-          <div
-            className="flex cursor-pointer"
-            onClick={() => {
-              navigateToUser();
-            }}
-          >
-            {userFirstName} {userLastName}
-          </div>
-          <button className="cursor-pointer" onClick={() => removeFriendRequest()}>
-            <div>{friendStatusText()}</div>
-          </button>
-        </div>
-      );
+    // - Renders receivedFriendRequest set up
     if (receivedFriendRequest)
       return (
         <div className="rounded-lg bg-white shadow-md p-4">
@@ -200,6 +189,37 @@ function PeopleUser({
           </div>
         </div>
       );
+    // - Renders the base set up most commonly used
+    else {
+      return (
+        <div className="p-4 grid grid-cols-[10fr,10fr,13fr] gap-[20px] items-center rounded-lg bg-white shadow-md">
+          <img
+            src={userProfilePicture === "" ? emptyProfilePicture : userProfilePicture}
+            alt=""
+            className="rounded-[50%] aspect-square object-cover cursor-pointer"
+            onClick={() => {
+              navigateToUser();
+            }}
+          />
+          <div
+            className="flex cursor-pointer"
+            onClick={() => {
+              navigateToUser();
+            }}
+          >
+            {userFirstName} {userLastName}
+          </div>
+          <button
+            className="cursor-pointer"
+            onClick={() => {
+              sendFriendRequest();
+            }}
+          >
+            <div>{friendStatusText()}</div>
+          </button>
+        </div>
+      );
+    }
   };
 
   return <div className="pl-4 pr-4 pt-2 pb-2">{friendStatus()}</div>;
