@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Dispatch } from "react";
 import { useNavigate } from "react-router-dom";
 
+import arrowDropdown from "../assets/icons/arrow-dropdown.png";
+
 import { db } from "../config/firebase.config";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, runTransaction } from "firebase/firestore";
 
 import { FirstNameProp, LastNameProp, ProfilePicture, UserData } from "../interfaces";
 
@@ -17,6 +19,14 @@ interface Props {
   alreadyFriends: boolean;
   sentFriendRequest: boolean;
   receivedFriendRequest: boolean;
+  allOtherUsers: UserData[];
+  setAllOtherUsers: Dispatch<UserData[]>;
+  allFriends: UserData[];
+  setAllFriends: Dispatch<UserData[]>;
+  allReceivedFriendRequests: UserData[];
+  setAllReceivedFriendRequests: Dispatch<UserData[]>;
+  allSentFriendRequests: UserData[];
+  setAllSentFriendRequests: Dispatch<UserData[]>;
 }
 
 function PeopleUser({
@@ -27,10 +37,32 @@ function PeopleUser({
   alreadyFriends,
   sentFriendRequest,
   receivedFriendRequest,
+  allOtherUsers,
+  setAllOtherUsers,
+  allFriends,
+  setAllFriends,
+  allReceivedFriendRequests,
+  setAllReceivedFriendRequests,
+  allSentFriendRequests,
+  setAllSentFriendRequests,
 }: Props) {
   const navigate = useNavigate();
   const emptyProfilePicture = useEmptyProfilePicture();
   const { loggedInUserId } = useLoggedInUserId();
+  const [friendsWithUser, setFriendsWithUser] = useState(false);
+  const [receivedFriendRequestFromUser, setReceivedFriendRequestFromUser] = useState(false);
+  const [sentFriendRequestToUser, setSentFriendRequestToUser] = useState(false);
+
+  useEffect(() => {
+    if (receivedFriendRequest) setReceivedFriendRequestFromUser(true);
+    if (alreadyFriends) setFriendsWithUser(true);
+    if (sentFriendRequest) setSentFriendRequestToUser(true);
+  }, []);
+
+  useEffect(() => {
+    friendStatus();
+    friendStatusButton();
+  }, [friendsWithUser, receivedFriendRequest, sentFriendRequestToUser]);
 
   const navigateToUser = () => {
     navigate(`/profile/${userId}`);
@@ -43,8 +75,11 @@ function PeopleUser({
   const sendFriendRequest = async () => {
     // Update the user receiving the request
     try {
+      setSentFriendRequestToUser(true);
+      // console.log(allSentFriendRequests);
       const userDoc = await getDoc(userDocRef);
       const userData = userDoc.data();
+      // console.log(userData);
       const newCurrentReceivedFriendRequests = {
         ...userData?.currentReceivedFriendRequests,
         [loggedInUserId]: {},
@@ -68,6 +103,7 @@ function PeopleUser({
         currentSentFriendRequests: newCurrentSentFriendRequests,
       });
     } catch (err) {
+      setSentFriendRequestToUser(false);
       console.error(err);
     }
   };
@@ -75,9 +111,8 @@ function PeopleUser({
   //1 Removes the friend requests from the objects
   const removeFriendRequest = async () => {
     // Update the user receiving the request
-    const userDocRef = doc(db, "users", userId);
-    const loggedInUserDocRef = doc(db, "users", loggedInUserId);
     try {
+      setSentFriendRequestToUser(false);
       const userDoc = await getDoc(userDocRef);
       const userData = userDoc.data();
       const loggedInUserDoc = await getDoc(loggedInUserDocRef);
@@ -100,6 +135,7 @@ function PeopleUser({
         });
       }
     } catch (err) {
+      setSentFriendRequestToUser(true);
       console.error(err);
     }
   };
@@ -107,8 +143,38 @@ function PeopleUser({
   //2 Ability to accept and/or reject friend requests
   //2 If already friends, show option to remove friend
 
-  const acceptFriendRequest = () => {
-    console.log("Accepted");
+  const acceptFriendRequest = async () => {
+    // Update the user accepting the request
+    try {
+      setReceivedFriendRequestFromUser(false);
+      setFriendsWithUser(true);
+      await runTransaction(db, async (transaction) => {
+        // Update userData
+        const userDoc = await transaction.get(userDocRef); // Get user data
+        const userData = userDoc.data();
+        const newCurrentFriendsSender = { ...userData?.friends, [loggedInUserId]: {} }; // Update friendlist
+        delete userData?.currentSentFriendRequests[loggedInUserId]; // Delete sent request
+        transaction.update(userDocRef, {
+          friends: newCurrentFriendsSender,
+          currentSentFriendRequests: { ...userData?.currentSentFriendRequests },
+        });
+        // Update loggedInUser data
+        const loggedInUserDoc = await getDoc(loggedInUserDocRef); // Get loggedInUser data
+        const loggedInUserData = loggedInUserDoc.data();
+        const newCurrentFriendsReceiver = { ...loggedInUserData?.friends, [userId]: {} }; // Update friendlist
+        delete loggedInUserData?.currentReceivedFriendRequests[userId];
+        transaction.update(loggedInUserDocRef, {
+          friends: newCurrentFriendsReceiver,
+          currentReceivedFriendRequests: {
+            ...loggedInUserData?.currentReceivedFriendRequests,
+          },
+        });
+      });
+    } catch (err) {
+      setReceivedFriendRequestFromUser(true);
+      setFriendsWithUser(false);
+      console.error(err);
+    }
   };
 
   //2 Will this function be virtually the same as the removeFriendRequest function?
@@ -116,21 +182,36 @@ function PeopleUser({
     console.log("Declined");
   };
 
+  //2 Will this function be virtually the same as the removeFriendRequest function?
+  const deleteFriend = () => {
+    console.log("Friend delete");
+  };
+
+  const friendsDropdownMenu = () => {
+    return (
+      <div className="z-10 absolute bg-red-400">
+        <div>LOL</div>
+      </div>
+    );
+  };
+
   const friendStatusButton = () => {
-    if (alreadyFriends)
+    if (friendsWithUser)
       return (
         <button
           className="cursor-pointer"
           onClick={() => {
-            sendFriendRequest();
+            friendsDropdownMenu();
           }}
         >
-          <div className="bg-green-400 text-white rounded-md p-1">
+          <div className="bg-green-400 text-white rounded-md p-1 grid grid-cols-[70%,30%] items-center">
             <div>Friends</div>
+            <img src={arrowDropdown} alt="" className="max-w-[30px]" />
+            <div></div>
           </div>
         </button>
       );
-    if (sentFriendRequest)
+    if (sentFriendRequestToUser)
       return (
         <button
           className="cursor-pointer"
@@ -158,12 +239,32 @@ function PeopleUser({
       );
   };
 
-  //2 Need to build a system for allowing different text for all state
-  //2 While also allowing a different structure for received friend requests
-
   const friendStatus = () => {
+    // - Renders the base set up most commonly used
+    if (!receivedFriendRequestFromUser)
+      return (
+        <div className="p-4 grid grid-cols-[10fr,10fr,13fr] gap-[20px] items-center rounded-lg bg-white shadow-md">
+          <img
+            src={userProfilePicture === "" ? emptyProfilePicture : userProfilePicture}
+            alt=""
+            className="rounded-[50%] aspect-square object-cover cursor-pointer"
+            onClick={() => {
+              navigateToUser();
+            }}
+          />
+          <div
+            className="flex cursor-pointer"
+            onClick={() => {
+              navigateToUser();
+            }}
+          >
+            {userFirstName} {userLastName}
+          </div>
+          {friendStatusButton()}
+        </div>
+      );
     // - Renders receivedFriendRequest set up
-    if (receivedFriendRequest)
+    if (receivedFriendRequestFromUser)
       return (
         <div className="rounded-lg bg-white shadow-md p-4">
           <div className="grid grid-cols-[1fr,10fr] gap-[20px] items-center">
@@ -189,13 +290,13 @@ function PeopleUser({
             <div className="flex gap-3">
               <button
                 className="cursor-pointer bg-[#00A7E1] text-white rounded-md p-2 w-[85px]"
-                onClick={() => console.log("Accepted")}
+                onClick={() => acceptFriendRequest()}
               >
                 Accept
               </button>
               <button
                 className="cursor-pointer bg-red-300 text-white rounded-md p-2 w-[85px]"
-                onClick={() => console.log("Declined")}
+                onClick={() => declineFriendRequest()}
               >
                 Decline
               </button>
@@ -203,30 +304,6 @@ function PeopleUser({
           </div>
         </div>
       );
-    // - Renders the base set up most commonly used
-    else {
-      return (
-        <div className="p-4 grid grid-cols-[10fr,10fr,13fr] gap-[20px] items-center rounded-lg bg-white shadow-md">
-          <img
-            src={userProfilePicture === "" ? emptyProfilePicture : userProfilePicture}
-            alt=""
-            className="rounded-[50%] aspect-square object-cover cursor-pointer"
-            onClick={() => {
-              navigateToUser();
-            }}
-          />
-          <div
-            className="flex cursor-pointer"
-            onClick={() => {
-              navigateToUser();
-            }}
-          >
-            {userFirstName} {userLastName}
-          </div>
-          {friendStatusButton()}
-        </div>
-      );
-    }
   };
 
   return <div className="pl-4 pr-4 pt-2 pb-2">{friendStatus()}</div>;
