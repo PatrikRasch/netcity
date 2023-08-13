@@ -81,6 +81,12 @@ function MakeComment({
     textarea.rows = rows; // Sets new number of rows
   };
 
+  const resetTextarea = () => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    textarea.rows = 1;
+  };
+
   return (
     <div className="grid grid-cols-[1fr,8fr] gap-4 pt-2 pb-2 pl-4 pr-4 items-center">
       <img
@@ -120,6 +126,7 @@ function MakeComment({
               postId: postId,
             });
             setPostCommentInput("");
+            resetTextarea();
           }}
         >
           <img src={postIcon} alt="" className="max-w-[25px]" />
