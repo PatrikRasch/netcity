@@ -19,14 +19,7 @@ interface Props {
   alreadyFriends: boolean;
   sentFriendRequest: boolean;
   receivedFriendRequest: boolean;
-  allOtherUsers: UserData[];
-  setAllOtherUsers: Dispatch<UserData[]>;
-  allFriends: UserData[];
-  setAllFriends: Dispatch<UserData[]>;
-  allReceivedFriendRequests: UserData[];
-  setAllReceivedFriendRequests: Dispatch<UserData[]>;
-  allSentFriendRequests: UserData[];
-  setAllSentFriendRequests: Dispatch<UserData[]>;
+  getAllUsers: () => Promise<void>;
 }
 
 function PeopleUser({
@@ -37,14 +30,7 @@ function PeopleUser({
   alreadyFriends,
   sentFriendRequest,
   receivedFriendRequest,
-  allOtherUsers,
-  setAllOtherUsers,
-  allFriends,
-  setAllFriends,
-  allReceivedFriendRequests,
-  setAllReceivedFriendRequests,
-  allSentFriendRequests,
-  setAllSentFriendRequests,
+  getAllUsers,
 }: Props) {
   const navigate = useNavigate();
   const emptyProfilePicture = useEmptyProfilePicture();
@@ -75,11 +61,11 @@ function PeopleUser({
   const sendFriendRequest = async () => {
     // Update the user receiving the request
     try {
+      // sentFriendRequest(true)
       setSentFriendRequestToUser(true);
-      // console.log(allSentFriendRequests);
       const userDoc = await getDoc(userDocRef);
       const userData = userDoc.data();
-      // console.log(userData);
+      // setAllSentFriendRequests(allSentFriendRequests, {...userData, id: doc.id})
       const newCurrentReceivedFriendRequests = {
         ...userData?.currentReceivedFriendRequests,
         [loggedInUserId]: {},
