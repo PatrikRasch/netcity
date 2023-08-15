@@ -45,6 +45,17 @@ const People = () => {
     getAndCategoriseUsers();
   }, [showOtherUsers, showReceivedFriendRequests, showSentFriendRequests, showFriends]);
 
+  const updateLoggedInUserData = async () => {
+    try {
+      const loggedInUserDocRef = doc(db, "users", loggedInUserId);
+      const loggedInUserDoc = await getDoc(loggedInUserDocRef);
+      const loggedInUserData = loggedInUserDoc.data();
+      setLoggedInUserData(loggedInUserData);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   //1 Get and categorise all users
   const getAndCategoriseUsers = async () => {
     const usersCollection = collection(db, "users");
@@ -126,6 +137,7 @@ const People = () => {
           userProfilePicture={user.profilePicture}
           loggedInUserData={loggedInUserData}
           getAndCategoriseUsers={getAndCategoriseUsers}
+          updateLoggedInUserData={updateLoggedInUserData}
         />
       </div>
     ));

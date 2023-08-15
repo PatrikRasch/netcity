@@ -4,7 +4,14 @@ import { useNavigate } from "react-router-dom";
 import arrowDropdown from "../assets/icons/arrow-dropdown.png";
 
 import { db } from "../config/firebase.config";
-import { doc, getDoc, updateDoc, runTransaction, DocumentData } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  updateDoc,
+  runTransaction,
+  DocumentData,
+  onSnapshot,
+} from "firebase/firestore";
 
 import { FirstNameProp, LastNameProp, ProfilePicture, UserData } from "../interfaces";
 
@@ -18,6 +25,7 @@ interface Props {
   userId: UserData["id"];
   loggedInUserData: DocumentData | undefined;
   getAndCategoriseUsers: () => Promise<void>;
+  updateLoggedInUserData: () => Promise<void>;
 }
 
 function PeopleUser({
@@ -27,6 +35,7 @@ function PeopleUser({
   userId,
   loggedInUserData,
   getAndCategoriseUsers,
+  updateLoggedInUserData,
 }: Props) {
   const navigate = useNavigate();
   const emptyProfilePicture = useEmptyProfilePicture();
@@ -69,35 +78,53 @@ function PeopleUser({
     navigate(`/profile/${userId}`);
   };
 
+  // useEffect(() => {
+  //   const getUpdatedLoggedInUserData = () => {
+  //     console.log(loggedInUserData);
+  //   };
+  //   getUpdatedLoggedInUserData();
+  // }, [sentFriendRequestToUser, receivedFriendRequestFromUser, friendsWithUser]);
+
+  // const unsubscribe = onSnapshot(sortedPostsProfile, (snapshot) => {
+  //   const postsProfileDataArray: PostData[] = []; // Empty array that'll be used for updating state
+  //   // Push each doc (post) into the postsProfileDataArray array.
+  //   snapshot.forEach((doc) => {
+  //     const postData = doc.data() as PostData; // "as PostData" is type validation
+  //     postsProfileDataArray.push({ ...postData, id: doc.id }); // (id: doc.id adds the id of the individual doc)
+  //   });
+  //   setPosts(postsProfileDataArray); // Update state with all the posts
+  // }); // Gets all docs from postsProfile collection
+
   const userDocRef = doc(db, "users", userId); // Used throughout component
   const loggedInUserDocRef = doc(db, "users", loggedInUserId); // Used throughout component
 
-  //1 Adds loggedInUserId into the received friend requests object of the user receiving the friend request
+  // const unsubscribe = onSnapshot(loggedInUserDocRef, (snapshot) => {
+  //   if (snapshot.exists()) {
+  //     console.log("Document data:", snapshot.data());
+  //   }
+  // });
+
+  // - Adds loggedInUserId into the received friend requests object of the user receiving the friend request
   const sendFriendRequest = async () => {
     // Update the user receiving the request
     try {
-      // sentFriendRequest(true)
       setSentFriendRequestToUser(true);
-      // setAllSentFriendRequests(allSentFriendRequests, {...userData, id: doc.id})
-      const newCurrentReceivedFriendRequests = {
-        ...userData?.currentReceivedFriendRequests,
-        [loggedInUserId]: {},
-      };
-      await updateDoc(userDocRef, {
-        currentReceivedFriendRequests: newCurrentReceivedFriendRequests,
-      });
-    } catch (err) {
-      console.error(err);
-    }
-    // Update the user sending the request
-    const loggedInUserDocRef = doc(db, "users", loggedInUserId);
-    try {
-      const newCurrentSentFriendRequests = {
-        ...loggedInUserData?.currentSentFriendRequests,
-        [userId]: {},
-      };
-      await updateDoc(loggedInUserDocRef, {
-        currentSentFriendRequests: newCurrentSentFriendRequests,
+      await runTransaction(db, async (transaction) => {
+        const newCurrentReceivedFriendRequests = {
+          ...userData?.currentReceivedFriendRequests,
+          [loggedInUserId]: {},
+        };
+        const newCurrentSentFriendRequests = {
+          ...loggedInUserData?.currentSentFriendRequests,
+          [userId]: {},
+        };
+
+        transaction.update(userDocRef, {
+          currentReceivedFriendRequests: newCurrentReceivedFriendRequests,
+        });
+        transaction.update(loggedInUserDocRef, {
+          currentSentFriendRequests: newCurrentSentFriendRequests,
+        });
       });
     } catch (err) {
       setSentFriendRequestToUser(false);
@@ -110,23 +137,25 @@ function PeopleUser({
     // Update the user receiving the request
     try {
       setSentFriendRequestToUser(false);
-      if (
-        userData?.currentReceivedFriendRequests.hasOwnProperty(loggedInUserId) &&
-        loggedInUserData?.currentSentFriendRequests.hasOwnProperty(userId)
-      ) {
-        delete userData?.currentReceivedFriendRequests[loggedInUserId];
-        delete loggedInUserData?.currentSentFriendRequests[userId];
+      await runTransaction(db, async (transaction) => {
+        if (
+          userData?.currentReceivedFriendRequests.hasOwnProperty(loggedInUserId) &&
+          loggedInUserData?.currentSentFriendRequests.hasOwnProperty(userId)
+        ) {
+          delete userData?.currentReceivedFriendRequests[loggedInUserId];
+          delete loggedInUserData?.currentSentFriendRequests[userId];
 
-        const newCurrentReceivedFriendRequests = { ...userData?.currentReceivedFriendRequests };
-        const newCurrentSentFriendRequests = { ...loggedInUserData?.currentSentFriendRequests };
+          const newCurrentReceivedFriendRequests = { ...userData?.currentReceivedFriendRequests };
+          const newCurrentSentFriendRequests = { ...loggedInUserData?.currentSentFriendRequests };
 
-        await updateDoc(userDocRef, {
-          currentReceivedFriendRequests: newCurrentReceivedFriendRequests,
-        });
-        await updateDoc(loggedInUserDocRef, {
-          currentSentFriendRequests: newCurrentSentFriendRequests,
-        });
-      }
+          transaction.update(userDocRef, {
+            currentReceivedFriendRequests: newCurrentReceivedFriendRequests,
+          });
+          transaction.update(loggedInUserDocRef, {
+            currentSentFriendRequests: newCurrentSentFriendRequests,
+          });
+        }
+      });
     } catch (err) {
       setSentFriendRequestToUser(true);
       console.error(err);
@@ -197,6 +226,16 @@ function PeopleUser({
       console.error(err);
     }
   };
+
+  useEffect(() => {
+    updateLoggedInUserData();
+  }, [
+    sendFriendRequest,
+    removeFriendRequest,
+    acceptFriendRequest,
+    declineFriendRequest,
+    deleteFriend,
+  ]);
 
   const friendsDropdownMenu = () => {
     if (isFriendsDropdownMenuOpen) {
