@@ -1,10 +1,10 @@
-import React, { useState, useEffect, Dispatch } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import arrowDropdown from "../assets/icons/arrow-dropdown.png";
 
 import { db } from "../config/firebase.config";
-import { doc, getDoc, updateDoc, runTransaction } from "firebase/firestore";
+import { doc, getDoc, updateDoc, runTransaction, DocumentData } from "firebase/firestore";
 
 import { FirstNameProp, LastNameProp, ProfilePicture, UserData } from "../interfaces";
 
@@ -16,10 +16,8 @@ interface Props {
   userLastName: LastNameProp["lastName"];
   userProfilePicture: ProfilePicture["profilePicture"];
   userId: UserData["id"];
-  alreadyFriends: boolean;
-  sentFriendRequest: boolean;
-  receivedFriendRequest: boolean;
-  getAllUsers: () => Promise<void>;
+  loggedInUserData: DocumentData | undefined;
+  getAndCategoriseUsers: () => Promise<void>;
 }
 
 function PeopleUser({
@@ -27,10 +25,8 @@ function PeopleUser({
   userLastName,
   userProfilePicture,
   userId,
-  alreadyFriends,
-  sentFriendRequest,
-  receivedFriendRequest,
-  getAllUsers,
+  loggedInUserData,
+  getAndCategoriseUsers,
 }: Props) {
   const navigate = useNavigate();
   const emptyProfilePicture = useEmptyProfilePicture();
@@ -39,16 +35,35 @@ function PeopleUser({
   const [receivedFriendRequestFromUser, setReceivedFriendRequestFromUser] = useState(false);
   const [sentFriendRequestToUser, setSentFriendRequestToUser] = useState(false);
 
+  const [isFriendsDropdownMenuOpen, setIsFriendsDropdownMenuOpen] = useState(false);
+
+  // alreadyFriends={usersFriendsIds.hasOwnProperty(user.id)}
+  // sentFriendRequest={usersSentFriendRequestsIds.hasOwnProperty(user.id)}
+  // receivedFriendRequest={usersReceivedFriendRequestsIds.hasOwnProperty(user.id)}
+
+  const [userData, setUserData] = useState<DocumentData>();
+
   useEffect(() => {
-    if (receivedFriendRequest) setReceivedFriendRequestFromUser(true);
-    if (alreadyFriends) setFriendsWithUser(true);
-    if (sentFriendRequest) setSentFriendRequestToUser(true);
+    const getUserData = async () => {
+      const userDocRef = doc(db, "users", userId);
+      const userDoc = await getDoc(userDocRef);
+      setUserData(userDoc.data());
+    };
+    getUserData();
+  }, []);
+
+  useEffect(() => {
+    if (loggedInUserData?.currentReceivedFriendRequests.hasOwnProperty(userId))
+      setReceivedFriendRequestFromUser(true);
+    if (loggedInUserData?.friends.hasOwnProperty(userId)) setFriendsWithUser(true);
+    if (loggedInUserData?.currentSentFriendRequests.hasOwnProperty(userId))
+      setSentFriendRequestToUser(true);
   }, []);
 
   useEffect(() => {
     friendStatus();
     friendStatusButton();
-  }, [friendsWithUser, receivedFriendRequest, sentFriendRequestToUser]);
+  }, [friendsWithUser, receivedFriendRequestFromUser, sentFriendRequestToUser]);
 
   const navigateToUser = () => {
     navigate(`/profile/${userId}`);
@@ -63,8 +78,6 @@ function PeopleUser({
     try {
       // sentFriendRequest(true)
       setSentFriendRequestToUser(true);
-      const userDoc = await getDoc(userDocRef);
-      const userData = userDoc.data();
       // setAllSentFriendRequests(allSentFriendRequests, {...userData, id: doc.id})
       const newCurrentReceivedFriendRequests = {
         ...userData?.currentReceivedFriendRequests,
@@ -79,8 +92,6 @@ function PeopleUser({
     // Update the user sending the request
     const loggedInUserDocRef = doc(db, "users", loggedInUserId);
     try {
-      const loggedInUserDoc = await getDoc(loggedInUserDocRef);
-      const loggedInUserData = loggedInUserDoc.data();
       const newCurrentSentFriendRequests = {
         ...loggedInUserData?.currentSentFriendRequests,
         [userId]: {},
@@ -99,10 +110,6 @@ function PeopleUser({
     // Update the user receiving the request
     try {
       setSentFriendRequestToUser(false);
-      const userDoc = await getDoc(userDocRef);
-      const userData = userDoc.data();
-      const loggedInUserDoc = await getDoc(loggedInUserDocRef);
-      const loggedInUserData = loggedInUserDoc.data();
       if (
         userData?.currentReceivedFriendRequests.hasOwnProperty(loggedInUserId) &&
         loggedInUserData?.currentSentFriendRequests.hasOwnProperty(userId)
@@ -130,14 +137,12 @@ function PeopleUser({
   //2 If already friends, show option to remove friend
 
   const acceptFriendRequest = async () => {
-    // Update the user accepting the request
     try {
+      // Update the user accepting the request
       setReceivedFriendRequestFromUser(false);
       setFriendsWithUser(true);
       await runTransaction(db, async (transaction) => {
         // Update userData
-        const userDoc = await transaction.get(userDocRef); // Get user data
-        const userData = userDoc.data();
         const newCurrentFriendsSender = { ...userData?.friends, [loggedInUserId]: {} }; // Update friendlist
         delete userData?.currentSentFriendRequests[loggedInUserId]; // Delete sent request
         transaction.update(userDocRef, {
@@ -145,8 +150,6 @@ function PeopleUser({
           currentSentFriendRequests: { ...userData?.currentSentFriendRequests },
         });
         // Update loggedInUser data
-        const loggedInUserDoc = await getDoc(loggedInUserDocRef); // Get loggedInUser data
-        const loggedInUserData = loggedInUserDoc.data();
         const newCurrentFriendsReceiver = { ...loggedInUserData?.friends, [userId]: {} }; // Update friendlist
         delete loggedInUserData?.currentReceivedFriendRequests[userId];
         transaction.update(loggedInUserDocRef, {
@@ -168,35 +171,81 @@ function PeopleUser({
     console.log("Declined");
   };
 
-  //2 Will this function be virtually the same as the removeFriendRequest function?
-  const deleteFriend = () => {
-    console.log("Friend delete");
+  // - Delete selected friend from friendlist
+  const deleteFriend = async () => {
+    try {
+      setFriendsWithUser(false);
+      await runTransaction(db, async (transaction) => {
+        // Checks that the two people are already friends before proceeding
+        if (
+          userData?.friends.hasOwnProperty(loggedInUserId) &&
+          loggedInUserData?.friends.hasOwnProperty(userId)
+        ) {
+          // Deletes the users from each other's state
+          delete userData?.friends[loggedInUserId];
+          delete loggedInUserData?.friends[userId];
+          // Prepares new data to be sent to Firebase
+          const newUserFriends = { ...userData?.friends };
+          const newLoggedInUserFriends = { ...loggedInUserData?.friends };
+          // Updates Firebase with the new data
+          transaction.update(userDocRef, { friends: newUserFriends });
+          transaction.update(loggedInUserDocRef, { friends: newLoggedInUserFriends });
+        }
+      });
+    } catch (err) {
+      setFriendsWithUser(true);
+      console.error(err);
+    }
   };
 
   const friendsDropdownMenu = () => {
-    return (
-      <div className="z-10 absolute bg-red-400">
-        <div>LOL</div>
-      </div>
-    );
+    if (isFriendsDropdownMenuOpen) {
+      return (
+        <div className="flex relative">
+          <button
+            className="cursor-pointer"
+            onClick={() => {
+              setIsFriendsDropdownMenuOpen(!isFriendsDropdownMenuOpen);
+            }}
+          >
+            <div className="bg-green-400 text-white rounded-t-md p-1 grid w-[110px] grid-cols-[70%,30%] items-center">
+              <div>Friends</div>
+              <img src={arrowDropdown} alt="" className="max-w-[30px] rotate-180" />
+            </div>
+          </button>
+          <button
+            className="absolute top-[100%] bg-red-400 rounded-b-md p-1 w-[110px] text-center"
+            onClick={() => {
+              console.log("clicked");
+              deleteFriend();
+            }}
+          >
+            <div>Delete friend</div>
+          </button>
+        </div>
+      );
+    }
+    if (!isFriendsDropdownMenuOpen) {
+      return (
+        <div>
+          <button
+            className="cursor-pointer"
+            onClick={() => {
+              setIsFriendsDropdownMenuOpen(!isFriendsDropdownMenuOpen);
+            }}
+          >
+            <div className="bg-green-400 text-white rounded-md p-1 grid w-[110px] grid-cols-[70%,30%] items-center">
+              <div>Friends</div>
+              <img src={arrowDropdown} alt="" className="max-w-[30px]" />
+            </div>
+          </button>
+        </div>
+      );
+    }
   };
 
   const friendStatusButton = () => {
-    if (friendsWithUser)
-      return (
-        <button
-          className="cursor-pointer"
-          onClick={() => {
-            friendsDropdownMenu();
-          }}
-        >
-          <div className="bg-green-400 text-white rounded-md p-1 grid grid-cols-[70%,30%] items-center">
-            <div>Friends</div>
-            <img src={arrowDropdown} alt="" className="max-w-[30px]" />
-            <div></div>
-          </div>
-        </button>
-      );
+    if (friendsWithUser) return friendsDropdownMenu();
     if (sentFriendRequestToUser)
       return (
         <button

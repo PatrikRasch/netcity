@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import PeopleUser from "./PeopleUser";
 
 import { db } from "./../config/firebase.config";
-import { collection, doc, getDoc, getDocs } from "firebase/firestore";
+import { DocumentData, collection, doc, getDoc, getDocs } from "firebase/firestore";
 
 import { useLoggedInUserId } from "./context/LoggedInUserProfileDataContextProvider";
 
@@ -39,6 +39,8 @@ const People = () => {
     []
   );
 
+  const [loggedInUserData, setLoggedInUserData] = useState<DocumentData>();
+
   useEffect(() => {
     getAndCategoriseUsers();
   }, [showOtherUsers, showReceivedFriendRequests, showSentFriendRequests, showFriends]);
@@ -50,7 +52,7 @@ const People = () => {
       const loggedInUserDocRef = doc(db, "users", loggedInUserId);
       const loggedInUserDoc = await getDoc(loggedInUserDocRef);
       const loggedInUserData = loggedInUserDoc.data();
-
+      setLoggedInUserData(loggedInUserData);
       const allUsers = await getDocs(usersCollection);
       const otherUsersArray: UserData[] = [];
       const usersFriendsArray: UserData[] = [];
@@ -66,10 +68,7 @@ const People = () => {
           return usersReceivedFriendRequestsArray.push({ ...userData, id: doc.id }); // Have they requested to be friends with loggedInUser?
         if (loggedInUserData?.currentSentFriendRequests.hasOwnProperty(doc.id))
           // if (usersSentFriendRequestsIds.hasOwnProperty(doc.id))
-          return usersSentFriendRequestsArray.push({
-            ...userData,
-            id: doc.id,
-          });
+          return usersSentFriendRequestsArray.push({ ...userData, id: doc.id });
         // Has logged in user already sent them a friend request?
         else return otherUsersArray.push({ ...userData, id: doc.id });
       });
@@ -125,10 +124,8 @@ const People = () => {
           userFirstName={user.firstName}
           userLastName={user.lastName}
           userProfilePicture={user.profilePicture}
-          alreadyFriends={usersFriendsIds.hasOwnProperty(user.id)}
-          sentFriendRequest={usersSentFriendRequestsIds.hasOwnProperty(user.id)}
-          receivedFriendRequest={usersReceivedFriendRequestsIds.hasOwnProperty(user.id)}
-          getAllUsers={getAndCategoriseUsers}
+          loggedInUserData={loggedInUserData}
+          getAndCategoriseUsers={getAndCategoriseUsers}
         />
       </div>
     ));
