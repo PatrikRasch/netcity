@@ -72,7 +72,9 @@ const About = ({ openProfileId, visitingUser, bioText, setBioText }: Props) => {
       return (
         <div className="grid justify-items-center">
           <div className="text-3xl mb-3 mt-3">Bio</div>
-          <div className="w-[90%] min-h-max border-2 border-black rounded-lg p-4">{bioText}</div>
+          <div className="w-[90svw] min-h-max border-2 border-black rounded-lg p-4 break-words">
+            {bioText}
+          </div>
         </div>
       );
     }
@@ -81,7 +83,7 @@ const About = ({ openProfileId, visitingUser, bioText, setBioText }: Props) => {
         <div className="grid justify-items-center">
           <div className="text-3xl mb-3 mt-3">Bio</div>
           <textarea
-            className="w-[90%] min-h-max border-2 border-black rounded-lg p-4"
+            className="w-[90%] border-2 border-black rounded-lg p-4"
             onChange={(e) => {
               setBioText(e.target.value);
             }}
