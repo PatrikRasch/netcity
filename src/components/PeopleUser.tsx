@@ -4,14 +4,7 @@ import { useNavigate } from "react-router-dom";
 import arrowDropdown from "../assets/icons/arrow-dropdown.png";
 
 import { db } from "../config/firebase.config";
-import {
-  doc,
-  getDoc,
-  updateDoc,
-  runTransaction,
-  DocumentData,
-  onSnapshot,
-} from "firebase/firestore";
+import { doc, getDoc, runTransaction, DocumentData } from "firebase/firestore";
 
 import { FirstNameProp, LastNameProp, ProfilePicture, UserData } from "../interfaces";
 
@@ -23,9 +16,9 @@ interface Props {
   userLastName: LastNameProp["lastName"];
   userProfilePicture: ProfilePicture["profilePicture"];
   userId: UserData["id"];
-  loggedInUserData: DocumentData | undefined;
   getAndCategoriseUsers: () => Promise<void>;
-  updateLoggedInUserData: () => Promise<void>;
+  loggedInUserData: DocumentData | undefined;
+  setLoggedInUserData: (value: object) => void;
 }
 
 function PeopleUser({
@@ -34,8 +27,7 @@ function PeopleUser({
   userProfilePicture,
   userId,
   loggedInUserData,
-  getAndCategoriseUsers,
-  updateLoggedInUserData,
+  setLoggedInUserData,
 }: Props) {
   const navigate = useNavigate();
   const emptyProfilePicture = useEmptyProfilePicture();
@@ -43,30 +35,14 @@ function PeopleUser({
   const [friendsWithUser, setFriendsWithUser] = useState(false);
   const [receivedFriendRequestFromUser, setReceivedFriendRequestFromUser] = useState(false);
   const [sentFriendRequestToUser, setSentFriendRequestToUser] = useState(false);
-
   const [isFriendsDropdownMenuOpen, setIsFriendsDropdownMenuOpen] = useState(false);
-
-  // alreadyFriends={usersFriendsIds.hasOwnProperty(user.id)}
-  // sentFriendRequest={usersSentFriendRequestsIds.hasOwnProperty(user.id)}
-  // receivedFriendRequest={usersReceivedFriendRequestsIds.hasOwnProperty(user.id)}
-
   const [userData, setUserData] = useState<DocumentData>();
 
   useEffect(() => {
-    const getUserData = async () => {
-      const userDocRef = doc(db, "users", userId);
-      const userDoc = await getDoc(userDocRef);
-      setUserData(userDoc.data());
-    };
     getUserData();
-  }, []);
-
-  useEffect(() => {
-    if (loggedInUserData?.currentReceivedFriendRequests.hasOwnProperty(userId))
-      setReceivedFriendRequestFromUser(true);
+    if (loggedInUserData?.currentReceivedFriendRequests.hasOwnProperty(userId)) setReceivedFriendRequestFromUser(true);
     if (loggedInUserData?.friends.hasOwnProperty(userId)) setFriendsWithUser(true);
-    if (loggedInUserData?.currentSentFriendRequests.hasOwnProperty(userId))
-      setSentFriendRequestToUser(true);
+    if (loggedInUserData?.currentSentFriendRequests.hasOwnProperty(userId)) setSentFriendRequestToUser(true);
   }, []);
 
   useEffect(() => {
@@ -78,47 +54,63 @@ function PeopleUser({
     navigate(`/profile/${userId}`);
   };
 
-  // useEffect(() => {
-  //   const getUpdatedLoggedInUserData = () => {
-  //     console.log(loggedInUserData);
-  //   };
-  //   getUpdatedLoggedInUserData();
-  // }, [sentFriendRequestToUser, receivedFriendRequestFromUser, friendsWithUser]);
+  // - Gets and sets the data in state for the user. Only used when the component mounts
+  const getUserData = async () => {
+    const userDoc = await getDoc(userDocRef);
+    setUserData(userDoc.data());
+  };
 
-  // const unsubscribe = onSnapshot(sortedPostsProfile, (snapshot) => {
-  //   const postsProfileDataArray: PostData[] = []; // Empty array that'll be used for updating state
-  //   // Push each doc (post) into the postsProfileDataArray array.
-  //   snapshot.forEach((doc) => {
-  //     const postData = doc.data() as PostData; // "as PostData" is type validation
-  //     postsProfileDataArray.push({ ...postData, id: doc.id }); // (id: doc.id adds the id of the individual doc)
-  //   });
-  //   setPosts(postsProfileDataArray); // Update state with all the posts
-  // }); // Gets all docs from postsProfile collection
+  // - Updates the state of the logged in user, used within the friend interaction functions below
+  const updateLoggedInUserData = async (newData: DocumentData) => {
+    try {
+      setLoggedInUserData(newData);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-  const userDocRef = doc(db, "users", userId); // Used throughout component
-  const loggedInUserDocRef = doc(db, "users", loggedInUserId); // Used throughout component
+  // - Updates the state of the non-logged in user, used within thte friend interaction functions below
+  const updateUserData = async (newData: DocumentData) => {
+    try {
+      setUserData(newData);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-  // const unsubscribe = onSnapshot(loggedInUserDocRef, (snapshot) => {
-  //   if (snapshot.exists()) {
-  //     console.log("Document data:", snapshot.data());
-  //   }
-  // });
+  // - Document references. Used throughout component
+  const userDocRef = doc(db, "users", userId);
+  const loggedInUserDocRef = doc(db, "users", loggedInUserId);
 
-  // - Adds loggedInUserId into the received friend requests object of the user receiving the friend request
+  // - Friend interaction function → Send a friend request
   const sendFriendRequest = async () => {
-    // Update the user receiving the request
     try {
       setSentFriendRequestToUser(true);
       await runTransaction(db, async (transaction) => {
+        // Handle the user receiving the request
+        // Prepare the new data
         const newCurrentReceivedFriendRequests = {
           ...userData?.currentReceivedFriendRequests,
           [loggedInUserId]: {},
         };
+        // Update state
+        const updatedUserData = { ...userData, currentReceivedFriendRequests: newCurrentReceivedFriendRequests };
+        await updateUserData(updatedUserData);
+
+        // Handle the user sending the request
+        // Prepare the new data
         const newCurrentSentFriendRequests = {
           ...loggedInUserData?.currentSentFriendRequests,
           [userId]: {},
         };
+        // Update state
+        const updatedLoggedInUserData = {
+          ...loggedInUserData,
+          currentSentFriendRequests: newCurrentSentFriendRequests,
+        };
+        await updateLoggedInUserData(updatedLoggedInUserData);
 
+        // Run the transactions to update the backend
         transaction.update(userDocRef, {
           currentReceivedFriendRequests: newCurrentReceivedFriendRequests,
         });
@@ -132,12 +124,13 @@ function PeopleUser({
     }
   };
 
-  //1 Removes the friend requests from the objects
+  // - Friend interaction function → Remove a sent friend request
   const removeFriendRequest = async () => {
     // Update the user receiving the request
     try {
       setSentFriendRequestToUser(false);
       await runTransaction(db, async (transaction) => {
+        // Delete friend request for both users (receiver & sender)
         if (
           userData?.currentReceivedFriendRequests.hasOwnProperty(loggedInUserId) &&
           loggedInUserData?.currentSentFriendRequests.hasOwnProperty(userId)
@@ -145,9 +138,27 @@ function PeopleUser({
           delete userData?.currentReceivedFriendRequests[loggedInUserId];
           delete loggedInUserData?.currentSentFriendRequests[userId];
 
+          // Handle the user receiving the request
+          // Prepare the new data
           const newCurrentReceivedFriendRequests = { ...userData?.currentReceivedFriendRequests };
-          const newCurrentSentFriendRequests = { ...loggedInUserData?.currentSentFriendRequests };
+          // Update state
+          const updatedUserData = {
+            ...userData,
+            currentReceivedFriendRequests: newCurrentReceivedFriendRequests,
+          };
+          await updateUserData(updatedUserData);
 
+          // Handle the user sending the request
+          // Prepare the new data
+          const newCurrentSentFriendRequests = { ...loggedInUserData?.currentSentFriendRequests };
+          // Update state
+          const updatedLoggedInUserData = {
+            ...loggedInUserData,
+            currentSentFriendRequests: newCurrentSentFriendRequests,
+          };
+          await updateLoggedInUserData(updatedLoggedInUserData);
+
+          // Run the transactions to update the backend
           transaction.update(userDocRef, {
             currentReceivedFriendRequests: newCurrentReceivedFriendRequests,
           });
@@ -162,25 +173,34 @@ function PeopleUser({
     }
   };
 
-  //2 Ability to accept and/or reject friend requests
-  //2 If already friends, show option to remove friend
-
+  // - Friend interaction function → Accept a received friend request
   const acceptFriendRequest = async () => {
     try {
       // Update the user accepting the request
       setReceivedFriendRequestFromUser(false);
       setFriendsWithUser(true);
       await runTransaction(db, async (transaction) => {
-        // Update userData
-        const newCurrentFriendsSender = { ...userData?.friends, [loggedInUserId]: {} }; // Update friendlist
+        // Handling the user who sent the request first
+        // Prepare the new data
+        const newCurrentFriendsSender = { ...userData?.friends, [loggedInUserId]: {} };
         delete userData?.currentSentFriendRequests[loggedInUserId]; // Delete sent request
+        // Update state
+        const updatedUserData = { ...userData, friends: newCurrentFriendsSender };
+        await updateUserData(updatedUserData);
+
+        // Handling the user who received the request
+        // Prepare the new data
+        const newCurrentFriendsReceiver = { ...loggedInUserData?.friends, [userId]: {} };
+        delete loggedInUserData?.currentReceivedFriendRequests[userId];
+        // Update state
+        const updatedLoggedInUserData = { ...loggedInUserData, friends: newCurrentFriendsReceiver };
+        await updateLoggedInUserData(updatedLoggedInUserData);
+
+        // Run the transactions to update the backend
         transaction.update(userDocRef, {
           friends: newCurrentFriendsSender,
           currentSentFriendRequests: { ...userData?.currentSentFriendRequests },
         });
-        // Update loggedInUser data
-        const newCurrentFriendsReceiver = { ...loggedInUserData?.friends, [userId]: {} }; // Update friendlist
-        delete loggedInUserData?.currentReceivedFriendRequests[userId];
         transaction.update(loggedInUserDocRef, {
           friends: newCurrentFriendsReceiver,
           currentReceivedFriendRequests: {
@@ -195,21 +215,48 @@ function PeopleUser({
     }
   };
 
-  //2 Will this function be virtually the same as the removeFriendRequest function?
-  const declineFriendRequest = () => {
-    console.log("Declined");
+  // - Friend interaction function → Decline a received friend request
+  const declineFriendRequest = async () => {
+    try {
+      setReceivedFriendRequestFromUser(false);
+      await runTransaction(db, async (transaction) => {
+        // Checks that the two people are already friends before proceeding
+        if (
+          userData?.currentSentFriendRequests.hasOwnProperty(loggedInUserId) &&
+          loggedInUserData?.currentReceivedFriendRequests.hasOwnProperty(userId)
+        ) {
+          // Deletes the users from each other's state
+          delete userData?.currentSentFriendRequests[loggedInUserId];
+          delete loggedInUserData?.currentReceivedFriendRequests[userId];
+
+          // Handle the user receiving the request
+          const newCurrentSentFriendRequests = { ...userData?.currentSentFriendRequests }; // Prepare the new data
+
+          // Handle the user sending the request
+          const newCurrentReceivedFriendRequests = { ...loggedInUserData?.currentReceivedFriendRequests }; // Prepare the new data
+
+          // Run the transactions for the backend
+          transaction.update(userDocRef, {
+            currentSentFriendRequests: newCurrentSentFriendRequests,
+          });
+          transaction.update(loggedInUserDocRef, {
+            currentReceivedFriendRequests: newCurrentReceivedFriendRequests,
+          });
+        }
+      });
+    } catch (err) {
+      setReceivedFriendRequestFromUser(true);
+      console.error(err);
+    }
   };
 
-  // - Delete selected friend from friendlist
+  // - Friend interaction function → Delete a current friend
   const deleteFriend = async () => {
     try {
       setFriendsWithUser(false);
       await runTransaction(db, async (transaction) => {
         // Checks that the two people are already friends before proceeding
-        if (
-          userData?.friends.hasOwnProperty(loggedInUserId) &&
-          loggedInUserData?.friends.hasOwnProperty(userId)
-        ) {
+        if (userData?.friends.hasOwnProperty(loggedInUserId) && loggedInUserData?.friends.hasOwnProperty(userId)) {
           // Deletes the users from each other's state
           delete userData?.friends[loggedInUserId];
           delete loggedInUserData?.friends[userId];
@@ -226,16 +273,6 @@ function PeopleUser({
       console.error(err);
     }
   };
-
-  useEffect(() => {
-    updateLoggedInUserData();
-  }, [
-    sendFriendRequest,
-    removeFriendRequest,
-    acceptFriendRequest,
-    declineFriendRequest,
-    deleteFriend,
-  ]);
 
   const friendsDropdownMenu = () => {
     if (isFriendsDropdownMenuOpen) {
@@ -255,7 +292,6 @@ function PeopleUser({
           <button
             className="absolute top-[100%] bg-red-400 rounded-b-md p-1 w-[110px] text-center"
             onClick={() => {
-              console.log("clicked");
               deleteFriend();
             }}
           >
@@ -364,13 +400,17 @@ function PeopleUser({
             <div className="flex gap-3">
               <button
                 className="cursor-pointer bg-[#00A7E1] text-white rounded-md p-2 w-[85px]"
-                onClick={() => acceptFriendRequest()}
+                onClick={() => {
+                  acceptFriendRequest();
+                }}
               >
                 Accept
               </button>
               <button
                 className="cursor-pointer bg-red-300 text-white rounded-md p-2 w-[85px]"
-                onClick={() => declineFriendRequest()}
+                onClick={() => {
+                  declineFriendRequest();
+                }}
               >
                 Decline
               </button>

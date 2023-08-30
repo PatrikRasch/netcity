@@ -16,7 +16,9 @@ import { UserData } from "../interfaces";
 //3 4. Make the users clickable
 //3 5. Navigate to the user's profile if clicked
 //3 6. Allow liking and disliking on other profiles
-//2 7. Ability to add friends
+//3 7. Ability to add friends
+
+//3 Must go through all components and ensure consistency when updating
 
 const People = () => {
   const { loggedInUserId } = useLoggedInUserId();
@@ -26,51 +28,36 @@ const People = () => {
   const [showReceivedFriendRequests, setShowReceivedFriendRequests] = useState(false);
   const [showSentFriendRequests, setShowSentFriendRequests] = useState(false);
 
+  const [allUsers, setAllUsers] = useState<DocumentData>();
   // Holds all the users in their various categories
   const [allOtherUsers, setAllOtherUsers] = useState<UserData[]>([]);
   const [allFriends, setAllFriends] = useState<UserData[]>([]);
   const [allReceivedFriendRequests, setAllReceivedFriendRequests] = useState<UserData[]>([]);
   const [allSentFriendRequests, setAllSentFriendRequests] = useState<UserData[]>([]);
 
-  // Holds all the ID's of the friend interactions from the logged in user
-  const [usersFriendsIds, setUsersFriendsIds] = useState<UserData[]>([]);
-  const [usersSentFriendRequestsIds, setUsersSentFriendRequestsIds] = useState<UserData[]>([]);
-  const [usersReceivedFriendRequestsIds, setUsersReceivedFriendRequestsIds] = useState<UserData[]>(
-    []
-  );
-
   const [loggedInUserData, setLoggedInUserData] = useState<DocumentData>();
 
   useEffect(() => {
     getAndCategoriseUsers();
-  }, [showOtherUsers, showReceivedFriendRequests, showSentFriendRequests, showFriends]);
+  }, []);
 
-  const updateLoggedInUserData = async () => {
-    try {
-      const loggedInUserDocRef = doc(db, "users", loggedInUserId);
-      const loggedInUserDoc = await getDoc(loggedInUserDocRef);
-      const loggedInUserData = loggedInUserDoc.data();
-      setLoggedInUserData(loggedInUserData);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  const usersCollection = collection(db, "users");
 
-  //1 Get and categorise all users
+  // -  Gets and categorises all users
   const getAndCategoriseUsers = async () => {
-    const usersCollection = collection(db, "users");
     try {
+      const allUsers = await getDocs(usersCollection);
+      setAllUsers(allUsers);
       const loggedInUserDocRef = doc(db, "users", loggedInUserId);
       const loggedInUserDoc = await getDoc(loggedInUserDocRef);
       const loggedInUserData = loggedInUserDoc.data();
       setLoggedInUserData(loggedInUserData);
-      const allUsers = await getDocs(usersCollection);
       const otherUsersArray: UserData[] = [];
       const usersFriendsArray: UserData[] = [];
       const usersSentFriendRequestsArray: UserData[] = [];
       const usersReceivedFriendRequestsArray: UserData[] = [];
 
-      allUsers.forEach((doc) => {
+      allUsers?.forEach((doc: DocumentData) => {
         const userData = doc.data() as UserData;
         if (doc.id === loggedInUserId) return; // Remove logged in user from the list of users
         if (loggedInUserData?.friends.hasOwnProperty(doc.id))
@@ -93,17 +80,77 @@ const People = () => {
     }
   };
 
-  const removeUserFromArray = () => {
-    console.log("remove");
+  // - Updates the list of friends of the logged in user
+  const updateFriends = async () => {
+    try {
+      const usersFriendsArray: UserData[] = [];
+      allUsers?.forEach((user: DocumentData) => {
+        const userData = user.data() as UserData;
+        if (loggedInUserData?.friends.hasOwnProperty(user.id))
+          return usersFriendsArray.push({ ...userData, id: user.id });
+        else return;
+      });
+      setAllFriends(usersFriendsArray);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const addUserIntoAllSentFriendRequests = (newObject: UserData) => {
-    setAllSentFriendRequests((prevAllSentFriendRequests) => ({
-      ...prevAllSentFriendRequests,
-      [newObject.id]: newObject,
-    }));
+  // - Updates the list of received friend requests of the logged in user
+  const updateReceivedFriendRequests = async () => {
+    try {
+      const usersReceivedFriendRequestsArray: UserData[] = [];
+      allUsers?.forEach((user: DocumentData) => {
+        const userData = user.data() as UserData;
+        // if (user.id === loggedInUserId) return; // Remove logged in user from the list of users
+        if (loggedInUserData?.currentReceivedFriendRequests.hasOwnProperty(user.id))
+          return usersReceivedFriendRequestsArray.push({ ...userData, id: user.id });
+        else return;
+      });
+      setAllReceivedFriendRequests(usersReceivedFriendRequestsArray);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
+  // - Updates the list of sent friend requests of the logged in user
+  const updateSentFriendRequests = async () => {
+    try {
+      const usersSentFriendRequestsArray: UserData[] = [];
+      allUsers?.forEach((user: DocumentData) => {
+        const userData = user.data() as UserData;
+        if (loggedInUserData?.currentSentFriendRequests.hasOwnProperty(user.id)) {
+          return usersSentFriendRequestsArray.push({ ...userData, id: user.id });
+        } else return;
+      });
+      setAllSentFriendRequests(usersSentFriendRequestsArray);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // - Updates the list of users the logged in user has no connections with
+  const updateOtherUsers = async () => {
+    try {
+      const otherUsersArray: UserData[] = [];
+      allUsers?.forEach((user: DocumentData) => {
+        const userData = user.data() as UserData;
+        if (user.id === loggedInUserId) return; // Remove logged in user from the list of users
+        if (
+          !loggedInUserData?.currentSentFriendRequests.hasOwnProperty(user.id) &&
+          !loggedInUserData?.currentReceivedFriendRequests.hasOwnProperty(user.id) &&
+          !loggedInUserData?.friends.hasOwnProperty(user.id)
+        )
+          return otherUsersArray.push({ ...userData, id: user.id });
+        else return;
+      });
+      setAllOtherUsers(otherUsersArray);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // - Allows for switching of the categories when called with the correct string
   const sectionControlSwitcher = (sectionToShow: string) => {
     setShowOtherUsers(false);
     setShowFriends(false);
@@ -120,6 +167,7 @@ const People = () => {
     if (section) section(true);
   };
 
+  // - Returns the category that is to be rendered
   const getUsersToRender = () => {
     if (showOtherUsers) return allOtherUsers;
     if (showFriends) return allFriends;
@@ -127,6 +175,7 @@ const People = () => {
     if (showSentFriendRequests) return allSentFriendRequests;
   };
 
+  // - Displays all the users within the open category
   const populateUsersOnPage = () => {
     return getUsersToRender()?.map((user: UserData) => (
       <div key={user.id}>
@@ -135,9 +184,9 @@ const People = () => {
           userFirstName={user.firstName}
           userLastName={user.lastName}
           userProfilePicture={user.profilePicture}
-          loggedInUserData={loggedInUserData}
           getAndCategoriseUsers={getAndCategoriseUsers}
-          updateLoggedInUserData={updateLoggedInUserData}
+          loggedInUserData={loggedInUserData}
+          setLoggedInUserData={setLoggedInUserData}
         />
       </div>
     ));
@@ -151,6 +200,7 @@ const People = () => {
           ${showOtherUsers ? "bg-[#00A7E1]" : "bg-gray-400"} `}
           onClick={() => {
             sectionControlSwitcher("setShowOtherUsers");
+            updateOtherUsers();
           }}
         >
           Find People
@@ -161,6 +211,7 @@ const People = () => {
           } `}
           onClick={() => {
             sectionControlSwitcher("setShowFriends");
+            updateFriends();
           }}
         >
           Friends
@@ -171,6 +222,7 @@ const People = () => {
           } `}
           onClick={() => {
             sectionControlSwitcher("setShowReceivedFriendRequests");
+            updateReceivedFriendRequests();
           }}
         >
           Friend Requests
@@ -181,6 +233,7 @@ const People = () => {
           } `}
           onClick={() => {
             sectionControlSwitcher("setShowSentFriendRequests");
+            updateSentFriendRequests();
           }}
         >
           Sent Requests
