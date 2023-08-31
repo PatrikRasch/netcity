@@ -15,36 +15,61 @@ interface PublicPostData {
 }
 
 interface Props {
-  publicPosts: PublicPostData[];
+  globalPosts: PublicPostData[];
+  friendsPosts: PublicPostData[];
+  showGlobalPosts: boolean;
 }
 
-const PublicPosts = ({ publicPosts }: Props) => {
+const PublicPosts = ({ globalPosts, friendsPosts, showGlobalPosts }: Props) => {
   //2 We need to use the userId on each post, to fetch the profile picture of the user with that ID.
   //2 If we add a profilePicture key-value pair to each post, profile pictures won't update across
   //2 the board when a user changes their profile picture.
 
   //1 Adds all the posts on Firebase onto the page.
   const populatePostsOnPage = () => {
-    if (!publicPosts) return;
-    return publicPosts.map((post, index) => (
-      <div key={post.id}>
-        <div>
-          <PublicPost
-            postFirstName={post.firstName}
-            postLastName={post.lastName}
-            postText={post.text}
-            postDate={post.date}
-            postLikes={post.likes}
-            postDislikes={post.dislikes}
-            postComments={post.comments}
-            postId={post.id}
-            postIndex={index}
-            postUserId={post.userId}
-          />
+    // if (!globalPosts) return;
+    if (showGlobalPosts) {
+      return globalPosts.map((post, index) => (
+        <div key={post.id}>
+          <div>
+            <PublicPost
+              postFirstName={post.firstName}
+              postLastName={post.lastName}
+              postText={post.text}
+              postDate={post.date}
+              postLikes={post.likes}
+              postDislikes={post.dislikes}
+              postComments={post.comments}
+              postId={post.id}
+              postIndex={index}
+              postUserId={post.userId}
+            />
+          </div>
+          <div className="w-full h-[15px] bg-gray-100"></div>
         </div>
-        <div className="w-full h-[15px] bg-gray-100"></div>
-      </div>
-    ));
+      ));
+    }
+    if (!showGlobalPosts) {
+      return friendsPosts.map((post, index) => (
+        <div key={post.id}>
+          <div>
+            <PublicPost
+              postFirstName={post.firstName}
+              postLastName={post.lastName}
+              postText={post.text}
+              postDate={post.date}
+              postLikes={post.likes}
+              postDislikes={post.dislikes}
+              postComments={post.comments}
+              postId={post.id}
+              postIndex={index}
+              postUserId={post.userId}
+            />
+          </div>
+          <div className="w-full h-[15px] bg-gray-100"></div>
+        </div>
+      ));
+    }
   };
 
   return <div>{populatePostsOnPage()}</div>;
