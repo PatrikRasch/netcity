@@ -47,6 +47,10 @@ const Profile = () => {
   const [openProfile, setOpenProfile] = useState(true);
   const [displayProfileContent, setDisplayProfileContent] = useState(false);
 
+  const [friendsWithUser, setFriendsWithUser] = useState(false);
+  const [sentFriendRequestToUser, setSentFriendRequestToUser] = useState(false);
+  const [receivedFriendRequestFromUser, setReceivedFriendRequestFromUser] = useState(false);
+
   //- Navigation declarations:
   const navigate = useNavigate();
   //- useParams:
@@ -268,12 +272,69 @@ const Profile = () => {
       );
   };
 
+  // - Checks the current friend status the loggedInUser has with the user
+  const friendStatusWithUser = async () => {
+    const loggedInUserDocRef = doc(db, "users", loggedInUserId);
+    const loggedInUserDoc = await getDoc(loggedInUserDocRef);
+    const loggedInUserData = loggedInUserDoc.data();
+    if (loggedInUserData?.friends.hasOwnProperty(openProfileId)) {
+      setFriendsWithUser(true);
+    } else {
+      setFriendsWithUser(false);
+    }
+    if (loggedInUserData?.currentSentFriendRequests.hasOwnProperty(openProfileId)) {
+      setSentFriendRequestToUser(true);
+    } else {
+      setSentFriendRequestToUser(false);
+    }
+    if (loggedInUserData?.currentReceivedFriendRequests.hasOwnProperty(openProfileId)) {
+      setReceivedFriendRequestFromUser(true);
+    } else {
+      setReceivedFriendRequestFromUser(false);
+    }
+  };
+
+  const friendStatusWithUserJSX = () => {
+    if (friendsWithUser)
+      return <button className="bg-green-400 text-white rounded-lg w-[190px] h-[40px]">Friends</button>;
+    if (sentFriendRequestToUser)
+      return <button className="bg-gray-400 text-white rounded-lg w-[190px] h-[40px]">Friend Request Sent</button>;
+    if (receivedFriendRequestFromUser)
+      return (
+        <div className="grid grid-rows-[20px,50px] items-center justify-items-center">
+          <div className="text-center">Sent you a friend request</div>
+          <div className="grid grid-cols-2 gap-4 w-[190px]">
+            <button className="bg-[#00A7E1] text-white rounded-lg h-[40px]">Accept</button>
+            <button className="bg-red-400 text-white rounded-lg h-[40px]">Decline</button>
+          </div>
+        </div>
+      );
+    else return <button className="bg-[#00A7E1] text-white rounded-lg w-[190px] h-[40px]">Add Friend</button>;
+  };
+
+  const showFriendStatusWithUser = () => {
+    friendStatusWithUser();
+    if (loggedInUserId === openProfileId) return;
+    else
+      return (
+        <div className="grid justify-center">
+          <div className="flex justify-center items-center p-2">{friendStatusWithUserJSX()}</div>
+        </div>
+      );
+  };
+
+  //   className={`${
+  //     friendsWithUser ? "bg-[#00A7E1] text-white" : ""
+  //   }  w-[100%] h-[100%] flex justify-center items-center rounded-lg `}
+  //   onClick={() => setShowPosts(true)}
+  // >
+
   return (
     <div>
       {/* // - Open/Private profile button */}
       {openProfileButton()}
       {/*//1 Profile picture and name */}
-      <div className="grid grid-cols-[120px,1fr] items-center justify-center gap-4 p-8">
+      <div className="grid grid-cols-[120px,1fr] items-center justify-center gap-4 pl-8 pr-8 pt-4 pb-4">
         <div>
           <label htmlFor="fileInput">{displayProfilePicture()}</label>
           <input
@@ -286,8 +347,12 @@ const Profile = () => {
         </div>
         <div className="text-3xl">{displayUserName()}</div>
       </div>
-      {/*//1 Posts/About selection */}
-      <div className="grid w-[100svw] justify-center">
+
+      {/* // - Friend status */}
+      {showFriendStatusWithUser()}
+
+      {/*// - Posts/About selection */}
+      <div className="grid w-[100svw] justify-center p-2">
         <div className="flex w-[65svw] rounded-lg h-12 border-2 border-black">
           <button
             className={`${
@@ -305,6 +370,7 @@ const Profile = () => {
           </button>
         </div>
       </div>
+
       <div className="w-full h-[12px] bg-gray-100"></div>
       {/*//1 Posts or About */}
       <div>{publicOrPrivateProfile()}</div>
