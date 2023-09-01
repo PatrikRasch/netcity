@@ -3,7 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
 //6 Login user alert error must be sexified later on.
 
+import { useLoggedInUserId } from "./context/LoggedInUserProfileDataContextProvider";
+
 const Login = () => {
+  const { loggedInUserId, setLoggedInUserId } = useLoggedInUserId();
+
   const [createNewAccount, setCreateNewAccount] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,9 +29,10 @@ const Login = () => {
   const handleLogin = async () => {
     const auth = getAuth();
     try {
-      const userCredentials = await signInWithEmailAndPassword(auth, email, password);
-      console.log("User logged in: ", userCredentials);
-      navigate("/profile");
+      await signInWithEmailAndPassword(auth, email, password).then((userCredentials) => {
+        console.log("User logged in: ", userCredentials);
+        navigate(`/profile/${userCredentials.user.uid}`);
+      });
     } catch (err) {
       console.error(err);
       alert("Username and/or password does not match");
@@ -95,9 +100,7 @@ const Login = () => {
       </div>
 
       {/*//1 Footer */}
-      <div className="flex justify-center items-end text-3xl min-h-[20svh] pb-12 font-Hertical">
-        NetCity
-      </div>
+      <div className="flex justify-center items-end text-3xl min-h-[20svh] pb-12 font-Hertical">NetCity</div>
     </div>
   );
 };
