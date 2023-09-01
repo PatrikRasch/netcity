@@ -21,7 +21,8 @@ import { useLoggedInUserProfilePicture } from "./context/LoggedInUserProfileData
 
 import { PostData } from "../interfaces";
 
-//2 Ideally posts are lazyloaded with 5-10 at a time instead of all at the same time
+//6 Bug occurs when a private profile is visited (not friends with) and then the loggedInUser is instantly navigated to by clicking the profile picture.
+//6 Problem is likely an async state update problem (regarding updating openProfileId)
 
 const Profile = () => {
   //- Context declarations:
@@ -42,6 +43,10 @@ const Profile = () => {
 
   const [profilePictureUpload, setProfilePictureUpload] = useState<File | null>(null);
   const [bioText, setBioText] = useState("");
+
+  const [openProfile, setOpenProfile] = useState(true);
+  const [displayProfileContent, setDisplayProfileContent] = useState(false);
+
   //- Navigation declarations:
   const navigate = useNavigate();
   //- useParams:
@@ -50,10 +55,21 @@ const Profile = () => {
   const [posts, setPosts] = useState<PostData[]>([]);
 
   useEffect(() => {
-    console.log("lol", openProfileId);
+    const getUserProfileStatus = async () => {
+      const loggedInUserDocRef = doc(db, "users", loggedInUserId);
+      const loggedInUserDoc = await getDoc(loggedInUserDocRef);
+      const loggedInUserData = loggedInUserDoc.data();
+      setOpenProfile(loggedInUserData?.openProfile);
+    };
+    getUserProfileStatus();
+  }, []);
+
+  useEffect(() => {
+    showProfileContentOrNot();
+
     if (loggedInUserId === openProfileId) setVisitingUser(false); // Viewing own profile
     if (loggedInUserId !== openProfileId) setVisitingUser(true); // Viewing someone else's profile
-    //1 Profile data includes all profile data but the posts
+    // - Profile data includes all profile data apart from the posts
     const getOtherProfileData = async () => {
       if (!openProfileId) return null;
       if (openProfileId !== loggedInUserId) {
@@ -74,23 +90,10 @@ const Profile = () => {
     getOtherProfileData();
   }, [openProfileId]);
 
-  useEffect(() => {
-    const getLoggedInUserProfilePosts = () => {
-      console.log("Running getAllPosts in Profile");
-      getAllPosts();
-    };
-    getLoggedInUserProfilePosts();
-  }, [openProfileId]); // Get docs when userId state changes
-
-  // const unsub = onSnapshot(doc(db, "cities", "SF"), (doc) => {
-  //     console.log("Current data: ", doc.data());
-  // });
-
   //1 GET POSTS FOR PROFILE CURRENTLY BEING VIEWED
   //  - Gets all the posts (profilePosts in Firestore) from the current profile subcollection.
   const getAllPosts = async () => {
     try {
-      console.log("getting all posts");
       const usersCollectionRef = collection(db, "users"); // Grabs the users collection
       const userDocRef = doc(usersCollectionRef, openProfileId); // Grabs the doc where the user is
       const postsProfileCollection = collection(userDocRef, "postsProfile"); // Grabs the postsProfile collection
@@ -112,10 +115,10 @@ const Profile = () => {
   if (openProfileId === undefined) return null; //6. must make this better later
 
   const showPostsOrAbout = () => {
+    if (!displayProfileContent) return;
     if (showPosts) {
       return (
         <>
-          {/* //2 We should pass the user information of the currently logged in user, not the one that's being visited, as this info is used to create posts. */}
           <MakePost
             userPicture={otherProfilePicture} // pf Picture og logged in user
             getAllPosts={getAllPosts}
@@ -195,8 +198,80 @@ const Profile = () => {
     if (visitingUser) return otherFirstName + " " + otherLastName;
   };
 
+  // - Switches and updates openProfile in state and the backend
+  const openOrPrivateProfileSwitcher = async () => {
+    const loggedInUserDocRef = doc(db, "users", loggedInUserId);
+    const loggedInUserDoc = await getDoc(loggedInUserDocRef);
+    const loggedInUserData = loggedInUserDoc.data();
+
+    if (loggedInUserData !== undefined) {
+      const updatedValue = !loggedInUserData.openProfile;
+      setOpenProfile(updatedValue);
+      loggedInUserData.openProfile = updatedValue;
+      await updateDoc(loggedInUserDocRef, { openProfile: updatedValue });
+    }
+  };
+
+  // - The button for open/private profile
+  const openProfileButton = () => {
+    if (openProfileId !== loggedInUserId) return;
+    return (
+      <section className="pr-4 pt-2 grid absolute right-0 text-sm">
+        <button
+          className={`text-white rounded-md pb-[4px] pt-[4px] pl-[3px] pr-[3px] w-[100px] 
+          ${openProfile ? "bg-[#00A7E1]" : "bg-red-500"} `}
+          onClick={() => {
+            openOrPrivateProfileSwitcher();
+          }}
+        >
+          {openProfile ? "Open Profile" : "Private Profile"}
+        </button>
+      </section>
+    );
+  };
+
+  // - Checks if the content on a profile should be displayed or not
+  const showProfileContentOrNot = async () => {
+    if (openProfileId === loggedInUserId) setDisplayProfileContent(true);
+
+    const userDocRef = doc(db, "users", openProfileId);
+    const userDoc = await getDoc(userDocRef);
+    const userData = userDoc.data();
+
+    const loggedInUserDocRef = doc(db, "users", loggedInUserId);
+    const loggedInUserDoc = await getDoc(loggedInUserDocRef);
+    const loggedInUserData = loggedInUserDoc.data();
+    // Checks three things:
+    // Is the profile not your own?
+    // Is the profile you are visiting private?
+    // Are you not friends with the user you are visiting?
+    if (
+      openProfileId !== loggedInUserId &&
+      !userData?.openProfile &&
+      !loggedInUserData?.friends.hasOwnProperty(openProfileId)
+    ) {
+      setDisplayProfileContent(false);
+    } else {
+      setDisplayProfileContent(true);
+      getAllPosts();
+    }
+  };
+
+  const publicOrPrivateProfile = () => {
+    if (displayProfileContent) return;
+    if (!displayProfileContent)
+      return (
+        <div>
+          This profile is private. You need to be friends with this user to see their posts and to make posts on their
+          page.
+        </div>
+      );
+  };
+
   return (
     <div>
+      {/* // - Open/Private profile button */}
+      {openProfileButton()}
       {/*//1 Profile picture and name */}
       <div className="grid grid-cols-[120px,1fr] items-center justify-center gap-4 p-8">
         <div>
@@ -211,7 +286,6 @@ const Profile = () => {
         </div>
         <div className="text-3xl">{displayUserName()}</div>
       </div>
-
       {/*//1 Posts/About selection */}
       <div className="grid w-[100svw] justify-center">
         <div className="flex w-[65svw] rounded-lg h-12 border-2 border-black">
@@ -224,9 +298,7 @@ const Profile = () => {
             Posts
           </button>
           <button
-            className={`${
-              !showPosts ? "bg-[#00A7E1] text-white" : ""
-            } w-[100%] flex justify-center items-center`}
+            className={`${!showPosts ? "bg-[#00A7E1] text-white" : ""} w-[100%] flex justify-center items-center`}
             onClick={() => setShowPosts(false)}
           >
             About
@@ -235,6 +307,7 @@ const Profile = () => {
       </div>
       <div className="w-full h-[12px] bg-gray-100"></div>
       {/*//1 Posts or About */}
+      <div>{publicOrPrivateProfile()}</div>
       <div>{showPostsOrAbout()}</div>
       <div className="w-full h-[15px] bg-gray-100"></div>
       <button onClick={() => userSignOut()}>LOG OUT</button>
