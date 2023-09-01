@@ -167,8 +167,8 @@ const Profile = () => {
     const auth = getAuth();
     signOut(auth).then(() => {
       console.log("Signed out");
+      navigate("/login");
     });
-    navigate("/login");
   };
 
   const displayProfilePicture = () => {
@@ -310,7 +310,7 @@ const Profile = () => {
       <div>{publicOrPrivateProfile()}</div>
       <div>{showPostsOrAbout()}</div>
       <div className="w-full h-[15px] bg-gray-100"></div>
-      <button onClick={() => userSignOut()}>LOG OUT</button>
+      <button onClick={() => userSignOut()}>{openProfileId === loggedInUserId ? "Sign out" : ""}</button>
     </div>
   );
 };
