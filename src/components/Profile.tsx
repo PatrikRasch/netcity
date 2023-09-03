@@ -2,7 +2,17 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { db, storage } from "./../config/firebase.config";
-import { doc, getDoc, updateDoc, collection, query, orderBy, onSnapshot } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  updateDoc,
+  collection,
+  query,
+  orderBy,
+  onSnapshot,
+  DocumentReference,
+  DocumentData,
+} from "firebase/firestore";
 import { getAuth, signOut } from "firebase/auth";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
@@ -16,6 +26,7 @@ import { useLoggedInUserFirstName } from "./context/LoggedInUserProfileDataConte
 import { useLoggedInUserLastName } from "./context/LoggedInUserProfileDataContextProvider";
 import { useLoggedInUserProfilePicture } from "./context/LoggedInUserProfileDataContextProvider";
 // import { useLoggedInUserBio } from "./context/LoggedInUserProfileDataContextProvider";
+import useFriendInteractions from "./custom-hooks/useFriendInteractions";
 
 // import { useLoadingScreen } from "./context/LoadingContextProvider";
 
@@ -31,6 +42,10 @@ const Profile = () => {
   const { loggedInUserId, setLoggedInUserId } = useLoggedInUserId();
   const { loggedInUserFirstName, setLoggedInUserFirstName } = useLoggedInUserFirstName();
   const { loggedInUserLastName, setLoggedInUserLastName } = useLoggedInUserLastName();
+
+  const { sendFriendRequest, removeFriendRequest, acceptFriendRequest, declineFriendRequest, deleteFriend } =
+    useFriendInteractions();
+
   const loggedInUserProfilePicture = useLoggedInUserProfilePicture();
   //- State declarations:
   const [visitingUser, setVisitingUser] = useState(false);
@@ -51,12 +66,27 @@ const Profile = () => {
   const [sentFriendRequestToUser, setSentFriendRequestToUser] = useState(false);
   const [receivedFriendRequestFromUser, setReceivedFriendRequestFromUser] = useState(false);
 
+  const [userDocRef, setUserDocRef] = useState<DocumentReference | undefined>();
+  const [userData, setUserData] = useState<DocumentData>();
+  const [loggedInUserData, setLoggedInUserData] = useState<DocumentData>();
+
   //- Navigation declarations:
   const navigate = useNavigate();
   //- useParams:
   const { openProfileId } = useParams();
 
   const [posts, setPosts] = useState<PostData[]>([]);
+
+  //6 Need to initialise state based on what the friend status with the user is.
+  //6 Could perhaps place these states within a context..? Maybe not a good idea.
+
+  useEffect(() => {
+    getLoggedInUserData();
+    getUserData();
+    friendStatusWithUser();
+  }, []);
+
+  const loggedInUserDocRef = doc(db, "users", loggedInUserId);
 
   useEffect(() => {
     const getUserProfileStatus = async () => {
@@ -80,6 +110,7 @@ const Profile = () => {
         try {
           // Get data for otherProfile (profile who's not logged in)
           const profileTargetUser = doc(db, "users", openProfileId);
+          setUserDocRef(profileTargetUser);
           const profileTargetDoc = await getDoc(profileTargetUser);
           const profileData = profileTargetDoc.data();
           setOtherFirstName(profileData?.firstName);
@@ -234,17 +265,42 @@ const Profile = () => {
     );
   };
 
+  // - Updates the state of the non-logged in user, used within the friend interaction functions below
+  const updateUserData = async (newData: DocumentData) => {
+    try {
+      setUserData(newData);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // - Updates the state of the logged in user, used within the friend interaction functions below
+  const updateLoggedInUserData = async (newData: DocumentData) => {
+    try {
+      setLoggedInUserData(newData);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const getUserData = async () => {
+    const userDocRef = doc(db, "users", openProfileId);
+    const userDoc = await getDoc(userDocRef);
+    const userData = userDoc.data();
+    setUserData(userData);
+  };
+
+  const getLoggedInUserData = async () => {
+    const loggedInUserDocRef = doc(db, "users", loggedInUserId);
+    const loggedInUserDoc = await getDoc(loggedInUserDocRef);
+    const loggedInUserData = loggedInUserDoc.data();
+    setLoggedInUserData(loggedInUserData);
+  };
+
   // - Checks if the content on a profile should be displayed or not
   const showProfileContentOrNot = async () => {
     if (openProfileId === loggedInUserId) setDisplayProfileContent(true);
 
-    const userDocRef = doc(db, "users", openProfileId);
-    const userDoc = await getDoc(userDocRef);
-    const userData = userDoc.data();
-
-    const loggedInUserDocRef = doc(db, "users", loggedInUserId);
-    const loggedInUserDoc = await getDoc(loggedInUserDocRef);
-    const loggedInUserData = loggedInUserDoc.data();
     // Checks three things:
     // Is the profile not your own?
     // Is the profile you are visiting private?
@@ -294,22 +350,72 @@ const Profile = () => {
     }
   };
 
+  const cancelFriendRequest = async () => {
+    if (userDocRef && userData && loggedInUserData) {
+      await removeFriendRequest(userDocRef, userData, loggedInUserDocRef, loggedInUserData, openProfileId);
+      setSentFriendRequestToUser(false);
+    }
+  };
+
   const friendStatusWithUserJSX = () => {
     if (friendsWithUser)
       return <button className="bg-green-400 text-white rounded-lg w-[190px] h-[40px]">Friends</button>;
     if (sentFriendRequestToUser)
-      return <button className="bg-gray-400 text-white rounded-lg w-[190px] h-[40px]">Friend Request Sent</button>;
+      return (
+        <button
+          className="bg-gray-400 text-white rounded-lg w-[190px] h-[40px]"
+          onClick={() => {
+            cancelFriendRequest();
+          }}
+        >
+          Friend Request Sent
+        </button>
+      );
     if (receivedFriendRequestFromUser)
       return (
         <div className="grid grid-rows-[20px,50px] items-center justify-items-center">
           <div className="text-center">Sent you a friend request</div>
           <div className="grid grid-cols-2 gap-4 w-[190px]">
-            <button className="bg-[#00A7E1] text-white rounded-lg h-[40px]">Accept</button>
-            <button className="bg-red-400 text-white rounded-lg h-[40px]">Decline</button>
+            <button
+              className="bg-[#00A7E1] text-white rounded-lg h-[40px]"
+              onClick={() => {
+                if (userDocRef && userData && loggedInUserData) {
+                  acceptFriendRequest(userDocRef, userData, loggedInUserDocRef, loggedInUserData, openProfileId);
+                  setReceivedFriendRequestFromUser(false);
+                  setFriendsWithUser(true);
+                }
+              }}
+            >
+              Accept
+            </button>
+            <button
+              className="bg-red-400 text-white rounded-lg h-[40px]"
+              onClick={() => {
+                if (userDocRef && userData && loggedInUserData) {
+                  declineFriendRequest(userDocRef, userData, loggedInUserDocRef, loggedInUserData, openProfileId);
+                  setReceivedFriendRequestFromUser(false);
+                }
+              }}
+            >
+              Decline
+            </button>
           </div>
         </div>
       );
-    else return <button className="bg-[#00A7E1] text-white rounded-lg w-[190px] h-[40px]">Add Friend</button>;
+    else
+      return (
+        <button
+          className="bg-[#00A7E1] text-white rounded-lg w-[190px] h-[40px]"
+          onClick={() => {
+            if (userDocRef && userData && loggedInUserData)
+              sendFriendRequest(userDocRef, userData, loggedInUserDocRef, loggedInUserData, openProfileId);
+            setSentFriendRequestToUser(true);
+            //6 Fetch new data
+          }}
+        >
+          Add Friend
+        </button>
+      );
   };
 
   const showFriendStatusWithUser = () => {
@@ -322,12 +428,6 @@ const Profile = () => {
         </div>
       );
   };
-
-  //   className={`${
-  //     friendsWithUser ? "bg-[#00A7E1] text-white" : ""
-  //   }  w-[100%] h-[100%] flex justify-center items-center rounded-lg `}
-  //   onClick={() => setShowPosts(true)}
-  // >
 
   return (
     <div>
@@ -357,13 +457,15 @@ const Profile = () => {
           <button
             className={`${
               showPosts ? "bg-[#00A7E1] text-white" : ""
-            }  w-[100%] h-[100%] flex justify-center items-center`}
+            }  w-[100%] h-[100%] flex justify-center rounded-tl-md rounded-bl-md items-center`}
             onClick={() => setShowPosts(true)}
           >
             Posts
           </button>
           <button
-            className={`${!showPosts ? "bg-[#00A7E1] text-white" : ""} w-[100%] flex justify-center items-center`}
+            className={`${
+              !showPosts ? "bg-[#00A7E1] text-white" : ""
+            } w-[100%] flex justify-center rounded-tr-md rounded-br-md items-center`}
             onClick={() => setShowPosts(false)}
           >
             About

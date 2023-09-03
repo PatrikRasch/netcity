@@ -8,52 +8,54 @@ import { useLoggedInUserId } from "../context/LoggedInUserProfileDataContextProv
 
 const useFriendInteractions = () => {
   const { loggedInUserId } = useLoggedInUserId();
-  const [friendsWithUser, setFriendsWithUser] = useState(false);
-  const [receivedFriendRequestFromUser, setReceivedFriendRequestFromUser] = useState(false);
-  const [sentFriendRequestToUser, setSentFriendRequestToUser] = useState(false);
-  const [userData, setUserData] = useState<DocumentData>();
-  const [loggedInUserData, setLoggedInUserData] = useState<DocumentData>();
+  // const [friendsWithUser, setFriendsWithUser] = useState(false);
+  // const [receivedFriendRequestFromUser, setReceivedFriendRequestFromUser] = useState(false);
+  // const [sentFriendRequestToUser, setSentFriendRequestToUser] = useState(false);
+  // const [loggedInUserData, setLoggedInUserData] = useState<DocumentData>();
 
-  // // - Document references. Used throughout component
-  const loggedInUserDocRef = doc(db, "users", loggedInUserId);
+  // // // - Document references. Used throughout component
+  // const loggedInUserDocRef = doc(db, "users", loggedInUserId);
 
-  useEffect(() => {
-    getLoggedInUserData();
-  }, []);
-  // -  Gets and categorises all users
-  const getLoggedInUserData = async () => {
-    try {
-      const loggedInUserDocRef = doc(db, "users", loggedInUserId);
-      const loggedInUserDoc = await getDoc(loggedInUserDocRef);
-      const loggedInUserData = loggedInUserDoc.data();
-      setLoggedInUserData(loggedInUserData);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  // // -  Gets and categorises all users
+  // const getLoggedInUserData = async () => {
+  //   try {
+  //     const loggedInUserDocRef = doc(db, "users", loggedInUserId);
+  //     const loggedInUserDoc = await getDoc(loggedInUserDocRef);
+  //     const loggedInUserData = loggedInUserDoc.data();
+  //     setLoggedInUserData(loggedInUserData);
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
 
-  // - Updates the state of the non-logged in user, used within thte friend interaction functions below
-  const updateUserData = async (newData: DocumentData) => {
-    try {
-      setUserData(newData);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  // // - Updates the state of the non-logged in user, used within the friend interaction functions below
+  // const updateUserData = async (newData: DocumentData) => {
+  //   try {
+  //     setUserData(newData);
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
 
-  // - Updates the state of the logged in user, used within the friend interaction functions below
-  const updateLoggedInUserData = async (newData: DocumentData) => {
-    try {
-      setLoggedInUserData(newData);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  // // - Updates the state of the logged in user, used within the friend interaction functions below
+  // const updateLoggedInUserData = async (newData: DocumentData) => {
+  //   try {
+  //     setLoggedInUserData(newData);
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
 
   // - Friend interaction function → Send a friend request
-  const sendFriendRequest = async (userDocRef: DocumentReference, openProfileId: string) => {
+  const sendFriendRequest = async (
+    userDocRef: DocumentReference,
+    userData: DocumentData,
+    loggedInUserDocRef: DocumentReference,
+    loggedInUserData: DocumentData,
+    openProfileId: string
+  ) => {
     try {
-      setSentFriendRequestToUser(true);
+      // setSentFriendRequestToUser(true);
       await runTransaction(db, async (transaction) => {
         // Handle the user receiving the request
         // Prepare the new data
@@ -61,9 +63,9 @@ const useFriendInteractions = () => {
           ...userData?.currentReceivedFriendRequests,
           [loggedInUserId]: {},
         };
-        // Update state
-        const updatedUserData = { ...userData, currentReceivedFriendRequests: newCurrentReceivedFriendRequests };
-        await updateUserData(updatedUserData);
+        // // Update state
+        // const updatedUserData = { ...userData, currentReceivedFriendRequests: newCurrentReceivedFriendRequests };
+        // await updateUserData(updatedUserData);
 
         // Handle the user sending the request
         // Prepare the new data
@@ -71,12 +73,12 @@ const useFriendInteractions = () => {
           ...loggedInUserData?.currentSentFriendRequests,
           [openProfileId]: {},
         };
-        // Update state
-        const updatedLoggedInUserData = {
-          ...loggedInUserData,
-          currentSentFriendRequests: newCurrentSentFriendRequests,
-        };
-        await updateLoggedInUserData(updatedLoggedInUserData);
+        // // Update state
+        // const updatedLoggedInUserData = {
+        //   ...loggedInUserData,
+        //   currentSentFriendRequests: newCurrentSentFriendRequests,
+        // };
+        // await updateLoggedInUserData(updatedLoggedInUserData);
 
         // Run the transactions to update the backend
         transaction.update(userDocRef, {
@@ -87,16 +89,22 @@ const useFriendInteractions = () => {
         });
       });
     } catch (err) {
-      setSentFriendRequestToUser(false);
+      // setSentFriendRequestToUser(false);
       console.error(err);
     }
   };
 
   // - Friend interaction function → Remove a sent friend request
-  const removeFriendRequest = async (userDocRef: DocumentReference, openProfileId: string) => {
+  const removeFriendRequest = async (
+    userDocRef: DocumentReference,
+    userData: DocumentData,
+    loggedInUserDocRef: DocumentReference,
+    loggedInUserData: DocumentData,
+    openProfileId: string
+  ) => {
     // Update the user receiving the request
     try {
-      setSentFriendRequestToUser(false);
+      // setSentFriendRequestToUser(false);
       await runTransaction(db, async (transaction) => {
         // Delete friend request for both users (receiver & sender)
         if (
@@ -109,22 +117,22 @@ const useFriendInteractions = () => {
           // Handle the user receiving the request
           // Prepare the new data
           const newCurrentReceivedFriendRequests = { ...userData?.currentReceivedFriendRequests };
-          // Update state
-          const updatedUserData = {
-            ...userData,
-            currentReceivedFriendRequests: newCurrentReceivedFriendRequests,
-          };
-          await updateUserData(updatedUserData);
+          // // Update state
+          // const updatedUserData = {
+          //   ...userData,
+          //   currentReceivedFriendRequests: newCurrentReceivedFriendRequests,
+          // };
+          // await updateUserData(updatedUserData);
 
           // Handle the user sending the request
           // Prepare the new data
           const newCurrentSentFriendRequests = { ...loggedInUserData?.currentSentFriendRequests };
-          // Update state
-          const updatedLoggedInUserData = {
-            ...loggedInUserData,
-            currentSentFriendRequests: newCurrentSentFriendRequests,
-          };
-          await updateLoggedInUserData(updatedLoggedInUserData);
+          // // Update state
+          // const updatedLoggedInUserData = {
+          //   ...loggedInUserData,
+          //   currentSentFriendRequests: newCurrentSentFriendRequests,
+          // };
+          // await updateLoggedInUserData(updatedLoggedInUserData);
 
           // Run the transactions to update the backend
           transaction.update(userDocRef, {
@@ -136,34 +144,34 @@ const useFriendInteractions = () => {
         }
       });
     } catch (err) {
-      setSentFriendRequestToUser(true);
+      // setSentFriendRequestToUser(true);
       console.error(err);
     }
   };
 
   // - Friend interaction function → Accept a received friend request
-  const acceptFriendRequest = async (userDocRef: DocumentReference, openProfileId: string) => {
+  const acceptFriendRequest = async (
+    userDocRef: DocumentReference,
+    userData: DocumentData,
+    loggedInUserDocRef: DocumentReference,
+    loggedInUserData: DocumentData,
+    openProfileId: string
+  ) => {
     try {
       // Update the user accepting the request
-      setReceivedFriendRequestFromUser(false);
-      setFriendsWithUser(true);
+      // setReceivedFriendRequestFromUser(false);
+      // setFriendsWithUser(true);
       await runTransaction(db, async (transaction) => {
         // Handling the user who sent the request first
         // Prepare the new data
         const newCurrentFriendsSender = { ...userData?.friends, [loggedInUserId]: {} };
         delete userData?.currentSentFriendRequests[loggedInUserId]; // Delete sent request
-        // Update state
-        const updatedUserData = { ...userData, friends: newCurrentFriendsSender };
-        await updateUserData(updatedUserData);
 
         // Handling the user who received the request
         // Prepare the new data
 
         const newCurrentFriendsReceiver = { ...loggedInUserData?.friends, [openProfileId]: {} };
         delete loggedInUserData?.currentReceivedFriendRequests[openProfileId];
-        // Update state
-        const updatedLoggedInUserData = { ...loggedInUserData, friends: newCurrentFriendsReceiver };
-        await updateLoggedInUserData(updatedLoggedInUserData);
 
         // Run the transactions to update the backend
         transaction.update(userDocRef, {
@@ -178,16 +186,22 @@ const useFriendInteractions = () => {
         });
       });
     } catch (err) {
-      setReceivedFriendRequestFromUser(true);
-      setFriendsWithUser(false);
+      // setReceivedFriendRequestFromUser(true);
+      // setFriendsWithUser(false);
       console.error(err);
     }
   };
 
   // - Friend interaction function → Decline a received friend request
-  const declineFriendRequest = async (userDocRef: DocumentReference, openProfileId: string) => {
+  const declineFriendRequest = async (
+    userDocRef: DocumentReference,
+    userData: DocumentData,
+    loggedInUserDocRef: DocumentReference,
+    loggedInUserData: DocumentData,
+    openProfileId: string
+  ) => {
     try {
-      setReceivedFriendRequestFromUser(false);
+      // setReceivedFriendRequestFromUser(false);
       await runTransaction(db, async (transaction) => {
         // Checks that the two people are already friends before proceeding
         if (
@@ -214,15 +228,21 @@ const useFriendInteractions = () => {
         }
       });
     } catch (err) {
-      setReceivedFriendRequestFromUser(true);
+      // setReceivedFriendRequestFromUser(true);
       console.error(err);
     }
   };
 
   // - Friend interaction function → Delete a current friend
-  const deleteFriend = async (userDocRef: DocumentReference, openProfileId: string) => {
+  const deleteFriend = async (
+    userDocRef: DocumentReference,
+    userData: DocumentData,
+    loggedInUserDocRef: DocumentReference,
+    loggedInUserData: DocumentData,
+    openProfileId: string
+  ) => {
     try {
-      setFriendsWithUser(false);
+      // setFriendsWithUser(false);
       await runTransaction(db, async (transaction) => {
         // Checks that the two people are already friends before proceeding
         if (
@@ -241,7 +261,7 @@ const useFriendInteractions = () => {
         }
       });
     } catch (err) {
-      setFriendsWithUser(true);
+      // setFriendsWithUser(true);
       console.error(err);
     }
   };
