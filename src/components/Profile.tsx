@@ -77,9 +77,6 @@ const Profile = () => {
 
   const [posts, setPosts] = useState<PostData[]>([]);
 
-  //6 Need to initialise state based on what the friend status with the user is.
-  //6 Could perhaps place these states within a context..? Maybe not a good idea.
-
   useEffect(() => {
     getLoggedInUserData();
     getUserData();
@@ -311,7 +308,7 @@ const Profile = () => {
 
   // - Checks if the content on a profile should be displayed or not
   const showProfileContentOrNot = async () => {
-    if (openProfileId === loggedInUserId) return setDisplayProfileContent(true);
+    if (openProfileId === loggedInUserId) setDisplayProfileContent(true);
     // Checks three things:
     // Is the profile not your own?
     // Is the profile you are visiting private?
