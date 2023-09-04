@@ -83,8 +83,13 @@ const Profile = () => {
   useEffect(() => {
     getLoggedInUserData();
     getUserData();
-    friendStatusWithUser();
   }, []);
+
+  useEffect(() => {
+    friendStatusWithUser();
+    showProfileContentOrNot();
+    publicOrPrivateProfile();
+  }, [openProfileId, userData, loggedInUserData]);
 
   const loggedInUserDocRef = doc(db, "users", loggedInUserId);
 
@@ -124,6 +129,13 @@ const Profile = () => {
     };
     getOtherProfileData();
   }, [openProfileId]);
+
+  //6 Last point of work
+  //6 It gets the states from the backend afterwards?
+  useEffect(() => {
+    // friendStatusWithUser();
+    // friendStatusWithUserJSX();
+  }, [sentFriendRequestToUser]);
 
   //1 GET POSTS FOR PROFILE CURRENTLY BEING VIEWED
   //  - Gets all the posts (profilePosts in Firestore) from the current profile subcollection.
@@ -299,8 +311,7 @@ const Profile = () => {
 
   // - Checks if the content on a profile should be displayed or not
   const showProfileContentOrNot = async () => {
-    if (openProfileId === loggedInUserId) setDisplayProfileContent(true);
-
+    if (openProfileId === loggedInUserId) return setDisplayProfileContent(true);
     // Checks three things:
     // Is the profile not your own?
     // Is the profile you are visiting private?
@@ -407,10 +418,10 @@ const Profile = () => {
         <button
           className="bg-[#00A7E1] text-white rounded-lg w-[190px] h-[40px]"
           onClick={() => {
-            if (userDocRef && userData && loggedInUserData)
-              sendFriendRequest(userDocRef, userData, loggedInUserDocRef, loggedInUserData, openProfileId);
             setSentFriendRequestToUser(true);
-            //6 Fetch new data
+            if (userDocRef && userData && loggedInUserData) {
+              sendFriendRequest(userDocRef, userData, loggedInUserDocRef, loggedInUserData, openProfileId);
+            }
           }}
         >
           Add Friend
