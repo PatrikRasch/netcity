@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import PeopleUser from "./PeopleUser";
 
 import { db } from "./../config/firebase.config";
-import { DocumentData, collection, doc, getDoc, getDocs } from "firebase/firestore";
+import { DocumentData, collection, doc, getDoc, getDocs, updateDoc } from "firebase/firestore";
 
 import { useLoggedInUserId } from "./context/LoggedInUserProfileDataContextProvider";
 
@@ -28,6 +28,8 @@ const People = () => {
   const [showReceivedFriendRequests, setShowReceivedFriendRequests] = useState(false);
   const [showSentFriendRequests, setShowSentFriendRequests] = useState(false);
 
+  const [numOfReceivedFriendRequests, setNumOfReceivedFriendRequests] = useState(0);
+
   const [allUsers, setAllUsers] = useState<DocumentData>();
   // Holds all the users in their various categories
   const [allOtherUsers, setAllOtherUsers] = useState<UserData[]>([]);
@@ -37,18 +39,42 @@ const People = () => {
 
   const [loggedInUserData, setLoggedInUserData] = useState<DocumentData>();
 
+  const loggedInUserDocRef = doc(db, "users", loggedInUserId);
+
   useEffect(() => {
     getAndCategoriseUsers();
   }, []);
 
+  useEffect(() => {
+    updateNumOfReceivedFriendsRequests();
+  }, []);
+
+  const updateNumOfReceivedFriendsRequests = async () => {
+    const loggedInUserDoc = await getDoc(loggedInUserDocRef);
+    const loggedInUserData = loggedInUserDoc.data();
+    const receivedRequests = loggedInUserData?.currentReceivedFriendRequests;
+    setNumOfReceivedFriendRequests(Object.keys(receivedRequests).length);
+  };
+
   const usersCollection = collection(db, "users");
+
+  // - Allows for editing a global property in Firestore if necessary
+  const editGlobalFirestoreProperty = async () => {
+    try {
+      const allUsersRef = await getDocs(usersCollection);
+      allUsersRef.forEach(async (doc) => {
+        await updateDoc(doc.ref, { openProfile: true });
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   // -  Gets and categorises all users
   const getAndCategoriseUsers = async () => {
     try {
       const allUsers = await getDocs(usersCollection);
       setAllUsers(allUsers);
-      const loggedInUserDocRef = doc(db, "users", loggedInUserId);
       const loggedInUserDoc = await getDoc(loggedInUserDocRef);
       const loggedInUserData = loggedInUserDoc.data();
       setLoggedInUserData(loggedInUserData);
@@ -101,6 +127,7 @@ const People = () => {
     try {
       const usersReceivedFriendRequestsArray: UserData[] = [];
       allUsers?.forEach((user: DocumentData) => {
+        console.log("here");
         const userData = user.data() as UserData;
         // if (user.id === loggedInUserId) return; // Remove logged in user from the list of users
         if (loggedInUserData?.currentReceivedFriendRequests.hasOwnProperty(user.id))
@@ -187,6 +214,8 @@ const People = () => {
           getAndCategoriseUsers={getAndCategoriseUsers}
           loggedInUserData={loggedInUserData}
           setLoggedInUserData={setLoggedInUserData}
+          numOfReceivedFriendRequests={numOfReceivedFriendRequests}
+          setNumOfReceivedFriendRequests={setNumOfReceivedFriendRequests}
         />
       </div>
     ));
@@ -217,7 +246,7 @@ const People = () => {
           Friends
         </button>
         <button
-          className={`text-white rounded-md pb-[4px] pt-[4px] pl-[3px] pr-[3px] ${
+          className={`relative text-white rounded-md pb-[4px] pt-[4px] pl-[3px] pr-[3px] ${
             showReceivedFriendRequests ? "bg-[#00A7E1]" : "bg-gray-400"
           } `}
           onClick={() => {
@@ -225,6 +254,13 @@ const People = () => {
             updateReceivedFriendRequests();
           }}
         >
+          <div
+            className={`absolute top-[-10%] left-[-5%] bg-red-500 rounded-[50%] w-[18px] h-[18px] flex items-center justify-center ${
+              numOfReceivedFriendRequests > 0 ? "opacity-1" : "opacity-0"
+            }`}
+          >
+            {numOfReceivedFriendRequests}
+          </div>
           Friend Requests
         </button>
         <button
