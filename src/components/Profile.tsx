@@ -12,6 +12,7 @@ import {
   onSnapshot,
   DocumentReference,
   DocumentData,
+  runTransaction,
 } from "firebase/firestore";
 import { getAuth, signOut } from "firebase/auth";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -26,7 +27,6 @@ import { useLoggedInUserFirstName } from "./context/LoggedInUserProfileDataConte
 import { useLoggedInUserLastName } from "./context/LoggedInUserProfileDataContextProvider";
 import { useLoggedInUserProfilePicture } from "./context/LoggedInUserProfileDataContextProvider";
 // import { useLoggedInUserBio } from "./context/LoggedInUserProfileDataContextProvider";
-import useFriendInteractions from "./custom-hooks/useFriendInteractions";
 
 // import { useLoadingScreen } from "./context/LoadingContextProvider";
 
@@ -42,9 +42,6 @@ const Profile = () => {
   const { loggedInUserId, setLoggedInUserId } = useLoggedInUserId();
   const { loggedInUserFirstName, setLoggedInUserFirstName } = useLoggedInUserFirstName();
   const { loggedInUserLastName, setLoggedInUserLastName } = useLoggedInUserLastName();
-
-  const { sendFriendRequest, removeFriendRequest, acceptFriendRequest, declineFriendRequest, deleteFriend } =
-    useFriendInteractions();
 
   const loggedInUserProfilePicture = useLoggedInUserProfilePicture();
   //- State declarations:
@@ -66,7 +63,7 @@ const Profile = () => {
   const [sentFriendRequestToUser, setSentFriendRequestToUser] = useState(false);
   const [receivedFriendRequestFromUser, setReceivedFriendRequestFromUser] = useState(false);
 
-  const [userDocRef, setUserDocRef] = useState<DocumentReference | undefined>();
+  const [userDocRef, setUserDocRef] = useState<DocumentReference>();
   const [userData, setUserData] = useState<DocumentData>();
   const [loggedInUserData, setLoggedInUserData] = useState<DocumentData>();
 
@@ -80,13 +77,17 @@ const Profile = () => {
   useEffect(() => {
     getLoggedInUserData();
     getUserData();
+    friendStatusWithUser();
   }, []);
 
   useEffect(() => {
-    friendStatusWithUser();
-    showProfileContentOrNot();
     publicOrPrivateProfile();
+    showProfileContentOrNot();
   }, [openProfileId, userData, loggedInUserData]);
+
+  useEffect(() => {
+    showProfileContentOrNot();
+  }, [openProfileId]);
 
   const loggedInUserDocRef = doc(db, "users", loggedInUserId);
 
@@ -101,8 +102,6 @@ const Profile = () => {
   }, []);
 
   useEffect(() => {
-    showProfileContentOrNot();
-
     if (loggedInUserId === openProfileId) setVisitingUser(false); // Viewing own profile
     if (loggedInUserId !== openProfileId) setVisitingUser(true); // Viewing someone else's profile
     // - Profile data includes all profile data apart from the posts
@@ -126,13 +125,6 @@ const Profile = () => {
     };
     getOtherProfileData();
   }, [openProfileId]);
-
-  //6 Last point of work
-  //6 It gets the states from the backend afterwards?
-  useEffect(() => {
-    // friendStatusWithUser();
-    // friendStatusWithUserJSX();
-  }, [sentFriendRequestToUser]);
 
   //1 GET POSTS FOR PROFILE CURRENTLY BEING VIEWED
   //  - Gets all the posts (profilePosts in Firestore) from the current profile subcollection.
@@ -293,17 +285,25 @@ const Profile = () => {
   };
 
   const getUserData = async () => {
-    const userDocRef = doc(db, "users", openProfileId);
-    const userDoc = await getDoc(userDocRef);
-    const userData = userDoc.data();
-    setUserData(userData);
+    try {
+      const userDocRef = doc(db, "users", openProfileId);
+      const userDoc = await getDoc(userDocRef);
+      const userData = userDoc.data();
+      setUserData(userData);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const getLoggedInUserData = async () => {
-    const loggedInUserDocRef = doc(db, "users", loggedInUserId);
-    const loggedInUserDoc = await getDoc(loggedInUserDocRef);
-    const loggedInUserData = loggedInUserDoc.data();
-    setLoggedInUserData(loggedInUserData);
+    try {
+      const loggedInUserDocRef = doc(db, "users", loggedInUserId);
+      const loggedInUserDoc = await getDoc(loggedInUserDocRef);
+      const loggedInUserData = loggedInUserDoc.data();
+      setLoggedInUserData(loggedInUserData);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   // - Checks if the content on a profile should be displayed or not
@@ -336,6 +336,195 @@ const Profile = () => {
       );
   };
 
+  // - Friend interaction function → Send a friend request
+  const sendFriendRequest = async () => {
+    try {
+      setSentFriendRequestToUser(true);
+      await runTransaction(db, async (transaction) => {
+        // Handle the user receiving the request → Prepare the new data
+        const newCurrentReceivedFriendRequests = {
+          ...userData?.currentReceivedFriendRequests,
+          [loggedInUserId]: {},
+        };
+        // Update state
+        const updatedUserData = { ...userData, currentReceivedFriendRequests: newCurrentReceivedFriendRequests };
+        await updateUserData(updatedUserData);
+        // Handle the user sending the request → Prepare the new data
+        const newCurrentSentFriendRequests = {
+          ...loggedInUserData?.currentSentFriendRequests,
+          [openProfileId]: {},
+        };
+        // Update state
+        const updatedLoggedInUserData = {
+          ...loggedInUserData,
+          currentSentFriendRequests: newCurrentSentFriendRequests,
+        };
+        await updateLoggedInUserData(updatedLoggedInUserData);
+        // Run the transactions to update the backend
+        if (userDocRef !== undefined) {
+          transaction.update(userDocRef, {
+            currentReceivedFriendRequests: newCurrentReceivedFriendRequests,
+          });
+          transaction.update(loggedInUserDocRef, {
+            currentSentFriendRequests: newCurrentSentFriendRequests,
+          });
+        }
+      });
+    } catch (err) {
+      setSentFriendRequestToUser(false);
+      console.error(err);
+    }
+  };
+
+  // - Friend interaction function → Remove a sent friend request
+  const removeFriendRequest = async () => {
+    // Update the user receiving the request
+    try {
+      setSentFriendRequestToUser(false);
+      await runTransaction(db, async (transaction) => {
+        // Delete friend request for both users (receiver & sender)
+        if (
+          userData?.currentReceivedFriendRequests.hasOwnProperty(loggedInUserId) &&
+          loggedInUserData?.currentSentFriendRequests.hasOwnProperty(openProfileId)
+        ) {
+          delete userData?.currentReceivedFriendRequests[loggedInUserId];
+          delete loggedInUserData?.currentSentFriendRequests[openProfileId];
+
+          // Handle the user receiving the request → Prepare the new data
+          const newCurrentReceivedFriendRequests = { ...userData?.currentReceivedFriendRequests };
+          // Update state
+          const updatedUserData = {
+            ...userData,
+            currentReceivedFriendRequests: newCurrentReceivedFriendRequests,
+          };
+          await updateUserData(updatedUserData);
+
+          // Handle the user sending the request → Prepare the new data
+          const newCurrentSentFriendRequests = { ...loggedInUserData?.currentSentFriendRequests };
+          // Update state
+          const updatedLoggedInUserData = {
+            ...loggedInUserData,
+            currentSentFriendRequests: newCurrentSentFriendRequests,
+          };
+          await updateLoggedInUserData(updatedLoggedInUserData);
+
+          // Run the transactions to update the backend
+          if (userDocRef !== undefined) {
+            transaction.update(userDocRef, {
+              currentReceivedFriendRequests: newCurrentReceivedFriendRequests,
+            });
+            transaction.update(loggedInUserDocRef, {
+              currentSentFriendRequests: newCurrentSentFriendRequests,
+            });
+          }
+        }
+      });
+    } catch (err) {
+      setSentFriendRequestToUser(true);
+      console.error(err);
+    }
+  };
+
+  // - Friend interaction function → Accept a received friend request
+  const acceptFriendRequest = async () => {
+    try {
+      // Update the user accepting the request
+      setReceivedFriendRequestFromUser(false);
+      setFriendsWithUser(true);
+      await runTransaction(db, async (transaction) => {
+        // Handling the user who sent the request first → Prepare the new data
+        const newCurrentFriendsSender = { ...userData?.friends, [loggedInUserId]: {} };
+        delete userData?.currentSentFriendRequests[loggedInUserId]; // Delete sent request
+        // Handling the user who received the request → Prepare the new data
+        const newCurrentFriendsReceiver = { ...loggedInUserData?.friends, [openProfileId]: {} };
+        delete loggedInUserData?.currentReceivedFriendRequests[openProfileId];
+        // Run the transactions to update the backend
+        if (userDocRef !== undefined) {
+          transaction.update(userDocRef, {
+            friends: newCurrentFriendsSender,
+            currentSentFriendRequests: { ...userData?.currentSentFriendRequests },
+          });
+          transaction.update(loggedInUserDocRef, {
+            friends: newCurrentFriendsReceiver,
+            currentReceivedFriendRequests: {
+              ...loggedInUserData?.currentReceivedFriendRequests,
+            },
+          });
+        }
+      });
+    } catch (err) {
+      setReceivedFriendRequestFromUser(true);
+      setFriendsWithUser(false);
+      console.error(err);
+    }
+  };
+
+  // - Friend interaction function → Decline a received friend request
+  const declineFriendRequest = async () => {
+    try {
+      setReceivedFriendRequestFromUser(false);
+      await runTransaction(db, async (transaction) => {
+        // Checks that the two people are already friends before proceeding
+        if (
+          userData?.currentSentFriendRequests.hasOwnProperty(loggedInUserId) &&
+          loggedInUserData?.currentReceivedFriendRequests.hasOwnProperty(openProfileId)
+        ) {
+          // Deletes the users from each other's state
+          delete userData?.currentSentFriendRequests[loggedInUserId];
+          delete loggedInUserData?.currentReceivedFriendRequests[openProfileId];
+
+          // Handle the user receiving the request
+          const newCurrentSentFriendRequests = { ...userData?.currentSentFriendRequests }; // Prepare the new data
+
+          // Handle the user sending the request
+          const newCurrentReceivedFriendRequests = { ...loggedInUserData?.currentReceivedFriendRequests }; // Prepare the new data
+
+          // Run the transactions for the backend
+          if (userDocRef !== undefined) {
+            transaction.update(userDocRef, {
+              currentSentFriendRequests: newCurrentSentFriendRequests,
+            });
+            transaction.update(loggedInUserDocRef, {
+              currentReceivedFriendRequests: newCurrentReceivedFriendRequests,
+            });
+          }
+        }
+      });
+    } catch (err) {
+      setReceivedFriendRequestFromUser(true);
+      console.error(err);
+    }
+  };
+
+  // - Friend interaction function → Delete a current friend
+  const deleteFriend = async () => {
+    try {
+      setFriendsWithUser(false);
+      await runTransaction(db, async (transaction) => {
+        // Checks that the two people are already friends before proceeding
+        if (
+          userData?.friends.hasOwnProperty(loggedInUserId) &&
+          loggedInUserData?.friends.hasOwnProperty(openProfileId)
+        ) {
+          // Deletes the users from each other's state
+          delete userData?.friends[loggedInUserId];
+          delete loggedInUserData?.friends[openProfileId];
+          // Prepares new data to be sent to Firebase
+          const newUserFriends = { ...userData?.friends };
+          const newLoggedInUserFriends = { ...loggedInUserData?.friends };
+          // Updates Firebase with the new data
+          if (userDocRef !== undefined) {
+            transaction.update(userDocRef, { friends: newUserFriends });
+            transaction.update(loggedInUserDocRef, { friends: newLoggedInUserFriends });
+          }
+        }
+      });
+    } catch (err) {
+      setFriendsWithUser(true);
+      console.error(err);
+    }
+  };
+
   // - Checks the current friend status the loggedInUser has with the user
   const friendStatusWithUser = async () => {
     const loggedInUserDocRef = doc(db, "users", loggedInUserId);
@@ -358,13 +547,6 @@ const Profile = () => {
     }
   };
 
-  const cancelFriendRequest = async () => {
-    if (userDocRef && userData && loggedInUserData) {
-      await removeFriendRequest(userDocRef, userData, loggedInUserDocRef, loggedInUserData, openProfileId);
-      setSentFriendRequestToUser(false);
-    }
-  };
-
   const friendStatusWithUserJSX = () => {
     if (friendsWithUser)
       return <button className="bg-green-400 text-white rounded-lg w-[190px] h-[40px]">Friends</button>;
@@ -373,7 +555,9 @@ const Profile = () => {
         <button
           className="bg-gray-400 text-white rounded-lg w-[190px] h-[40px]"
           onClick={() => {
-            cancelFriendRequest();
+            if (userDocRef && userData && loggedInUserData) {
+              removeFriendRequest();
+            }
           }}
         >
           Friend Request Sent
@@ -388,9 +572,7 @@ const Profile = () => {
               className="bg-[#00A7E1] text-white rounded-lg h-[40px]"
               onClick={() => {
                 if (userDocRef && userData && loggedInUserData) {
-                  acceptFriendRequest(userDocRef, userData, loggedInUserDocRef, loggedInUserData, openProfileId);
-                  setReceivedFriendRequestFromUser(false);
-                  setFriendsWithUser(true);
+                  acceptFriendRequest();
                 }
               }}
             >
@@ -400,8 +582,7 @@ const Profile = () => {
               className="bg-red-400 text-white rounded-lg h-[40px]"
               onClick={() => {
                 if (userDocRef && userData && loggedInUserData) {
-                  declineFriendRequest(userDocRef, userData, loggedInUserDocRef, loggedInUserData, openProfileId);
-                  setReceivedFriendRequestFromUser(false);
+                  declineFriendRequest();
                 }
               }}
             >
@@ -415,9 +596,8 @@ const Profile = () => {
         <button
           className="bg-[#00A7E1] text-white rounded-lg w-[190px] h-[40px]"
           onClick={() => {
-            setSentFriendRequestToUser(true);
             if (userDocRef && userData && loggedInUserData) {
-              sendFriendRequest(userDocRef, userData, loggedInUserDocRef, loggedInUserData, openProfileId);
+              sendFriendRequest();
             }
           }}
         >
@@ -427,7 +607,6 @@ const Profile = () => {
   };
 
   const showFriendStatusWithUser = () => {
-    friendStatusWithUser();
     if (loggedInUserId === openProfileId) return;
     else
       return (
