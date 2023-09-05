@@ -67,6 +67,8 @@ const Profile = () => {
   const [userData, setUserData] = useState<DocumentData>();
   const [loggedInUserData, setLoggedInUserData] = useState<DocumentData>();
 
+  const [isDeleteFriendDropdownMenuOpen, setIsDeleteFriendDropdownMenuOpen] = useState(false);
+
   //- Navigation declarations:
   const navigate = useNavigate();
   //- useParams:
@@ -87,7 +89,7 @@ const Profile = () => {
 
   useEffect(() => {
     showProfileContentOrNot();
-  }, [openProfileId]);
+  }, [openProfileId, friendsWithUser]);
 
   const loggedInUserDocRef = doc(db, "users", loggedInUserId);
 
@@ -435,9 +437,17 @@ const Profile = () => {
         // Handling the user who sent the request first → Prepare the new data
         const newCurrentFriendsSender = { ...userData?.friends, [loggedInUserId]: {} };
         delete userData?.currentSentFriendRequests[loggedInUserId]; // Delete sent request
+        // Update state
+        const updatedUserData = { ...userData, friends: newCurrentFriendsSender };
+        await updateUserData(updatedUserData);
+
         // Handling the user who received the request → Prepare the new data
         const newCurrentFriendsReceiver = { ...loggedInUserData?.friends, [openProfileId]: {} };
         delete loggedInUserData?.currentReceivedFriendRequests[openProfileId];
+        // Update state
+        const updatedLoggedInUserData = { ...loggedInUserData, friends: newCurrentFriendsReceiver };
+        await updateLoggedInUserData(updatedLoggedInUserData);
+
         // Run the transactions to update the backend
         if (userDocRef !== undefined) {
           transaction.update(userDocRef, {
@@ -547,9 +557,54 @@ const Profile = () => {
     }
   };
 
+  const deleteFriendDropdownMenuJSX = () => {
+    if (isDeleteFriendDropdownMenuOpen)
+      return (
+        <div>
+          <div className="grid grid-cols-2 w-[190px] h-[40px]">
+            <button
+              className="bg-green-400 rounded-tl-lg rounded-bl-lg"
+              onClick={() => {
+                setIsDeleteFriendDropdownMenuOpen(
+                  (prevIsDeleteFriendDropdownMenuOpen) => !prevIsDeleteFriendDropdownMenuOpen
+                );
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              className="bg-red-400 rounded-tr-lg rounded-br-lg"
+              onClick={() => {
+                deleteFriend();
+              }}
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      );
+    if (!isDeleteFriendDropdownMenuOpen)
+      return (
+        <div>
+          <button
+            className="bg-green-400 text-white rounded-lg w-[190px] h-[40px]"
+            onClick={() => {
+              setIsDeleteFriendDropdownMenuOpen(
+                (prevIsDeleteFriendDropdownMenuOpen) => !prevIsDeleteFriendDropdownMenuOpen
+              );
+            }}
+          >
+            Friends
+          </button>
+        </div>
+      );
+  };
+
   const friendStatusWithUserJSX = () => {
-    if (friendsWithUser)
-      return <button className="bg-green-400 text-white rounded-lg w-[190px] h-[40px]">Friends</button>;
+    if (friendsWithUser) {
+      return deleteFriendDropdownMenuJSX();
+    }
+
     if (sentFriendRequestToUser)
       return (
         <button
