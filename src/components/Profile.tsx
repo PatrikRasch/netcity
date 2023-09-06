@@ -678,11 +678,14 @@ const Profile = () => {
       {/*//1 Profile picture and name */}
       <div className="grid grid-cols-[120px,1fr] items-center justify-center gap-4 pl-8 pr-8 pt-4 pb-4">
         <div>
-          <label htmlFor="fileInput">{displayProfilePicture()}</label>
+          <label htmlFor="fileInput" className="block h-max hover:cursor-pointer">
+            {displayProfilePicture()}
+          </label>
           <input
             type="file"
             id="fileInput"
-            className="opacity-0 hidden"
+            className="opacity-0"
+            hidden
             onChange={(e) => {
               uploadProfilePicture(e.target.files?.[0] || null);
             }}
