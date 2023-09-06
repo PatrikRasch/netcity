@@ -53,7 +53,6 @@ const Profile = () => {
 
   const [dataLoaded, setDataLoaded] = useState(false);
 
-  const [profilePictureUpload, setProfilePictureUpload] = useState<File | null>(null);
   const [bioText, setBioText] = useState("");
 
   const [openProfile, setOpenProfile] = useState(true);
@@ -181,20 +180,22 @@ const Profile = () => {
       );
   };
 
-  //1 Allows user to select profile picture. Writes and stores the profile picture in Firebase Storage.
-  //1 Also updates the user in the Firestore database with URL to the photo.
-  const profilePictureClicked = async () => {
-    if (profilePictureUpload === null) return; // Return if no imagine is uploaded
+  // - Allows user to select profile picture. Writes and stores the profile picture in Firebase Storage.
+  // - Also updates the user in the Firestore database with URL to the photo.
+  const uploadProfilePicture = async (newProfilePicture: File | null) => {
+    console.log("Initialising...");
+    if (newProfilePicture === null) return; // Return if no imagine is uploaded
+    console.log("Made it past!");
     const storageRef = ref(storage, `/profilePictures/${loggedInUserId}`); // Connect to storage
     try {
-      const uploadedPicture = await uploadBytes(storageRef, profilePictureUpload); // Upload the image
+      const uploadedPicture = await uploadBytes(storageRef, newProfilePicture); // Upload the image
       const downloadURL = await getDownloadURL(uploadedPicture.ref); // Get the downloadURL for the image
       setOtherProfilePicture(downloadURL); // Set the downloadURL for the image in state to use across the app.
       // Update Firestore Database with image:
       const usersCollectionRef = collection(db, "users"); // Grabs the users collection
       const userDocRef = doc(usersCollectionRef, loggedInUserId); // Grabs the doc where the user is
       await updateDoc(userDocRef, { profilePicture: downloadURL }); // Add the image into Firestore
-      alert("Profile picture uploaded"); //6 Should be sexified
+      // alert("Profile picture uploaded"); //6 Should be sexified
     } catch (err) {
       console.error(err);
       //6 Need a "Something went wrong, please try again"
@@ -216,7 +217,6 @@ const Profile = () => {
           src={loggedInUserProfilePicture === "" ? emptyProfilePicture : loggedInUserProfilePicture}
           alt="profile"
           className="rounded-[50%] aspect-square object-cover"
-          onClick={() => profilePictureClicked()}
         />
       );
     }
@@ -683,7 +683,9 @@ const Profile = () => {
             type="file"
             id="fileInput"
             className="opacity-0 hidden"
-            onChange={(e) => setProfilePictureUpload(e.target.files?.[0] || null)}
+            onChange={(e) => {
+              uploadProfilePicture(e.target.files?.[0] || null);
+            }}
             disabled={visitingUser} // Disables fileInput if it's not your profile
           />
         </div>
