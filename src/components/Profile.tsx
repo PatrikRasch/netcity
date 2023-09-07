@@ -183,9 +183,7 @@ const Profile = () => {
   // - Allows user to select profile picture. Writes and stores the profile picture in Firebase Storage.
   // - Also updates the user in the Firestore database with URL to the photo.
   const uploadProfilePicture = async (newProfilePicture: File | null) => {
-    console.log("Initialising...");
     if (newProfilePicture === null) return; // Return if no imagine is uploaded
-    console.log("Made it past!");
     const storageRef = ref(storage, `/profilePictures/${loggedInUserId}`); // Connect to storage
     try {
       const uploadedPicture = await uploadBytes(storageRef, newProfilePicture); // Upload the image
