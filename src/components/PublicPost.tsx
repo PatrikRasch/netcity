@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import AllCommentsOnPost from "./AllCommentsOnPost";
 import MakeCommentPublic from "./MakeCommentPublic";
 import Likes from "./Likes";
@@ -9,24 +9,15 @@ import commentIcon from "./../assets/icons/comment.png";
 import deleteIcon from "./../assets/icons/delete.png";
 import deleteRedIcon from "./../assets/icons/delete-red.png";
 
-import { db } from "./../config/firebase.config";
-import {
-  doc,
-  getDoc,
-  getDocs,
-  updateDoc,
-  deleteDoc,
-  collection,
-  orderBy,
-  query,
-  onSnapshot,
-} from "firebase/firestore";
+import { db, storage } from "./../config/firebase.config";
+import { doc, getDoc, getDocs, updateDoc, deleteDoc, collection, orderBy, query, onSnapshot } from "firebase/firestore";
 import { useLoggedInUserId } from "./context/LoggedInUserProfileDataContextProvider";
 import { useLoggedInUserFirstName } from "./context/LoggedInUserProfileDataContextProvider";
 import { useLoggedInUserLastName } from "./context/LoggedInUserProfileDataContextProvider";
 import { useLoggedInUserProfilePicture } from "./context/LoggedInUserProfileDataContextProvider";
 import { useDateFunctions } from "./custom-hooks/useDateFunctions";
 import { TargetData, CommentData } from "../interfaces";
+import { deleteObject, ref } from "firebase/storage";
 
 //6 Have to implement comments into each post
 
@@ -34,6 +25,8 @@ interface Props {
   postFirstName: string;
   postLastName: string;
   postText: string;
+  postImage: string;
+  postImageId: string;
   postDate: string;
   postLikes: object;
   postDislikes: object;
@@ -47,6 +40,8 @@ const PublicPost = ({
   postFirstName,
   postLastName,
   postText,
+  postImage,
+  postImageId,
   postDate,
   postLikes,
   postDislikes,
@@ -73,6 +68,11 @@ const PublicPost = ({
   const [showLoadMoreCommentsButton, setShowLoadMoreCommentsButton] = useState(true);
   const [comments, setComments] = useState<CommentData[]>([]);
 
+  const [showFullImage, setShowFullImage] = useState(false);
+  const [imageTooLargeToShowFull, setImageTooLargeToShowFull] = useState(false);
+
+  const imageHeightRef = useRef<HTMLImageElement>(null);
+
   //1 Access this posts document from Firestore. postDocRef used throughout component.
   const publicPostsCollection = collection(db, "publicPosts");
   const postDocRef = doc(publicPostsCollection, postId); // Grab the posts on the user's profile
@@ -86,10 +86,7 @@ const PublicPost = ({
   getNumOfComments();
 
   useEffect(() => {
-    // console.log("use effect");
     if (postIndex === 0) setShowMakeComment(true);
-    // console.log("Post likes:", postLikes);
-    // console.log("Post dislikes:", postDislikes);
     setPostNumOfLikes(Object.keys(postLikes).length); // Number of likes on post
     setPostNumOfDislikes(-Object.keys(postDislikes).length); // Number of dislikes on post
     getPostData(); // Get all the data for this post
@@ -166,7 +163,19 @@ const PublicPost = ({
   //1 Fetches and sets in state all posts from Firebase.
   useEffect(() => {
     getAllComments();
-    // console.log("use effect");
+  }, []);
+
+  useEffect(() => {
+    const img = new Image();
+    img.src = postImage;
+    img.onload = () => {
+      if (imageHeightRef && imageHeightRef.current) {
+        const divHeight = imageHeightRef.current.clientHeight;
+        if (divHeight > window.innerHeight * 0.7) {
+          setImageTooLargeToShowFull(true);
+        } else setShowFullImage(true);
+      }
+    };
   }, []);
 
   //1 Determines if the comment input field is to be displayed on the post
@@ -202,12 +211,7 @@ const PublicPost = ({
     if (loggedInUserId === postUserId) {
       return (
         <div>
-          <img
-            src={deleteIcon}
-            alt=""
-            className="max-h-[18px] cursor-pointer"
-            onClick={() => deletePostClicked()}
-          />
+          <img src={deleteIcon} alt="" className="max-h-[18px] cursor-pointer" onClick={() => deletePostClicked()} />
         </div>
       );
     } else return <div></div>;
@@ -216,10 +220,38 @@ const PublicPost = ({
   const deletePostClicked = async () => {
     try {
       await deleteDoc(postDocRef);
+      if (postImage) {
+        const postImageRef = ref(storage, `postImages/${postImageId}`);
+        await deleteObject(postImageRef);
+      }
       console.log("Doc deleted");
     } catch (err) {
       console.error(err);
     }
+  };
+
+  const displayPostImageOrNot = () => {
+    if (postImage)
+      return (
+        <div className={`overflow-hidden relative ${showFullImage ? "" : "max-h-[70vh]"}`}>
+          <img
+            src={postImage}
+            alt="attached to post"
+            ref={imageHeightRef}
+            className="overflow-hidden rounded-2xl"
+            onClick={() => {
+              if (imageTooLargeToShowFull) {
+                setShowFullImage((prevShowFullImage) => !prevShowFullImage);
+              }
+            }}
+          />
+          <div
+            className={`absolute bottom-0 ${
+              showFullImage ? "" : "bg-gradient-to-b from-transparent via-white to-white w-[100%] h-[50px] p-2"
+            }`}
+          ></div>
+        </div>
+      );
   };
 
   //2 Get id of post
@@ -247,6 +279,7 @@ const PublicPost = ({
           {showDeletePostOrNot()}
         </div>
         <div className="pt-2">{postText}</div>
+        <div>{displayPostImageOrNot()}</div>
       </div>
       <div className="w-full h-[1px] bg-gray-300"></div>
       <div className="grid grid-cols-[1fr,1fr,2fr] h-[33px] mt-1 mb-1 items-center justify-items-center">
@@ -282,12 +315,7 @@ const PublicPost = ({
 
         {/* //1 Comment */}
         <div className="flex gap-2">
-          <img
-            src={commentIcon}
-            alt=""
-            className="max-h-6"
-            onClick={(e) => handleCommentButtonClicked()}
-          />
+          <img src={commentIcon} alt="" className="max-h-6" onClick={(e) => handleCommentButtonClicked()} />
           <div>{postTotalNumOfComments}</div>
         </div>
       </div>

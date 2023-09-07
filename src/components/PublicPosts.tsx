@@ -6,6 +6,8 @@ interface PublicPostData {
   firstName: string;
   lastName: string;
   text: string;
+  image: string;
+  imageId: string;
   date: string;
   likes: object;
   dislikes: object;
@@ -36,6 +38,8 @@ const PublicPosts = ({ globalPosts, friendsPosts, showGlobalPosts }: Props) => {
               postFirstName={post.firstName}
               postLastName={post.lastName}
               postText={post.text}
+              postImage={post?.image}
+              postImageId={post?.imageId}
               postDate={post.date}
               postLikes={post.likes}
               postDislikes={post.dislikes}
@@ -57,6 +61,8 @@ const PublicPosts = ({ globalPosts, friendsPosts, showGlobalPosts }: Props) => {
               postFirstName={post.firstName}
               postLastName={post.lastName}
               postText={post.text}
+              postImage={post?.image}
+              postImageId={post?.imageId}
               postDate={post.date}
               postLikes={post.likes}
               postDislikes={post.dislikes}

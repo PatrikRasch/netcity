@@ -5,7 +5,7 @@ import { FirstNameProp } from "../interfaces";
 import { LastNameProp } from "../interfaces";
 import { GetAllPosts } from "../interfaces";
 
-import { db } from "./../config/firebase.config";
+import { db } from "../config/firebase.config";
 import { doc, addDoc, collection } from "firebase/firestore";
 
 interface Props {
@@ -29,10 +29,6 @@ function MakePost(props: Props) {
     const targetUser = doc(db, "users", loggedInUserId);
     return collection(targetUser, "postsProfile");
   };
-
-  //1 Current problems:
-  //2 Posts don't load in order, need to add a post timestamp to sort posts.
-  //2 All posts load together no matter how many when a profile is visited. Need to add some form of lazyloading.
 
   //1 Write the post to Firestore
   const writePost = async (data: {
@@ -78,11 +74,7 @@ function MakePost(props: Props) {
       <div className="w-full min-h-[150px] bg-white shadow-xl">
         <div className="min-h-[120px] flex p-4 gap-2">
           <div className="min-w-[50px] max-w-min">
-            <img
-              src={profilePicture}
-              alt="profile"
-              className="rounded-[50%] aspect-square object-cover"
-            />
+            <img src={profilePicture} alt="profile" className="rounded-[50%] aspect-square object-cover" />
           </div>
           <textarea
             placeholder="Make a post"
@@ -92,7 +84,6 @@ function MakePost(props: Props) {
             onChange={(e) => setPostInput(e.target.value)}
           />
         </div>
-        {/* <div className="w-full h-[2px] bg-gray-300"></div> */}
         <button
           className="min-h-[30px] w-full bg-[#00A7E1] text-white"
           onClick={(e) => {

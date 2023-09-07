@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import PublicPosts from "./PublicPosts";
 
-import { db } from "../config/firebase.config";
+import { db, storage } from "../config/firebase.config";
 import {
   collection,
   doc,
@@ -15,12 +15,17 @@ import {
   limit,
 } from "firebase/firestore";
 
+import { v4 as uuidv4 } from "uuid";
+
+import imageIcon from "./../assets/icons/imageIcon.png";
+
 import { useLoggedInUserId } from "./context/LoggedInUserProfileDataContextProvider";
 import { useLoggedInUserFirstName } from "./context/LoggedInUserProfileDataContextProvider";
 import { useLoggedInUserLastName } from "./context/LoggedInUserProfileDataContextProvider";
 import { useLoggedInUserProfilePicture } from "./context/LoggedInUserProfileDataContextProvider";
 import { useDateFunctions } from "./custom-hooks/useDateFunctions";
 import useInfinityScrollFunctions from "./custom-hooks/useInfinityScrollFunctions";
+import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage";
 //2 Need to split AllPosts into PublicPosts and ProfilePosts ??
 
 //2 Need a MakePost component for public, name it MakePostPublic
@@ -34,6 +39,8 @@ interface PublicPostData {
   firstName: string;
   lastName: string;
   text: string;
+  image: string;
+  imageId: string;
   date: string;
   likes: object;
   dislikes: object;
@@ -59,6 +66,8 @@ function Public() {
   const [showGlobalPosts, setShowGlobalPosts] = useState(true);
   const [showFriendsPosts, setShowFriendsPosts] = useState(false);
   const [publicPost, setPublicPost] = useState(true);
+  const [imageAddedToPostFeed, setImageAddedToPostFeed] = useState<string>("");
+  const [imageAddedToPostFeedId, setImageAddedToPostFeedId] = useState<string>("");
 
   //1 Gets the reference to the publicPosts collection
   const publicPostsCollection = collection(db, "publicPosts");
@@ -68,6 +77,8 @@ function Public() {
     firstName: string;
     lastName: string;
     text: string;
+    image: string;
+    imageId: string;
     date: string;
     likes: object;
     dislikes: object;
@@ -170,6 +181,59 @@ function Public() {
     getGlobalPosts,
   });
 
+  const displayUploadedImageOrNot = () => {
+    if (imageAddedToPostFeed)
+      return (
+        <div className="pb-4 pr-8">
+          <div className="relative">
+            <img src={imageAddedToPostFeed} alt="" className="rounded-xl shadow-xl border-black border-2 p-[3px]" />
+            <div
+              className="absolute top-[15px] right-[15px] bg-white drop-shadow-xl rounded-[50%] w-[22px] h-[22px] opacity-90 flex justify-center items-center hover:cursor-pointer"
+              onClick={() => {
+                deleteImageAddedToPost();
+              }}
+            >
+              X
+            </div>
+          </div>
+        </div>
+      );
+    if (!imageAddedToPostFeed) return null;
+  };
+
+  const addImageToPost = async (imageToAddToPost: File | null) => {
+    if (imageToAddToPost === null) return; // Return if no imagine is uploaded
+    const imageId = imageToAddToPost.name + " " + uuidv4();
+    const storageRef = ref(storage, `postImages/${imageId}`); // Connect to storage
+    try {
+      const addedImage = await uploadBytes(storageRef, imageToAddToPost); // Upload the image
+      const downloadURL = await getDownloadURL(addedImage.ref); // Get the downloadURL for the image
+      // Update Firestore Database with image:
+      // const usersCollectionRef = collection(db, "users"); // Grabs the users collection
+      // const loggedInUserDocRef = doc(usersCollectionRef, loggedInUserId); // Grabs the doc where the user is
+      // // const postRef = doc(loggedInUserDocRef, "postsProfile", postId);
+      // await updateDoc(postRef, { image: downloadURL }); // Add the image into Firestore
+      setImageAddedToPostFeedId(imageId);
+      setImageAddedToPostFeed(downloadURL);
+      // alert("Profile picture uploaded"); //6 Should be sexified
+    } catch (err) {
+      console.error(err);
+      //6 Need a "Something went wrong, please try again"
+    }
+  };
+
+  const deleteImageAddedToPost = async () => {
+    try {
+      if (imageAddedToPostFeed) {
+        const postImageRef = ref(storage, `postImages/${imageAddedToPostFeedId}`);
+        await deleteObject(postImageRef);
+        setImageAddedToPostFeed("");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div>
       <div className="grid justify-items-center gap-4 mt-4">
@@ -185,7 +249,22 @@ function Public() {
           }}
         />
       </div>
-      <div className="grid grid-rows-2 pl-4 pr-4">
+      <div className="grid pl-4 pr-4">
+        <div className="grid grid-cols-[80px,1fr]">
+          <input
+            type="file"
+            id="addImageToPostFeedButton"
+            hidden
+            onChange={(e) => {
+              addImageToPost(e.target.files?.[0] || null);
+              e.target.value = "";
+            }}
+          />
+          <label htmlFor="addImageToPostFeedButton" className="hover:cursor-pointer block w-max">
+            <img src={imageIcon} alt="add and upload file to post" />
+          </label>
+          {displayUploadedImageOrNot()}
+        </div>
         <button
           onClick={() => {
             changePostDestination();
@@ -194,15 +273,18 @@ function Public() {
           {postDestination()}
         </button>
         <button
-          className="min-h-[30px] w-full bg-[#00A7E1] text-white rounded-md"
+          className="min-h-[30px] w-full bg-[#00A7E1] text-white"
           onClick={(e) => {
-            if (postInput.length === 0) return console.log("add text to input before posting");
+            if (postInput.length === 0 && imageAddedToPostFeed === "")
+              return console.log("add text or image before posting");
             setFullTimestamp(new Date());
             writePost({
               timestamp: fullTimestamp,
               firstName: loggedInUserFirstName,
               lastName: loggedInUserLastName,
               text: postInput,
+              image: imageAddedToPostFeed,
+              imageId: imageAddedToPostFeedId,
               date: dateDayMonthYear,
               likes: {},
               dislikes: {},
@@ -212,6 +294,7 @@ function Public() {
             });
             getGlobalPosts();
             setPostInput("");
+            setImageAddedToPostFeed("");
           }}
         >
           Post
