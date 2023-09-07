@@ -57,6 +57,8 @@ export interface PostData {
   firstName: string;
   lastName: string;
   text: string;
+  image: string;
+  imageId: string;
   date: string;
   likes: object;
   dislikes: object;
