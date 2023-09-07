@@ -28,6 +28,8 @@ const AllPosts = ({ posts, openProfileId }: Props) => {
             postFirstName={post.firstName}
             postLastName={post.lastName}
             postText={post.text}
+            postImage={post?.image}
+            postImageId={post?.imageId}
             postDate={post.date}
             postLikes={post.likes}
             postDislikes={post.dislikes}
