@@ -50,11 +50,7 @@ const PublicPost = ({
   postIndex,
   postUserId,
 }: Props) => {
-  //   const emptyProfilePicture = useEmptyProfilePicture();
   const { loggedInUserId, setLoggedInUserId } = useLoggedInUserId();
-  const { loggedInUserFirstName, setLoggedInUserFirstName } = useLoggedInUserFirstName();
-  const { loggedInUserLastName, setLoggedInUserLastName } = useLoggedInUserLastName();
-  const loggedInUserProfilePicture = useLoggedInUserProfilePicture();
   const [liked, setLiked] = useState(false);
   const [postNumOfLikes, setPostNumOfLikes] = useState(0);
   const [disliked, setDisliked] = useState(false);
@@ -73,6 +69,8 @@ const PublicPost = ({
 
   const imageHeightRef = useRef<HTMLImageElement>(null);
 
+  const [displayFullPostText, setDisplayFullPostText] = useState(false);
+
   //1 Access this posts document from Firestore. postDocRef used throughout component.
   const publicPostsCollection = collection(db, "publicPosts");
   const postDocRef = doc(publicPostsCollection, postId); // Grab the posts on the user's profile
@@ -90,6 +88,10 @@ const PublicPost = ({
     setPostNumOfLikes(Object.keys(postLikes).length); // Number of likes on post
     setPostNumOfDislikes(-Object.keys(postDislikes).length); // Number of dislikes on post
     getPostData(); // Get all the data for this post
+  }, []);
+
+  useEffect(() => {
+    if (postText.length < 300) setDisplayFullPostText(true);
   }, []);
 
   //1 Get the data from this post from the backend and store it in the "postData" state
@@ -254,10 +256,38 @@ const PublicPost = ({
       );
   };
 
-  //2 Get id of post
-  //2 Get reference to post in Firestore
-  //2 Remove post from Firestore
-  //2 Update the posts on the page by fetching and setting in state
+  const displayFullPostOrNot = () => {
+    if (displayFullPostText && postText.length > 300)
+      return (
+        <div>
+          <div>{postText + " "}</div>
+          <span className="text-[#00A7E1]">
+            <button
+              onClick={() => {
+                setDisplayFullPostText(false);
+              }}
+            >
+              see less
+            </button>
+          </span>
+        </div>
+      );
+    if (displayFullPostText) return postText;
+    return (
+      <div>
+        {postText.slice(0, 300) + " "}
+        <span className="text-[#00A7E1]">
+          <button
+            onClick={() => {
+              setDisplayFullPostText(true);
+            }}
+          >
+            ... see more
+          </button>
+        </span>
+      </div>
+    );
+  };
 
   return (
     <div className="w-full min-h-[150px] bg-white shadow-xl">
@@ -278,7 +308,7 @@ const PublicPost = ({
           </div>
           {showDeletePostOrNot()}
         </div>
-        <div className="pt-2">{postText}</div>
+        <div className="pt-2">{displayFullPostOrNot()}</div>
         <div>{displayPostImageOrNot()}</div>
       </div>
       <div className="w-full h-[1px] bg-gray-300"></div>

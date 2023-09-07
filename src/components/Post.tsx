@@ -76,6 +76,8 @@ const Post = ({
 
   const imageHeightRef = useRef<HTMLImageElement>(null);
 
+  const [displayFullPostText, setDisplayFullPostText] = useState(false);
+
   //1 Access this posts document from Firestore. postDocRef used throughout component.
   const usersDocRef = doc(db, "users", openProfileId); // Grab the user
   const postsProfileCollection = collection(usersDocRef, "postsProfile"); // Grab the posts on the user's profile
@@ -107,6 +109,10 @@ const Post = ({
     setPostNumOfLikes(Object.keys(postLikes).length); // Number of likes on post
     setPostNumOfDislikes(-Object.keys(postDislikes).length); // Number of dislikes on post
     getPostData(); // Get all the data for this post
+  }, []);
+
+  useEffect(() => {
+    if (postText.length < 300) setDisplayFullPostText(true);
   }, []);
 
   //1 Get the data from this post from the backend and store it in the "postData" state
@@ -281,6 +287,39 @@ const Post = ({
       );
   };
 
+  const displayFullPostOrNot = () => {
+    if (displayFullPostText && postText.length > 300)
+      return (
+        <div>
+          <div>{postText + " "}</div>
+          <span className="text-[#00A7E1]">
+            <button
+              onClick={() => {
+                setDisplayFullPostText(false);
+              }}
+            >
+              see less
+            </button>
+          </span>
+        </div>
+      );
+    if (displayFullPostText) return postText;
+    return (
+      <div>
+        {postText.slice(0, 300) + " "}
+        <span className="text-[#00A7E1]">
+          <button
+            onClick={() => {
+              setDisplayFullPostText(true);
+            }}
+          >
+            ... see more
+          </button>
+        </span>
+      </div>
+    );
+  };
+
   return (
     <div className="w-full min-h-[150px] bg-white shadow-xl">
       <div className="min-h-[120px] p-4 gap-2">
@@ -300,7 +339,7 @@ const Post = ({
           </div>
           {showDeletePostOrNot()}
         </div>
-        <div className="pt-2">{postText}</div>
+        <div className="pt-2">{displayFullPostOrNot()}</div>
         <div>{displayPostImageOrNot()}</div>
       </div>
       <div className="w-full h-[1px] bg-gray-300"></div>
