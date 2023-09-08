@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import PublicPosts from "./PublicPosts";
+import AllPosts from "./AllPosts";
 
 import { db, storage } from "../config/firebase.config";
 import {
@@ -26,13 +26,6 @@ import { useLoggedInUserProfilePicture } from "./context/LoggedInUserProfileData
 import { useDateFunctions } from "./custom-hooks/useDateFunctions";
 import useInfinityScrollFunctions from "./custom-hooks/useInfinityScrollFunctions";
 import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage";
-//2 Need to split AllPosts into PublicPosts and ProfilePosts ??
-
-//2 Need a MakePost component for public, name it MakePostPublic
-//2 Might be able to use AllPosts component to populate the Public page
-//2 Use Post component to populate the Public page with posts
-
-//2 We should store loggedInUserProfileData in a context so that Public can access it
 
 interface PublicPostData {
   userId: string;
@@ -241,7 +234,7 @@ function Public() {
         <textarea
           placeholder="Make a post"
           className="min-h-[120px] w-full resize-none text-center text-xl p-2 outline-none"
-          maxLength={150}
+          maxLength={1000}
           value={postInput}
           onChange={(e) => {
             setPostInput(e.target.value);
@@ -328,7 +321,12 @@ function Public() {
         </button>
       </section>
       <div className="w-full h-[15px] bg-gray-100"></div>
-      <PublicPosts globalPosts={globalPosts} friendsPosts={friendsPosts} showGlobalPosts={showGlobalPosts} />
+      <AllPosts
+        globalPosts={globalPosts}
+        friendsPosts={friendsPosts}
+        showGlobalPosts={showGlobalPosts}
+        context={"feed"}
+      />
     </div>
   );
 }

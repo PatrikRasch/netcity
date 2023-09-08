@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { updateDoc, DocumentReference } from "firebase/firestore";
 
 import likeIcon from "./../assets/icons/heartPlus.png";
@@ -13,8 +13,8 @@ interface Props {
   setLiked: (value: boolean) => void;
   numOfLikes: number;
   setNumOfLikes: (value: number) => void;
-  removeLike: () => Promise<void>;
-  removeDislike: () => Promise<void>;
+  removeLike: (value: DocumentReference) => Promise<void>;
+  removeDislike: (value: DocumentReference) => Promise<void>;
   loggedInUserId: string;
   docRef: DocumentReference;
   data: TargetData | TargetCommentData | null;
@@ -33,12 +33,7 @@ function Likes({
   docRef,
   data,
 }: Props) {
-  //2 It can't add the likes correctly because they aren't being fetched from the backend properly when a like is added?
-  //2 The addLike function only knows about the like that has just now been added?
-  //2 That's because postLikes is declared within this custom hook as an empty object
-  //2 Instead, it should base its state on what it gets from the backend
-
-  const addLike = async () => {
+  const addLike = async (commentDocRef: DocumentReference) => {
     setLiked(true); // Set liked to true, makes heart red
     // Frontend updates:
     (totalLikes as { [key: string]: boolean })[loggedInUserId] = true; // Add the userId into postLikes as true
@@ -46,23 +41,23 @@ function Likes({
     // Backend updates:
     const newLikes = { ...data?.likes, [loggedInUserId]: true }; // Define new object to hold the likes
     try {
-      await updateDoc(docRef, { likes: newLikes }); // Update the backend with the new likes
+      await updateDoc(commentDocRef, { likes: newLikes }); // Update the backend with the new likes
     } catch (err) {
       console.error(err);
     }
   };
 
   const handleClickLike = async () => {
-    // If post not liked
-    if (!liked) {
-      if (disliked) {
-        removeDislike();
+    if (docRef !== undefined) {
+      if (!liked) {
+        if (disliked) {
+          removeDislike(docRef);
+        }
+        addLike(docRef);
       }
-      addLike();
-    }
-    // If post already liked
-    if (liked) {
-      removeLike();
+      if (liked) {
+        removeLike(docRef);
+      }
     }
   };
 

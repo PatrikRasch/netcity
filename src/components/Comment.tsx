@@ -121,23 +121,6 @@ const Comment = ({
     setProfilePicture(profilePictureRef);
   };
 
-  //1 The like icon on each comment. Shows if the user has liked a comment.
-  const showLikedOrNot = () => {
-    if (!liked) {
-      return <img src={likeIcon} alt="" className="max-h-6" />;
-    } else {
-      return <img src={heartLiked} alt="" className="max-h-6" />;
-    }
-  };
-  //1 The dislike icon on each comment. Shows if the user has disliked a comment.
-  const showDislikedOrNot = () => {
-    if (!disliked) {
-      return <img src={dislikeIcon} alt="" className="max-h-6" />;
-    } else {
-      return <img src={heartDisliked} alt="" className="max-h-6" />;
-    }
-  };
-
   useEffect(() => {
     getCommentData();
     setCommentNumOfLikes(Object.keys(commentLikes).length);
@@ -149,12 +132,7 @@ const Comment = ({
     if (loggedInUserId === commentById) {
       return (
         <div>
-          <img
-            src={deleteIcon}
-            alt=""
-            className="max-h-[15px] cursor-pointer"
-            onClick={() => deletePostClicked()}
-          />
+          <img src={deleteIcon} alt="" className="max-h-[15px] cursor-pointer" onClick={() => deletePostClicked()} />
         </div>
       );
     } else return <div></div>;

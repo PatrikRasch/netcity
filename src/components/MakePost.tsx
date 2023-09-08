@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDateFunctions } from "./custom-hooks/useDateFunctions";
 
+import { v4 as uuidv4 } from "uuid";
+
 import { GetAllPosts, VisitingUser } from "../interfaces";
 import { useEmptyProfilePicture } from "./context/EmptyProfilePictureContextProvider";
 import { useLoggedInUserId } from "./context/LoggedInUserProfileDataContextProvider";
@@ -9,8 +11,11 @@ import { useLoggedInUserFirstName } from "./context/LoggedInUserProfileDataConte
 import { useLoggedInUserLastName } from "./context/LoggedInUserProfileDataContextProvider";
 import { useLoggedInUserProfilePicture } from "./context/LoggedInUserProfileDataContextProvider";
 
-import { db } from "./../config/firebase.config";
-import { doc, addDoc, collection } from "firebase/firestore";
+import { db, storage } from "./../config/firebase.config";
+import { doc, addDoc, collection, updateDoc } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
+
+import imageIcon from "./../assets/icons/imageIcon.png";
 
 interface Props {
   getAllPosts: GetAllPosts["getAllPosts"];
@@ -29,6 +34,8 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
   const { loggedInUserFirstName, setLoggedInUserFirstName } = useLoggedInUserFirstName();
   const { loggedInUserLastName, setLoggedInUserLastName } = useLoggedInUserLastName();
   const loggedInUserProfilePicture = useLoggedInUserProfilePicture();
+  const [imageAddedToPost, setImageAddedToPost] = useState<string>("");
+  const [imageAddedToPostId, setImageAddedToPostId] = useState<string>("");
 
   //1 Gets the reference to the postsProfile collection for the user
   const getPostsProfileRef = () => {
@@ -47,6 +54,8 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
     firstName: string;
     lastName: string;
     text: string;
+    image: string;
+    imageId: string;
     date: string;
     likes: object;
     dislikes: object;
@@ -64,15 +73,66 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
     }
   };
 
+  const addImageToPost = async (imageToAddToPost: File | null) => {
+    if (imageToAddToPost === null) return; // Return if no imagine is uploaded
+    const imageId = imageToAddToPost.name + " " + uuidv4();
+    const storageRef = ref(storage, `postImages/${imageId}`); // Connect to storage
+    try {
+      const addedImage = await uploadBytes(storageRef, imageToAddToPost); // Upload the image
+      const downloadURL = await getDownloadURL(addedImage.ref); // Get the downloadURL for the image
+      // Update Firestore Database with image:
+      // const usersCollectionRef = collection(db, "users"); // Grabs the users collection
+      // const loggedInUserDocRef = doc(usersCollectionRef, loggedInUserId); // Grabs the doc where the user is
+      // // const postRef = doc(loggedInUserDocRef, "postsProfile", postId);
+      // await updateDoc(postRef, { image: downloadURL }); // Add the image into Firestore
+      setImageAddedToPostId(imageId);
+      setImageAddedToPost(downloadURL);
+      // alert("Profile picture uploaded"); //6 Should be sexified
+    } catch (err) {
+      console.error(err);
+      //6 Need a "Something went wrong, please try again"
+    }
+  };
+
+  const displayUploadedImageOrNot = () => {
+    if (imageAddedToPost)
+      return (
+        <div className="pb-4 pr-8">
+          <div className="relative">
+            <img src={imageAddedToPost} alt="" className="rounded-xl shadow-xl border-black border-2 p-[3px]" />
+            <div
+              className="absolute top-[15px] right-[15px] bg-white drop-shadow-xl rounded-[50%] w-[22px] h-[22px] opacity-90 flex justify-center items-center hover:cursor-pointer"
+              onClick={() => {
+                deleteImageAddedToPost();
+              }}
+            >
+              X
+            </div>
+          </div>
+        </div>
+      );
+    if (!imageAddedToPost) return null;
+  };
+
+  const deleteImageAddedToPost = async () => {
+    try {
+      if (imageAddedToPost) {
+        const postImageRef = ref(storage, `postImages/${imageAddedToPostId}`);
+        await deleteObject(postImageRef);
+        setImageAddedToPost("");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div>
       <div className="w-full min-h-[150px] bg-white shadow-xl">
         <div className="min-h-[120px] flex p-4 gap-2">
           <div className="min-w-[50px] max-w-min">
             <img
-              src={
-                loggedInUserProfilePicture === "" ? emptyProfilePicture : loggedInUserProfilePicture
-              }
+              src={loggedInUserProfilePicture === "" ? emptyProfilePicture : loggedInUserProfilePicture}
               alt="profile"
               className="rounded-[50%] aspect-square object-cover"
             />
@@ -80,7 +140,7 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
           <textarea
             placeholder="Make a post"
             className="w-full bg-transparent resize-none outline-none"
-            maxLength={150}
+            maxLength={1000}
             value={postInput}
             onChange={(e) => {
               setPostInput(e.target.value);
@@ -88,17 +148,35 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
             }}
           />
         </div>
-        {/* <div className="w-full h-[2px] bg-gray-300"></div> */}
+        <div className="grid grid-cols-[80px,1fr]">
+          <input
+            type="file"
+            id="imageInput"
+            hidden
+            onChange={(e) => {
+              console.log("Change!");
+              addImageToPost(e.target.files?.[0] || null);
+              e.target.value = "";
+            }}
+          />
+          <label htmlFor="imageInput" className="hover:cursor-pointer block w-max">
+            <img src={imageIcon} alt="add and upload file to post" />
+          </label>
+          {displayUploadedImageOrNot()}
+        </div>
         <button
           className="min-h-[30px] w-full bg-[#00A7E1] text-white"
           onClick={(e) => {
-            if (postInput.length === 0) return console.log("add text to input before posting");
+            if (postInput.length === 0 && imageAddedToPost === "")
+              return console.log("add text or image before posting");
             setFullTimestamp(new Date());
             writePost({
               timestamp: fullTimestamp,
               firstName: loggedInUserFirstName,
               lastName: loggedInUserLastName,
               text: postInput,
+              image: imageAddedToPost,
+              imageId: imageAddedToPostId,
               date: dateDayMonthYear,
               likes: {},
               dislikes: {},
@@ -107,6 +185,7 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
             });
             getAllPosts();
             setPostInput("");
+            setImageAddedToPost("");
           }}
         >
           Post

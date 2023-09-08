@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { updateDoc, DocumentReference } from "firebase/firestore";
 
 import dislikeIcon from "./../assets/icons/heartMinus.png";
@@ -13,10 +13,10 @@ interface Props {
   setDisliked: (value: boolean) => void;
   numOfDislikes: number;
   setNumOfDislikes: (value: number) => void;
-  removeLike: () => Promise<void>;
-  removeDislike: () => Promise<void>;
+  removeLike: (value: DocumentReference) => Promise<void>;
+  removeDislike: (value: DocumentReference) => Promise<void>;
   loggedInUserId: string;
-  docRef: DocumentReference;
+  docRef?: DocumentReference;
   data: TargetData | TargetCommentData | null;
 }
 
@@ -33,27 +33,27 @@ function Dislikes({
   docRef,
   data,
 }: Props) {
-  const addDislike = async () => {
+  const addDislike = async (commentDocRef: DocumentReference) => {
     setDisliked(true); // Set disliked to true, makes heart black
     // Frontend updates:
     (totalDislikes as { [key: string]: boolean })[loggedInUserId] = true; // Add the userId into postDislikes as true
     setNumOfDislikes(-Object.keys(totalDislikes).length); // Update state for number of dislikes to display
     // Backend updates:
     const newDislikes = { ...data?.dislikes, [loggedInUserId]: true }; // Define new object to hold the dislikes
-    await updateDoc(docRef, { dislikes: newDislikes }); // Update the backend with the new dislikes
+    await updateDoc(commentDocRef, { dislikes: newDislikes }); // Update the backend with the new dislikes
   };
 
   const handleClickDislike = async () => {
-    // If post not disliked
-    if (!disliked) {
-      if (liked) {
-        removeLike();
+    if (docRef !== undefined) {
+      if (!disliked) {
+        if (liked) {
+          removeLike(docRef);
+        }
+        addDislike(docRef);
       }
-      addDislike();
-    }
-    // If post already liked
-    if (disliked) {
-      removeDislike();
+      if (disliked) {
+        removeDislike(docRef);
+      }
     }
   };
 

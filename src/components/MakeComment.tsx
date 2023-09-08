@@ -1,7 +1,6 @@
 import React, { useState, useRef } from "react";
 
-import { db } from "./../config/firebase.config";
-import { collection, doc, addDoc } from "firebase/firestore";
+import { collection, doc, addDoc, DocumentReference } from "firebase/firestore";
 import { useDateFunctions } from "./custom-hooks/useDateFunctions";
 
 import postIcon from "./../assets/icons/post.png";
@@ -12,9 +11,10 @@ interface Props {
   loggedInUserLastName: string;
   loggedInUserProfilePicture: string;
   loggedInUserId: string;
-  openProfileId: string;
+  openProfileId?: string;
   postId: string;
-  getAllComments: () => Promise<void>;
+  getAllComments: (value: DocumentReference) => Promise<void>;
+  postDocRef: DocumentReference;
   numOfCommentsShowing: number;
   setNumOfCommentsShowing: (value: number) => void;
 }
@@ -26,20 +26,16 @@ function MakeComment({
   loggedInUserId,
   openProfileId,
   postId,
+  getAllComments,
+  postDocRef,
   numOfCommentsShowing,
   setNumOfCommentsShowing,
-  getAllComments,
 }: Props) {
   const emptyProfilePicture = useEmptyProfilePicture();
   const [postCommentInput, setPostCommentInput] = useState("");
   const [fullTimestamp, setFullTimestamp] = useState({});
   const { dateDayMonthYear } = useDateFunctions();
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-
-  const usersDoc = doc(db, "users", openProfileId); // Grab the user
-
-  const postsProfileCollection = collection(usersDoc, "postsProfile"); // Grab the posts on the user's profile
-  const postDoc = doc(postsProfileCollection, postId); // grab this post
 
   const postComment = async (commentData: {
     timestamp: object;
@@ -54,22 +50,22 @@ function MakeComment({
   }) => {
     //2 Start by adding document to the backend
     try {
-      const commentCollection = collection(postDoc, "comments");
+      const commentCollection = collection(postDocRef, "comments");
       await addDoc(commentCollection, commentData);
       console.log("Comment added to Firebase");
       setNumOfCommentsShowing(numOfCommentsShowing + 1);
-      getAllComments();
+      getAllComments(postDocRef);
     } catch (err) {
       console.error(err);
     }
   };
 
-  //1 Gets the reference to the postsProfile collection for the user
-  const getPostsProfileRef = () => {
-    if (!openProfileId) return console.log("No userProfileId"); //6 Need to make this error better later
-    const targetUser = doc(db, "users", openProfileId);
-    return collection(targetUser, "postsProfile");
-  };
+  // //1 Gets the reference to the postsProfile collection for the user
+  // const getPostsProfileRef = () => {
+  //   if (!openProfileId) return console.log("No userProfileId"); //6 Need to make this error better later
+  //   const targetUser = doc(db, "users", openProfileId);
+  //   return collection(targetUser, "postsProfile");
+  // };
 
   //1 Changes the height of the comment input field dynamically
   const handleTextareaChange = () => {
@@ -112,8 +108,7 @@ function MakeComment({
         <button
           className="justify-self-center self-center rounded-[50%]"
           onClick={(e) => {
-            if (postCommentInput.length === 0)
-              return console.log("add text to input before posting");
+            if (postCommentInput.length === 0) return console.log("add text to input before posting");
             postComment({
               timestamp: fullTimestamp,
               firstName: loggedInUserFirstName,

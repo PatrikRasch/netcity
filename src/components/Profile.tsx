@@ -164,6 +164,7 @@ const Profile = () => {
           <AllPosts
             openProfileId={openProfileId} // Id of profile being viewed
             posts={posts}
+            context={"profile"}
           />
         </>
       );

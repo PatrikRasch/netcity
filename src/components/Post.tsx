@@ -4,20 +4,27 @@ import MakeComment from "./MakeComment";
 import Likes from "./Likes";
 import Dislikes from "./Dislikes";
 
+import emptyProfilePicture from "./../assets/icons/emptyProfilePicture.jpg";
 import commentIcon from "./../assets/icons/comment.png";
 import deleteIcon from "./../assets/icons/delete.png";
-import deleteRedIcon from "./../assets/icons/delete-red.png";
 
 import { db, storage } from "./../config/firebase.config";
-import { doc, getDoc, getDocs, updateDoc, deleteDoc, collection, orderBy, query, onSnapshot } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  updateDoc,
+  deleteDoc,
+  collection,
+  orderBy,
+  query,
+  onSnapshot,
+  getDocs,
+  DocumentReference,
+} from "firebase/firestore";
 import { ref, deleteObject } from "firebase/storage";
-import { useDateFunctions } from "./custom-hooks/useDateFunctions";
 import { useEmptyProfilePicture } from "./context/EmptyProfilePictureContextProvider";
 import { useLoggedInUserId } from "./context/LoggedInUserProfileDataContextProvider";
 import { TargetData, CommentData } from "../interfaces";
-import { DEFAULT_MAX_VERSION } from "tls";
-
-//6 Have to implement comments into each post
 
 interface Props {
   postFirstName: string;
@@ -29,13 +36,16 @@ interface Props {
   postLikes: object;
   postDislikes: object;
   postComments: object;
-  openProfileId: string;
-  loggedInUserProfilePicture: string;
-  setLoggedInUserProfilePicture: (value: string) => void;
   postId: string;
   postIndex: number;
   postUserId: string;
+  openProfileId?: string;
+  loggedInUserProfilePicture: string;
+  setLoggedInUserProfilePicture: (value: string) => void;
+  context: string;
 }
+
+//6 Clicking comments (to see comments not working), potentially multiple other issues regarding interacting with a post. Must confirm.
 
 const Post = ({
   postFirstName,
@@ -53,6 +63,7 @@ const Post = ({
   postId,
   postIndex,
   postUserId,
+  context,
 }: Props) => {
   const emptyProfilePicture = useEmptyProfilePicture();
   const { loggedInUserId } = useLoggedInUserId();
@@ -78,18 +89,51 @@ const Post = ({
 
   const [displayFullPostText, setDisplayFullPostText] = useState(false);
 
-  //1 Access this posts document from Firestore. postDocRef used throughout component.
-  const usersDocRef = doc(db, "users", openProfileId); // Grab the user
-  const postsProfileCollection = collection(usersDocRef, "postsProfile"); // Grab the posts on the user's profile
-  const postDocRef = doc(postsProfileCollection, postId); // grab this post
+  const [postDocRef, setPostDocRef] = useState<DocumentReference>(null!);
 
-  const getNumOfComments = async () => {
+  let profilePostDocRef: any; // I know this is frowned upon
+
+  // - Get reference for posts from profile
+  if (openProfileId) {
+    const openProfileDocRef = doc(db, "users", openProfileId); // Grab the user
+    const profilePostsCollection = collection(openProfileDocRef, "postsProfile"); // Grab the posts on the user's profile
+    profilePostDocRef = doc(profilePostsCollection, postId); // grab this post
+  }
+
+  useEffect(() => {
+    if (context === "feed") {
+      getNumOfComments(feedPostDocRef);
+      setPostDocRef(feedPostDocRef);
+      getPostData(feedPostDocRef);
+      getAllComments(feedPostDocRef);
+    }
+    if (context === "profile") {
+      getNumOfComments(profilePostDocRef);
+      setPostDocRef(profilePostDocRef);
+      getPostData(profilePostDocRef);
+      getAllComments(profilePostDocRef);
+    }
+
+    if (postText.length < 300) setDisplayFullPostText(true);
+
+    if (postIndex === 0) setShowMakeComment(true);
+    setPostNumOfLikes(Object.keys(postLikes).length); // Number of likes on post
+    setPostNumOfDislikes(-Object.keys(postDislikes).length); // Number of dislikes on post
+  }, []);
+
+  // - Get reference for posts from feed
+  const feedPostsCollection = collection(db, "publicPosts");
+  const feedPostDocRef = doc(feedPostsCollection, postId); // Grab the posts on the user's profile
+
+  const getNumOfComments = async (postDocRef: DocumentReference) => {
     const commentsCollection = collection(postDocRef, "comments");
-    const commentsDocs = await getDocs(commentsCollection);
-    setPostTotalNumOfComments(commentsDocs.size);
+    try {
+      const commentsDocs = await getDocs(commentsCollection);
+      setPostTotalNumOfComments(commentsDocs.size);
+    } catch (err) {
+      console.error(err);
+    }
   };
-
-  getNumOfComments();
 
   const getLoggedInUserInformation = async (loggedInUserId: string) => {
     if (!loggedInUserId) return <h1>Loading...</h1>;
@@ -99,31 +143,22 @@ const Post = ({
     setLoggedInUserFirstName(data?.firstName);
     setLoggedInUserLastName(data?.lastName);
     const profilePictureRef = data?.profilePicture;
-    setLoggedInUserProfilePicture(profilePictureRef);
+    if (setLoggedInUserProfilePicture) setLoggedInUserProfilePicture(profilePictureRef);
   };
 
   getLoggedInUserInformation(loggedInUserId);
 
-  useEffect(() => {
-    if (postIndex === 0) setShowMakeComment(true);
-    setPostNumOfLikes(Object.keys(postLikes).length); // Number of likes on post
-    setPostNumOfDislikes(-Object.keys(postDislikes).length); // Number of dislikes on post
-    getPostData(); // Get all the data for this post
-  }, []);
-
-  useEffect(() => {
-    if (postText.length < 300) setDisplayFullPostText(true);
-  }, []);
-
-  //1 Get the data from this post from the backend and store it in the "postData" state
-  const getPostData = async () => {
+  // - Get the data from this post from the backend and store it in the "postData" state
+  const getPostData = async (postDocRef: DocumentReference) => {
     try {
       const targetDoc = await getDoc(postDocRef); // Fetch the data
-      const data = targetDoc.data();
-      setPostData(data as TargetData | null); // Store the post data in state
-      if (data?.likes?.hasOwnProperty(loggedInUserId)) setLiked(true); // Has the user already liked the post?
-      if (data?.dislikes?.hasOwnProperty(loggedInUserId)) setDisliked(true); // Has the user already disliked the post?
-      getPostProfilePicture(data?.userId); // Grab the profile picture of the user who made the post
+      const data: TargetData | undefined = targetDoc.data() as TargetData | undefined;
+      if (data) {
+        setPostData(data);
+        if (data?.likes?.hasOwnProperty(loggedInUserId)) setLiked(true); // Has the user already liked the post?
+        if (data?.dislikes?.hasOwnProperty(loggedInUserId)) setDisliked(true); // Has the user already disliked the post?
+        getPostProfilePicture(data?.userId); // Grab the profile picture of the user who made the post
+      }
     } catch (err) {
       console.error(err);
     }
@@ -138,10 +173,7 @@ const Post = ({
     setPostProfilePicture(profilePictureRef);
   };
 
-  //2 Could potentially add in a revert of the frontend update if the backend update
-  //2 was to fail for whatever reason, and then alert the user of the issue. Optimistic UI, that is.
-
-  const removeLike = async () => {
+  const removeLike = async (postDocRef: DocumentReference) => {
     setLiked(false); // Set liked to false, makes heart empty
     // Frontend updates
     delete (postLikes as { [key: string]: boolean })[loggedInUserId]; // Remove the userId from postLikes
@@ -152,7 +184,7 @@ const Post = ({
     await updateDoc(postDocRef, { likes: newLikes }); // Update the backend with the new likes
   };
 
-  const removeDislike = async () => {
+  const removeDislike = async (postDocRef: DocumentReference) => {
     setDisliked(false); // Set liked to false, makes heart empty
     // Frontend updates
     delete (postDislikes as { [key: string]: boolean })[loggedInUserId]; // Remove the userId from postLikes
@@ -165,7 +197,7 @@ const Post = ({
 
   //1 GET POSTS FOR PROFILE CURRENTLY BEING VIEWED
   //  - Gets all the posts (profilePosts in Firestore) from the current profile subcollection.
-  const getAllComments = async () => {
+  const getAllComments = async (postDocRef: DocumentReference) => {
     try {
       const commentsCollection = collection(postDocRef, "comments");
       const sortedComments = query(commentsCollection, orderBy("timestamp", "desc")); // Sorts comments in descending order. "query" and "orderBy" are Firebase/Firestore methods
@@ -183,11 +215,6 @@ const Post = ({
     }
   };
 
-  //1 Fetches and sets in state all posts from Firebase.
-  useEffect(() => {
-    getAllComments();
-  }, []);
-
   useEffect(() => {
     const img = new Image();
     img.src = postImage;
@@ -201,18 +228,19 @@ const Post = ({
     };
   }, []);
 
-  //1 Determines if the comment input field is to be displayed on the post
-  const displayMakeComment = () => {
+  // - Determines if the comment input field is to be displayed on the post
+  const displayMakeCommentOrNot = () => {
     if (showMakeComment === true)
       return (
         <MakeComment
-          loggedInUserFirstName={postFirstName}
-          loggedInUserLastName={postLastName}
+          loggedInUserFirstName={loggedInUserFirstName}
+          loggedInUserLastName={loggedInUserLastName}
           loggedInUserProfilePicture={loggedInUserProfilePicture}
           loggedInUserId={loggedInUserId}
           openProfileId={openProfileId}
           postId={postId}
           getAllComments={getAllComments}
+          postDocRef={postDocRef}
           numOfCommentsShowing={numOfCommentsShowing}
           setNumOfCommentsShowing={setNumOfCommentsShowing}
         />
@@ -381,7 +409,7 @@ const Post = ({
       </div>
       <div className="w-full h-[1px] bg-gray-300"></div>
       {/* //1 Add comment  */}
-      {displayMakeComment()}
+      {displayMakeCommentOrNot()}
       {/* //1 Posted comments */}
       <AllCommentsOnPost
         comments={comments}
@@ -399,34 +427,3 @@ const Post = ({
 };
 
 export default Post;
-
-//3 If user clicks on like/dislike, add the userId into the object as true
-//3   Update the backend with the like
-
-//3 For tomorrow: What is the difference on postLikes and postData?
-//3   1. postLikes is the prop for the "likes" key-value pair  for the post, coming from AllPosts
-//3   2. postData is state declared in this component, which gets populated by the getPostData() function
-
-//3 Next goal is to ensure that when a like is removed, it is reflected on the screen.
-//3 Work with the useEffect below and handleClick. Gotta do something with state
-//3 That updates every time the like button is clicked.
-
-//3 Only allow a userId to have either liked or disliked a post.
-//3 - If a user dislikes a post after having liked it, remove the like
-//3 - If a user likes post after having disliked it, remove the dislike
-
-//3 Must take in props with postUser, postDate, postText, postNumOfLikes, postNumOfDislikes, postNumOfComments
-//3    When a new post is made, the numbers should be 0 (or "no comments").
-//3    The date should be set to today's date
-
-//3 Posts needs to be populated with data that comes from Firebase.
-//3   When a user makes a post, all of its data should populate a Post component
-
-//3 Need to get profile picture based on userId that made the post.
-//3 Can go into the "users" collection, pick the ID that matches the userId value of the post,
-//3 then take the profilePicture string from the user and display it here.
-
-//3 Every post needs a subcollection that holds all the comments.
-//3 Every post needs a way to track which users has liked the post,
-//3 so that a user can only like a post once.
-//3 Comments will demand this, but with even more complexity.
