@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Likes from "./Likes";
 import Dislikes from "./Dislikes";
 import { useParams } from "react-router-dom";
@@ -55,7 +56,12 @@ const Comment = ({
   const [commentNumOfDislikes, setCommentNumOfDislikes] = useState(0);
   const [profilePicture, setProfilePicture] = useState("");
   const { commentData, setCommentData } = useCommentData();
-  // const [commentDocRef, setCommentDocRef] = useState("");
+
+  const navigate = useNavigate();
+
+  const navigateToUser = () => {
+    navigate(`/profile/${commentById}`);
+  };
 
   // //1 Access this comment document from Firestore
   const getCommentDocRef = () => {
@@ -154,12 +160,22 @@ const Comment = ({
           src={profilePicture === "" ? emptyProfilePicture : profilePicture}
           alt="User who made comment"
           className="rounded-[50%] max-w-[38px] self-start aspect-square object-cover"
+          onClick={() => {
+            navigateToUser();
+          }}
         />
         <div className="flex flex-col">
           <div className="bg-gray-200 rounded-xl p-2">
             <div className="grid grid-cols-[20fr,2fr] text-[12px]">
               <div className="flex gap-4">
-                <div className="font-bold">{commentFirstName + " " + commentLastName}</div>
+                <div
+                  className="font-bold"
+                  onClick={() => {
+                    navigateToUser();
+                  }}
+                >
+                  {commentFirstName + " " + commentLastName}
+                </div>
                 <div className="opacity-50 text-[10px] self-center">{commentDate}</div>
               </div>
               <div>{showDeleteCommentOrNot()}</div>
