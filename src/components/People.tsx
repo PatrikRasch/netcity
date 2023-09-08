@@ -127,7 +127,6 @@ const People = () => {
     try {
       const usersReceivedFriendRequestsArray: UserData[] = [];
       allUsers?.forEach((user: DocumentData) => {
-        console.log("here");
         const userData = user.data() as UserData;
         // if (user.id === loggedInUserId) return; // Remove logged in user from the list of users
         if (loggedInUserData?.currentReceivedFriendRequests.hasOwnProperty(user.id))

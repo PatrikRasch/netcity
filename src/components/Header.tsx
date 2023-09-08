@@ -15,10 +15,10 @@ const Header = () => {
     <div>
       <div className="h-[100px] grid grid-cols-3 items-center text-center text-3xl">
         <div className="cursor-pointer justify-self-center" onClick={() => navigate("/people")}>
-          People
+          Friends
         </div>
         <div className="cursor-pointer justify-self-center" onClick={() => navigate("/public")}>
-          Public
+          Feed
         </div>
         <img
           src={loggedInUserProfilePicture === "" ? emptyProfilePicture : loggedInUserProfilePicture}

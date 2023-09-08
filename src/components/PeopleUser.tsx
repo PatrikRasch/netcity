@@ -19,6 +19,8 @@ interface Props {
   getAndCategoriseUsers: () => Promise<void>;
   loggedInUserData: DocumentData | undefined;
   setLoggedInUserData: (value: object) => void;
+  numOfReceivedFriendRequests: number;
+  setNumOfReceivedFriendRequests: (value: number) => void;
 }
 
 function PeopleUser({
@@ -28,6 +30,8 @@ function PeopleUser({
   userId,
   loggedInUserData,
   setLoggedInUserData,
+  numOfReceivedFriendRequests,
+  setNumOfReceivedFriendRequests,
 }: Props) {
   const navigate = useNavigate();
   const emptyProfilePicture = useEmptyProfilePicture();
@@ -54,6 +58,10 @@ function PeopleUser({
     navigate(`/profile/${userId}`);
   };
 
+  // - Document references. Used throughout component
+  const userDocRef = doc(db, "users", userId);
+  const loggedInUserDocRef = doc(db, "users", loggedInUserId);
+
   // - Gets and sets the data in state for the user. Only used when the component mounts
   const getUserData = async () => {
     const userDoc = await getDoc(userDocRef);
@@ -77,10 +85,6 @@ function PeopleUser({
       console.error(err);
     }
   };
-
-  // - Document references. Used throughout component
-  const userDocRef = doc(db, "users", userId);
-  const loggedInUserDocRef = doc(db, "users", loggedInUserId);
 
   // - Friend interaction function → Send a friend request
   const sendFriendRequest = async () => {
@@ -179,6 +183,7 @@ function PeopleUser({
       // Update the user accepting the request
       setReceivedFriendRequestFromUser(false);
       setFriendsWithUser(true);
+      setNumOfReceivedFriendRequests(numOfReceivedFriendRequests - 1);
       await runTransaction(db, async (transaction) => {
         // Handling the user who sent the request first
         // Prepare the new data
@@ -211,6 +216,7 @@ function PeopleUser({
     } catch (err) {
       setReceivedFriendRequestFromUser(true);
       setFriendsWithUser(false);
+      setNumOfReceivedFriendRequests(numOfReceivedFriendRequests + 1);
       console.error(err);
     }
   };
@@ -219,6 +225,7 @@ function PeopleUser({
   const declineFriendRequest = async () => {
     try {
       setReceivedFriendRequestFromUser(false);
+      setNumOfReceivedFriendRequests(numOfReceivedFriendRequests - 1);
       await runTransaction(db, async (transaction) => {
         // Checks that the two people are already friends before proceeding
         if (
@@ -246,6 +253,7 @@ function PeopleUser({
       });
     } catch (err) {
       setReceivedFriendRequestFromUser(true);
+      setNumOfReceivedFriendRequests(numOfReceivedFriendRequests + 1);
       console.error(err);
     }
   };

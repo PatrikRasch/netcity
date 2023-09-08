@@ -28,8 +28,11 @@ export default App;
 //3 Ability to delete comments you've made
 //3 Liking and disliking from (in Current Known Problems)
 //3 The Public page in general must be implemented
-//2 The ability to add friends
-//2 Option to have closed or open profile
+//3 The ability to add friends
+//3 Option to see all public posts or only friends' posts
+//3 Option to make public post or only to friends
+//3 Option to have closed or open profile
+
 //2 Implement react-image for better load times (it might use caching for us?)
 
 //2 Profile pictures being stored in cache (or a way to not load the same images every time they're displayed)

@@ -67,12 +67,7 @@ const Register = () => {
 
   //1 Runs every time a user tries to register
   const checkIfAllFieldsEntered = () => {
-    if (
-      firstName.length === 0 ||
-      lastName.length === 0 ||
-      email.length === 0 ||
-      password.length === 0
-    ) {
+    if (firstName.length === 0 || lastName.length === 0 || email.length === 0 || password.length === 0) {
       setFormFilled(false);
       alert("All fields are required (change this to better form validation later)");
     } else setFormFilled(true);
@@ -109,17 +104,13 @@ const Register = () => {
 
   return (
     <div className="min-h-[100svh]">
-      <div
-        className={`${showLoadingBar ? "opacity-100" : "opacity-0"} pointer-events-none transition`}
-      >
+      <div className={`${showLoadingBar ? "opacity-100" : "opacity-0"} pointer-events-none transition`}>
         <div className="absolute inset-0 flex justify-center items-center z-20">
           <LoadingBar />
         </div>
         <div className="absolute bg-black opacity-25 inset-0 z-10"></div>
       </div>
-      <div
-        className={`${accountCreated ? "opacity-100" : "opacity-0"} pointer-events-none transition`}
-      >
+      <div className={`${accountCreated ? "opacity-100" : "opacity-0"} pointer-events-none transition`}>
         {accountCreatedJSX()}
       </div>
       <div className="min-h-[90svh] grid justify-center">
@@ -207,9 +198,7 @@ const Register = () => {
         </button>
       </div>
       {/*//1 Footer */}
-      <div className="flex justify-center items-end text-3xl min-h-[10svh] pb-8 font-Hertical">
-        NetCity
-      </div>
+      <div className="flex justify-center items-end text-3xl min-h-[10svh] pb-8 font-Hertical">NetCity</div>
     </div>
   );
 };

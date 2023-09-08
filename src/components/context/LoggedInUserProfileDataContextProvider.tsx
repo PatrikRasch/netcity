@@ -52,13 +52,6 @@ interface Props {
   children: ReactNode;
 }
 
-// const LoggedInUserProfilePictureComponent = () => {
-//   const {src} = useImage({
-//     srcList: LoggedInUserProfilePicture
-//   })
-//   return <img src={src}/>
-// }
-
 //1 Actual function which returns the provider
 const LoggedInUserProfileDataProvider = ({ children }: Props) => {
   const { openProfileId } = useParams();

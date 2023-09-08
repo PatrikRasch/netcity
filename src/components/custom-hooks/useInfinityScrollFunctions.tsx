@@ -5,7 +5,7 @@ interface Props {
   setFetchingMorePosts: (value: boolean) => void;
   postsLoaded: number;
   setPostsLoaded: (value: number) => void;
-  getPublicPosts: () => Promise<void>;
+  getGlobalPosts: () => Promise<void>;
 }
 
 function useInfinityScrollFunctions({
@@ -13,7 +13,7 @@ function useInfinityScrollFunctions({
   setFetchingMorePosts,
   postsLoaded,
   setPostsLoaded,
-  getPublicPosts,
+  getGlobalPosts,
 }: Props) {
   //1 Adds a scroll eventListener to the page
   useEffect(() => {
@@ -25,10 +25,7 @@ function useInfinityScrollFunctions({
 
   //1 Activates the useEffect below which initiates the fetching of 10 more posts
   const handleScroll = () => {
-    if (
-      window.innerHeight + window.scrollY >= document.body.scrollHeight - 100 &&
-      !fetchingMorePosts
-    ) {
+    if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 100 && !fetchingMorePosts) {
       setFetchingMorePosts(true);
     }
   };
@@ -43,7 +40,7 @@ function useInfinityScrollFunctions({
 
   //1 Loads 10 posts from the feed. Loads whatever value postsLoaded holds
   useEffect(() => {
-    getPublicPosts();
+    getGlobalPosts();
   }, [postsLoaded]);
 
   return;

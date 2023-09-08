@@ -21,6 +21,7 @@ export interface TargetData {
   dislikes: object;
   text: string;
   timestamp: firebase.firestore.Timestamp;
+  userId: string;
 }
 
 export interface TargetCommentData {
@@ -64,6 +65,7 @@ export interface PostData {
   dislikes: object;
   comments: object;
   id: string;
+  timestamp: object;
   userId: string;
 }
 
@@ -73,10 +75,6 @@ export interface FirstNameProp {
 
 export interface LastNameProp {
   lastName: string;
-}
-
-export interface PostsProp {
-  posts: PostData[];
 }
 
 export interface GetAllPosts {

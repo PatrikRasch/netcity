@@ -16,9 +16,6 @@ interface Props {
   setBioText: (value: string) => void;
 }
 
-//2 Have to update bio in the backend and fetch it from there when loading the component
-//2 Need to fetch bio from profile that is currently open (can use the URL for that)
-
 const About = ({ openProfileId, visitingUser, bioText, setBioText }: Props) => {
   const { loggedInUserId } = useLoggedInUserId();
   const [editButtonText, setEditButtonText] = useState("");
@@ -72,9 +69,7 @@ const About = ({ openProfileId, visitingUser, bioText, setBioText }: Props) => {
       return (
         <div className="grid justify-items-center">
           <div className="text-3xl mb-3 mt-3">Bio</div>
-          <div className="w-[90svw] min-h-max border-2 border-black rounded-lg p-4 break-words">
-            {bioText}
-          </div>
+          <div className="w-[90svw] min-h-max border-2 border-black rounded-lg p-4 break-words">{bioText}</div>
         </div>
       );
     }
