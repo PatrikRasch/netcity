@@ -7,19 +7,12 @@ import Dislikes from "./Dislikes";
 import emptyProfilePicture from "./../assets/icons/emptyProfilePicture.jpg";
 import commentIcon from "./../assets/icons/comment.png";
 import deleteIcon from "./../assets/icons/delete.png";
-import deleteRedIcon from "./../assets/icons/delete-red.png";
 
 import { db, storage } from "./../config/firebase.config";
 import { doc, getDoc, getDocs, updateDoc, deleteDoc, collection, orderBy, query, onSnapshot } from "firebase/firestore";
 import { useLoggedInUserId } from "./context/LoggedInUserProfileDataContextProvider";
-import { useLoggedInUserFirstName } from "./context/LoggedInUserProfileDataContextProvider";
-import { useLoggedInUserLastName } from "./context/LoggedInUserProfileDataContextProvider";
-import { useLoggedInUserProfilePicture } from "./context/LoggedInUserProfileDataContextProvider";
-import { useDateFunctions } from "./custom-hooks/useDateFunctions";
 import { TargetData, CommentData } from "../interfaces";
 import { deleteObject, ref } from "firebase/storage";
-
-//6 Have to implement comments into each post
 
 interface Props {
   postFirstName: string;
