@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import AllCommentsOnPost from "./AllCommentsOnPost";
 import MakeComment from "./MakeComment";
 import Likes from "./Likes";
@@ -91,6 +92,8 @@ const Post = ({
 
   const [postDocRef, setPostDocRef] = useState<DocumentReference>(null!);
 
+  const navigate = useNavigate();
+
   let profilePostDocRef: any; // I know this is frowned upon
 
   // - Get reference for posts from profile
@@ -124,6 +127,10 @@ const Post = ({
   // - Get reference for posts from feed
   const feedPostsCollection = collection(db, "publicPosts");
   const feedPostDocRef = doc(feedPostsCollection, postId); // Grab the posts on the user's profile
+
+  const navigateToUser = () => {
+    navigate(`/profile/${postUserId}`);
+  };
 
   const getNumOfComments = async (postDocRef: DocumentReference) => {
     const commentsCollection = collection(postDocRef, "comments");
@@ -358,10 +365,19 @@ const Post = ({
                 src={postProfilePicture === "" ? emptyProfilePicture : postProfilePicture}
                 alt="profile"
                 className="rounded-[50%] aspect-square object-cover"
+                onClick={() => {
+                  navigateToUser();
+                }}
               />
             </div>
             <div className="flex flex-col">
-              <div>{postFirstName + " " + postLastName}</div>
+              <div
+                onClick={() => {
+                  navigateToUser();
+                }}
+              >
+                {postFirstName + " " + postLastName}
+              </div>
               <div className="opacity-50 text-sm">{postDate}</div>
             </div>
           </div>
