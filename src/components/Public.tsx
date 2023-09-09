@@ -17,7 +17,9 @@ import {
 
 import { v4 as uuidv4 } from "uuid";
 
-import imageIcon from "./../assets/icons/imageIcon.png";
+import imageIcon from "./../assets/icons/imageIcon.svg";
+import friendsOnlyIcon from "./../assets/icons/starIcon.svg";
+import globalIcon from "./../assets/icons/globalIcon.svg";
 
 import { useLoggedInUserId } from "./context/LoggedInUserProfileDataContextProvider";
 import { useLoggedInUserFirstName } from "./context/LoggedInUserProfileDataContextProvider";
@@ -162,8 +164,8 @@ function Public() {
   };
 
   const postDestination = () => {
-    if (publicPost) return "Public Post";
-    else return "Friends Only Post";
+    if (publicPost) return "Public post";
+    else return "Friends only";
   };
 
   useInfinityScrollFunctions({
@@ -229,87 +231,23 @@ function Public() {
 
   return (
     <div>
-      <div className="grid justify-items-center gap-4 mt-4">
-        <img src={loggedInUserProfilePicture} alt="" className="aspect-square object-cover h-[80px] rounded-[50px]" />
-        <textarea
-          placeholder="Make a post"
-          className="min-h-[120px] w-full resize-none text-center text-xl p-2 outline-none"
-          maxLength={1000}
-          value={postInput}
-          onChange={(e) => {
-            setPostInput(e.target.value);
-            setFullTimestamp(new Date());
-          }}
-        />
-      </div>
-      <div className="grid pl-4 pr-4">
-        <div className="grid grid-cols-[80px,1fr]">
-          <input
-            type="file"
-            id="addImageToPostFeedButton"
-            hidden
-            onChange={(e) => {
-              addImageToPost(e.target.files?.[0] || null);
-              e.target.value = "";
-            }}
-          />
-          <label htmlFor="addImageToPostFeedButton" className="hover:cursor-pointer block w-max">
-            <img src={imageIcon} alt="add and upload file to post" />
-          </label>
-          {displayUploadedImageOrNot()}
-        </div>
+      {/* Choose posts to see */}
+      <section className="grid grid-cols-2 gap-8 text-sm p-4">
         <button
-          onClick={() => {
-            changePostDestination();
-          }}
-        >
-          {postDestination()}
-        </button>
-        <button
-          className="min-h-[30px] w-full bg-[#00A7E1] text-white"
-          onClick={(e) => {
-            if (postInput.length === 0 && imageAddedToPostFeed === "")
-              return console.log("add text or image before posting");
-            setFullTimestamp(new Date());
-            writePost({
-              timestamp: fullTimestamp,
-              firstName: loggedInUserFirstName,
-              lastName: loggedInUserLastName,
-              text: postInput,
-              image: imageAddedToPostFeed,
-              imageId: imageAddedToPostFeedId,
-              date: dateDayMonthYear,
-              likes: {},
-              dislikes: {},
-              comments: {},
-              userId: loggedInUserId,
-              publicPost: publicPost,
-            });
-            getGlobalPosts();
-            setPostInput("");
-            setImageAddedToPostFeed("");
-          }}
-        >
-          Post
-        </button>
-      </div>
-      <div className="w-full h-[15px] bg-gray-100"></div>
-      {/* Choose posts to see section */}
-      <section className="grid grid-cols-2 gap-2 text-sm p-4">
-        <button
-          className={`text-white rounded-md pb-[4px] pt-[4px] pl-[3px] pr-[3px] 
-          ${showGlobalPosts ? "bg-[#00A7E1]" : "bg-gray-400"} `}
+          className={`text-white rounded-3xl flex items-center gap-2 justify-center pb-[8px] pt-[8px] 
+          ${showGlobalPosts ? "bg-grayMain text-white" : "bg-graySoft text-textMain"} `}
           onClick={() => {
             setShowGlobalPosts(true);
             setShowFriendsPosts(false);
             setPostsLoaded(10);
           }}
         >
+          <img src={globalIcon} alt="" />
           Public Posts
         </button>
         <button
-          className={` text-white rounded-md pb-[4px] pt-[4px] pl-[3px] pr-[3px] ${
-            showFriendsPosts ? "bg-[#00A7E1]" : "bg-gray-400"
+          className={`rounded-3xl flex items-center gap-2 justify-center pb-[8px] pt-[8px] ${
+            showFriendsPosts ? "bg-grayMain text-white" : "bg-graySoft text-textMain"
           } `}
           onClick={() => {
             setShowFriendsPosts(true);
@@ -317,10 +255,93 @@ function Public() {
             setPostsLoaded(10);
           }}
         >
+          <img src={friendsOnlyIcon} alt="" />
           Friends' Posts
         </button>
       </section>
-      <div className="w-full h-[15px] bg-gray-100"></div>
+      <div className="w-full h-[7px] bg-grayLineThick"></div>
+
+      <div className="font-mainFontSemiBold text-medium ml-4 mt-3">Create a Post</div>
+      <div className="w-full h-[2px] bg-grayLineThin"></div>
+
+      {/* Make a post row */}
+      <section className="grid grid-cols-[55px,1fr,55px] justify-items-center items-center gap-2 mt-2 mb-2">
+        <img
+          src={loggedInUserProfilePicture}
+          alt=""
+          className="aspect-square object-cover h-[45px] ml-2 rounded-[50px]"
+        />
+        <div className={`${imageAddedToPostFeed ? "" : "absolute"}`}>{displayUploadedImageOrNot()}</div>
+        <textarea
+          placeholder="Make a post"
+          className="w-full h-[39px] rounded-3xl p-2 pl-4 resize-none text-medium outline-none bg-graySoft"
+          maxLength={1000}
+          value={postInput}
+          onChange={(e) => {
+            setPostInput(e.target.value);
+            setFullTimestamp(new Date());
+          }}
+        />
+        <input
+          type="file"
+          id="addImageToPostFeedButton"
+          hidden
+          onChange={(e) => {
+            addImageToPost(e.target.files?.[0] || null);
+            e.target.value = "";
+          }}
+        />
+        <label htmlFor="addImageToPostFeedButton" className="hover:cursor-pointer mr-2 block">
+          <img src={imageIcon} alt="add and upload file to post" className="w-[43px]" />
+          {/* <div className="text-verySmall text-center">Photo</div> */}
+        </label>
+      </section>
+
+      {/* Post section */}
+      <section className="grid grid-cols-[55px,1fr,55px] justify-items-center items-center gap-2 pb-4">
+        <div></div>
+        <div className="w-full flex justify-around items-center gap-9">
+          <button
+            className="w-[70%] bg-purpleMain text-white rounded-3xl text-medium h-[28px]"
+            onClick={(e) => {
+              if (postInput.length === 0 && imageAddedToPostFeed === "")
+                return console.log("add text or image before posting");
+              setFullTimestamp(new Date());
+              writePost({
+                timestamp: fullTimestamp,
+                firstName: loggedInUserFirstName,
+                lastName: loggedInUserLastName,
+                text: postInput,
+                image: imageAddedToPostFeed,
+                imageId: imageAddedToPostFeedId,
+                date: dateDayMonthYear,
+                likes: {},
+                dislikes: {},
+                comments: {},
+                userId: loggedInUserId,
+                publicPost: publicPost,
+              });
+              getGlobalPosts();
+              setPostInput("");
+              setImageAddedToPostFeed("");
+            }}
+          >
+            Post
+          </button>
+          <button
+            onClick={() => {
+              changePostDestination();
+            }}
+            className="bg-graySoft w-[70%] text-textMain rounded-3xl text-verySmall grid grid-cols-[20px,1fr] place-items-center pl-2 pr-2 h-[28px]"
+          >
+            <img src={friendsOnlyIcon} alt="" className="w-[20px]" />
+            <div className="text-start w-full pl-1">{postDestination()}</div>
+          </button>
+        </div>
+        <div></div>
+      </section>
+      <div className="w-full h-[7px] bg-grayLineThick"></div>
+
       <AllPosts
         globalPosts={globalPosts}
         friendsPosts={friendsPosts}
