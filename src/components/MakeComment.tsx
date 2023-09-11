@@ -90,13 +90,13 @@ function MakeComment({
         alt="logged in user"
         className="rounded-[50%] max-w-[38px] justify-self-center aspect-square object-cover"
       />
-      <div className="bg-gray-200 rounded-xl grid grid-cols-[4fr,1fr] gap-4">
+      <div className="bg-gray-200 rounded-3xl pl-1 grid grid-cols-[4fr,1fr] gap-4 font-mainFont">
         <textarea
           ref={textareaRef}
           // style={{ height: textareaHeight }}
           placeholder="Write a comment"
           className="w-full bg-transparent m-2 flex-grow resize-none overflow-y-auto outline-none"
-          maxLength={150}
+          maxLength={1000}
           value={postCommentInput}
           onChange={(e) => {
             setPostCommentInput(e.target.value);

@@ -4,10 +4,6 @@ import Likes from "./Likes";
 import Dislikes from "./Dislikes";
 import { useParams } from "react-router-dom";
 
-import likeIcon from "./../assets/icons/heartPlus.png";
-import heartLiked from "./../assets/icons/heartLiked.png";
-import dislikeIcon from "./../assets/icons/heartMinus.png";
-import heartDisliked from "./../assets/icons/heartDisliked.png";
 import deleteIcon from "./../assets/icons/delete.png";
 import deleteRedIcon from "./../assets/icons/delete-red.png";
 
@@ -181,7 +177,7 @@ const Comment = ({
               <div>{showDeleteCommentOrNot()}</div>
             </div>
 
-            <div className=" grid grid-cols-[4fr,1fr] gap-4">{commentText}</div>
+            <div className=" grid grid-cols-[4fr,1fr] gap-4 hyphens-auto">{commentText}</div>
           </div>
           <div className="grid grid-cols-[50px,50px] h-max mt-1 mb-1 items-start justify-items-start">
             {/*//1 Like/Dislike */}
@@ -198,6 +194,7 @@ const Comment = ({
                 loggedInUserId={loggedInUserId}
                 docRef={commentDocRef}
                 data={commentData}
+                isPost={false}
               />
             }
             <Dislikes
@@ -212,6 +209,7 @@ const Comment = ({
               loggedInUserId={loggedInUserId}
               docRef={commentDocRef}
               data={commentData}
+              isPost={false}
             />
           </div>
         </div>

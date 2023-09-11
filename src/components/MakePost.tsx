@@ -15,7 +15,7 @@ import { db, storage } from "./../config/firebase.config";
 import { doc, addDoc, collection, updateDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 
-import imageIcon from "./../assets/icons/imageIcon.png";
+import imageIcon from "./../assets/icons/imageIcon/imageIcon.png";
 
 interface Props {
   getAllPosts: GetAllPosts["getAllPosts"];
@@ -160,7 +160,7 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
             }}
           />
           <label htmlFor="imageInput" className="hover:cursor-pointer block w-max">
-            <img src={imageIcon} alt="add and upload file to post" />
+            <img src={imageIcon} alt="add and upload file to post" className="max-w-[50px]" />
           </label>
           {displayUploadedImageOrNot()}
         </div>

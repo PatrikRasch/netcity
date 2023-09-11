@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { updateDoc, DocumentReference } from "firebase/firestore";
 
-import likeIcon from "./../assets/icons/heartPlus.png";
-import heartLiked from "./../assets/icons/heartLiked.png";
+import likeIconUnselected from "./../assets/icons/likeIcon/likeIconUnselected.png";
+import likeIconSelected from "./../assets/icons/likeIcon/likeIconSelected.png";
 
 import { TargetData, TargetCommentData } from "../interfaces";
 
@@ -18,6 +18,7 @@ interface Props {
   loggedInUserId: string;
   docRef: DocumentReference;
   data: TargetData | TargetCommentData | null;
+  isPost: boolean;
 }
 
 function Likes({
@@ -32,6 +33,7 @@ function Likes({
   loggedInUserId,
   docRef,
   data,
+  isPost,
 }: Props) {
   const addLike = async (commentDocRef: DocumentReference) => {
     setLiked(true); // Set liked to true, makes heart red
@@ -64,20 +66,40 @@ function Likes({
   //1 The like icon on each post. Shows if the user has liked a post.
   const showLikedOrNot = () => {
     if (!liked) {
-      return <img src={likeIcon} alt="" className="max-h-6" />;
+      return <img src={likeIconUnselected} alt="" className="max-h-6" />;
     } else {
-      return <img src={heartLiked} alt="" className="max-h-6" />;
+      return <img src={likeIconSelected} alt="" className="max-h-6" />;
     }
   };
 
-  return (
-    <div className="flex gap-2">
-      {/* <button>pic</button> */}
-      <button onClick={() => handleClickLike()}>{showLikedOrNot()}</button>
-      {/* <div>5</div> */}
-      <div>{numOfLikes}</div>
-    </div>
-  );
+  const postOrComment = () => {
+    if (isPost) {
+      return (
+        <button
+          onClick={() => handleClickLike()}
+          className={`w-full flex gap-2 justify-center rounded-3xl p-1 font-mainFontSemiBold cursor-pointer ${
+            liked ? "bg-purpleSoft text-purpleMain" : "bg-graySoft text-grayMain"
+          }`}
+        >
+          {showLikedOrNot()}
+          <div>{numOfLikes}</div>
+        </button>
+      );
+    } else {
+      return (
+        <button
+          className={`w-full flex gap-1 justify-center font-mainFont ${liked ? "text-purpleMain" : "text-grayMain"}`}
+        >
+          <div onClick={() => handleClickLike()} className="cursor-pointer">
+            {showLikedOrNot()}
+          </div>
+          <div className="cursor-default">{numOfLikes}</div>
+        </button>
+      );
+    }
+  };
+
+  return postOrComment();
 }
 
 export default Likes;

@@ -17,9 +17,13 @@ import {
 
 import { v4 as uuidv4 } from "uuid";
 
-import imageIcon from "./../assets/icons/imageIcon.svg";
-import friendsOnlyIcon from "./../assets/icons/starIcon.svg";
-import globalIcon from "./../assets/icons/globalIcon.svg";
+import imageIcon from "./../assets/icons/imageIcon/imageIcon.png";
+import globalIconGray from "./../assets/icons/globalIcon/globalIconGray.svg";
+import globalIconGrayFilled from "./../assets/icons/globalIcon/globalIconGrayFilled.svg";
+import globalIconWhite from "./../assets/icons/globalIcon/globalIconWhite.svg";
+import starIconGray from "./../assets/icons/starIcon/starIconGray.svg";
+import starIconGrayFilled from "./../assets/icons/starIcon/starIconGrayFilled.svg";
+import starIconWhite from "./../assets/icons/starIcon/starIconWhite.svg";
 
 import { useLoggedInUserId } from "./context/LoggedInUserProfileDataContextProvider";
 import { useLoggedInUserFirstName } from "./context/LoggedInUserProfileDataContextProvider";
@@ -163,8 +167,10 @@ function Public() {
     setPublicPost((prevMakePublicPost) => !prevMakePublicPost);
   };
 
+  //6 changePostDestination is redundant atm due to postDestination not using publicPost state, but rather using showGlobalPosts
+
   const postDestination = () => {
-    if (publicPost) return "Public post";
+    if (showGlobalPosts) return "Public post";
     else return "Friends only";
   };
 
@@ -234,19 +240,23 @@ function Public() {
       {/* Choose posts to see */}
       <section className="grid grid-cols-2 gap-8 text-sm p-4">
         <button
-          className={`text-white rounded-3xl flex items-center gap-2 justify-center pb-[8px] pt-[8px] 
-          ${showGlobalPosts ? "bg-grayMain text-white" : "bg-graySoft text-textMain"} `}
+          className={`text-white rounded-3xl flex items-center gap-2 justify-center pb-[8px] pt-[8px] max-h-[45px] 
+          ${showGlobalPosts ? "bg-grayMain" : "bg-graySoft"} `}
           onClick={() => {
             setShowGlobalPosts(true);
             setShowFriendsPosts(false);
             setPostsLoaded(10);
           }}
         >
-          <img src={globalIcon} alt="" />
-          Public Posts
+          <img src={showGlobalPosts ? globalIconWhite : globalIconGray} alt="" className="max-h-[85%]" />
+          <div
+            className={`font-mainFontSemiBold mr-2 tracking-wide ${showGlobalPosts ? "text-white" : "text-textMain"} `}
+          >
+            Public Posts
+          </div>
         </button>
         <button
-          className={`rounded-3xl flex items-center gap-2 justify-center pb-[8px] pt-[8px] ${
+          className={`rounded-3xl flex items-center gap-2 justify-center pb-[8px] pt-[8px] max-h-[45px]  ${
             showFriendsPosts ? "bg-grayMain text-white" : "bg-graySoft text-textMain"
           } `}
           onClick={() => {
@@ -255,14 +265,13 @@ function Public() {
             setPostsLoaded(10);
           }}
         >
-          <img src={friendsOnlyIcon} alt="" />
-          Friends' Posts
+          <img src={showFriendsPosts ? starIconWhite : starIconGray} alt="" className="max-h-[85%]" />
+          <div className="font-mainFontSemiBold tracking-wide">Friends' Posts</div>
         </button>
       </section>
       <div className="w-full h-[7px] bg-grayLineThick"></div>
 
       <div className="font-mainFontSemiBold text-medium ml-4 mt-3">Create a Post</div>
-      <div className="w-full h-[2px] bg-grayLineThin"></div>
 
       {/* Make a post row */}
       <section className="grid grid-cols-[55px,1fr,55px] justify-items-center items-center gap-2 mt-2 mb-2">
@@ -292,7 +301,7 @@ function Public() {
           }}
         />
         <label htmlFor="addImageToPostFeedButton" className="hover:cursor-pointer mr-2 block">
-          <img src={imageIcon} alt="add and upload file to post" className="w-[43px]" />
+          <img src={imageIcon} alt="add and upload file to post" className="min-w-[55px]" />
           {/* <div className="text-verySmall text-center">Photo</div> */}
         </label>
       </section>
@@ -334,7 +343,7 @@ function Public() {
             }}
             className="bg-graySoft w-[70%] text-textMain rounded-3xl text-verySmall grid grid-cols-[20px,1fr] place-items-center pl-2 pr-2 h-[28px]"
           >
-            <img src={friendsOnlyIcon} alt="" className="w-[20px]" />
+            <img src={showGlobalPosts ? globalIconGray : starIconGray} alt="" className="w-[20px]" />
             <div className="text-start w-full pl-1">{postDestination()}</div>
           </button>
         </div>

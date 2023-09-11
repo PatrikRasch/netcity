@@ -6,8 +6,11 @@ import Likes from "./Likes";
 import Dislikes from "./Dislikes";
 
 import emptyProfilePicture from "./../assets/icons/emptyProfilePicture.jpg";
-import commentIcon from "./../assets/icons/comment.png";
+import commentIcon from "./../assets/icons/commentIcon.svg";
 import deleteIcon from "./../assets/icons/delete.png";
+import likeIcon from "./../assets/icons/likeIcon.svg";
+import dislikeIcon from "./../assets/icons/dislikeIcon.svg";
+import starIcon from "./../assets/icons/starIcon.svg";
 
 import { db, storage } from "./../config/firebase.config";
 import {
@@ -44,6 +47,7 @@ interface Props {
   loggedInUserProfilePicture: string;
   setLoggedInUserProfilePicture: (value: string) => void;
   context: string;
+  friendsOnlyPost?: boolean;
 }
 
 //6 Clicking comments (to see comments not working), potentially multiple other issues regarding interacting with a post. Must confirm.
@@ -65,6 +69,7 @@ const Post = ({
   postIndex,
   postUserId,
   context,
+  friendsOnlyPost,
 }: Props) => {
   const emptyProfilePicture = useEmptyProfilePicture();
   const { loggedInUserId } = useLoggedInUserId();
@@ -80,7 +85,7 @@ const Post = ({
   const [loggedInUserLastName, setLoggedInUserLastName] = useState("");
   const [showMakeComment, setShowMakeComment] = useState(false);
   const [numOfCommentsShowing, setNumOfCommentsShowing] = useState(0);
-  const [showLoadMoreCommentsButton, setShowLoadMoreCommentsButton] = useState(true);
+  const [showLoadMoreCommentsButton, setShowLoadMoreCommentsButton] = useState(false);
   const [comments, setComments] = useState<CommentData[]>([]);
 
   const [showFullImage, setShowFullImage] = useState(false);
@@ -326,7 +331,7 @@ const Post = ({
     if (displayFullPostText && postText.length > 300)
       return (
         <div>
-          <div>{postText + " "}</div>
+          <div className="font-mainFont whitespace-pre">{postText + " "}</div>
           <span className="text-[#00A7E1]">
             <button
               onClick={() => {
@@ -340,7 +345,7 @@ const Post = ({
       );
     if (displayFullPostText) return postText;
     return (
-      <div>
+      <div className="font-mainFont whitespace-pre">
         {postText.slice(0, 300) + " "}
         <span className="text-[#00A7E1]">
           <button
@@ -353,6 +358,34 @@ const Post = ({
         </span>
       </div>
     );
+  };
+
+  const renderAllCommentsOnPost = () => {
+    return (
+      <AllCommentsOnPost
+        comments={comments}
+        postId={postId}
+        postTotalNumOfComments={postTotalNumOfComments}
+        numOfCommentsShowing={numOfCommentsShowing}
+        setNumOfCommentsShowing={setNumOfCommentsShowing}
+        showMakeComment={showMakeComment}
+        showLoadMoreCommentsButton={showLoadMoreCommentsButton}
+        setShowLoadMoreCommentsButton={setShowLoadMoreCommentsButton}
+        setShowMakeComment={setShowMakeComment}
+      />
+    );
+  };
+
+  const renderFriendsPostIconOrNot = () => {
+    if (friendsOnlyPost)
+      return (
+        <div className="flex gap-2 items-center">
+          <div className="text-grayMedium text-smaller font-mainFont">{postDate}</div>
+          <div className="text-smaller text-grayMedium">•</div>
+          <img src={starIcon} alt="" className="w-[12px]" />
+        </div>
+      );
+    else return <div className="text-grayMedium text-smaller font-mainFont">{postDate}</div>;
   };
 
   return (
@@ -370,24 +403,27 @@ const Post = ({
                 }}
               />
             </div>
-            <div className="flex flex-col">
+            <div className="flex flex-col gap-[1px]">
               <div
                 onClick={() => {
                   navigateToUser();
                 }}
+                className="font-mainFontSemiBold tracking-wide"
               >
                 {postFirstName + " " + postLastName}
               </div>
-              <div className="opacity-50 text-sm">{postDate}</div>
+              {renderFriendsPostIconOrNot()}
             </div>
           </div>
           {showDeletePostOrNot()}
         </div>
-        <div className="pt-2">{displayFullPostOrNot()}</div>
-        <div>{displayPostImageOrNot()}</div>
+        <div className="grid gap-2">
+          <div className="pt-2">{displayFullPostOrNot()}</div>
+          <div>{displayPostImageOrNot()}</div>
+        </div>
       </div>
-      <div className="w-full h-[1px] bg-gray-300"></div>
-      <div className="grid grid-cols-[1fr,1fr,2fr] h-[33px] mt-1 mb-1 items-center justify-items-center">
+      <div className="w-full h-[1.5px] bg-grayLineThin"></div>
+      <div className="grid grid-cols-[1fr,1fr,1fr] h-[33px] mt-2 mb-2 gap-5 ml-2 mr-2 items-center justify-items-center">
         {/*//1 Like/Dislike */}
         {
           <Likes
@@ -402,6 +438,7 @@ const Post = ({
             loggedInUserId={loggedInUserId}
             docRef={postDocRef}
             data={postData}
+            isPost={true}
           />
         }
         <Dislikes
@@ -416,28 +453,26 @@ const Post = ({
           removeDislike={removeDislike}
           docRef={postDocRef}
           data={postData}
+          isPost={true}
         />
         {/* //1 Comment */}
-        <div className="flex gap-2">
-          <img src={commentIcon} alt="" className="max-h-6" onClick={(e) => handleCommentButtonClicked()} />
-          <div>{postTotalNumOfComments}</div>
+        <div
+          className={` w-full grid justify-center rounded-3xl p-1 ${
+            showMakeComment && numOfCommentsShowing !== 0 ? "bg-grayMain" : "bg-graySoft"
+          }`}
+          onClick={(e) => handleCommentButtonClicked()}
+        >
+          <div className="flex gap-2">
+            <img src={commentIcon} alt="" className="max-h-6 scale-x-[-1]" />
+            <div>{postTotalNumOfComments}</div>
+          </div>
         </div>
       </div>
-      <div className="w-full h-[1px] bg-gray-300"></div>
-      {/* //1 Add comment  */}
+      <div className="w-full h-[1.5px] bg-grayLineThin"></div>
+      {/* // - Add comment  */}
       {displayMakeCommentOrNot()}
-      {/* //1 Posted comments */}
-      <AllCommentsOnPost
-        comments={comments}
-        postId={postId}
-        postTotalNumOfComments={postTotalNumOfComments}
-        numOfCommentsShowing={numOfCommentsShowing}
-        setNumOfCommentsShowing={setNumOfCommentsShowing}
-        showMakeComment={showMakeComment}
-        showLoadMoreCommentsButton={showLoadMoreCommentsButton}
-        setShowLoadMoreCommentsButton={setShowLoadMoreCommentsButton}
-        setShowMakeComment={setShowMakeComment}
-      />
+      {/* // - Posted comments */}
+      {renderAllCommentsOnPost()}
     </div>
   );
 };

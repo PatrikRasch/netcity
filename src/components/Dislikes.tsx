@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { updateDoc, DocumentReference } from "firebase/firestore";
 
-import dislikeIcon from "./../assets/icons/heartMinus.png";
-import heartDisliked from "./../assets/icons/heartDisliked.png";
+import dislikeIconUnselected from "./../assets/icons/dislikeIcon/dislikeIconUnselected.svg";
+import dislikeIconSelected from "./../assets/icons/dislikeIcon/dislikeIconSelected.svg";
 
 import { TargetData, TargetCommentData } from "../interfaces";
 
@@ -18,6 +18,7 @@ interface Props {
   loggedInUserId: string;
   docRef?: DocumentReference;
   data: TargetData | TargetCommentData | null;
+  isPost: boolean;
 }
 
 function Dislikes({
@@ -32,12 +33,13 @@ function Dislikes({
   loggedInUserId,
   docRef,
   data,
+  isPost,
 }: Props) {
   const addDislike = async (commentDocRef: DocumentReference) => {
     setDisliked(true); // Set disliked to true, makes heart black
     // Frontend updates:
     (totalDislikes as { [key: string]: boolean })[loggedInUserId] = true; // Add the userId into postDislikes as true
-    setNumOfDislikes(-Object.keys(totalDislikes).length); // Update state for number of dislikes to display
+    setNumOfDislikes(Object.keys(totalDislikes).length); // Update state for number of dislikes to display
     // Backend updates:
     const newDislikes = { ...data?.dislikes, [loggedInUserId]: true }; // Define new object to hold the dislikes
     await updateDoc(commentDocRef, { dislikes: newDislikes }); // Update the backend with the new dislikes
@@ -60,18 +62,40 @@ function Dislikes({
   //1 The dislike icon on each post. Shows if the user has disliked a post.
   const showDislikedOrNot = () => {
     if (!disliked) {
-      return <img src={dislikeIcon} alt="" className="max-h-6" />;
+      return <img src={dislikeIconUnselected} alt="" className="max-h-6" />;
     } else {
-      return <img src={heartDisliked} alt="" className="max-h-6" />;
+      return <img src={dislikeIconSelected} alt="" className="max-h-6" />;
     }
   };
 
-  return (
-    <div className="flex gap-2">
-      <button onClick={() => handleClickDislike()}>{showDislikedOrNot()}</button>
-      <div>{numOfDislikes}</div>
-    </div>
-  );
+  const postOrComment = () => {
+    if (isPost) {
+      return (
+        <button
+          onClick={() => handleClickDislike()}
+          className={`w-full flex gap-2 justify-center rounded-3xl p-1 font-mainFontSemiBold cursor-pointer ${
+            disliked ? "bg-redSoft text-redMain" : "bg-graySoft text-grayMain"
+          }`}
+        >
+          {showDislikedOrNot()}
+          <div>{numOfDislikes}</div>
+        </button>
+      );
+    } else {
+      return (
+        <button
+          className={`w-full flex gap-1 justify-center font-mainFont ${disliked ? "text-redMain" : "text-grayMain"}`}
+        >
+          <div onClick={() => handleClickDislike()} className="cursor-pointer">
+            {showDislikedOrNot()}
+          </div>
+          <div className="cursor-default">{numOfDislikes}</div>
+        </button>
+      );
+    }
+  };
+
+  return postOrComment();
 }
 
 export default Dislikes;
