@@ -40,6 +40,7 @@ const Register = () => {
           friends: {},
           currentReceivedFriendRequests: {},
           currentSentFriendRequests: {},
+          openProfile: true,
         };
         const docToBeAdded = doc(usersCollection, userId); // Document that is to be added into Firestore
         await setDoc(docToBeAdded, dataToAdd); // Set the document and add it into Firestore
@@ -167,7 +168,7 @@ const Register = () => {
         {/*//1 Register account button */}
         <div className="flex flex-col items-center text-xl">
           <button
-            className="p-4 rounded-md border-2 border-black min-w-[60svw] shadow-lg min-h-[50px] m-2 text-white bg-[#00A7E1]"
+            className="p-4 rounded-md border-2 border-black min-w-[60svw] shadow-lg min-h-[50px] m-2 text-white bg-purpleMain"
             onClick={registerAccountWithEmail}
           >
             Register account
@@ -182,14 +183,14 @@ const Register = () => {
         {/*//1 Sign up with Google button */}
         <div className="flex flex-col items-center text-xl">
           <button
-            className="p-4 min-h-[50px] border-2 border-black rounded-md min-w-[60svw] shadow-lg m-2 text-white bg-[#00AF54]"
+            className="p-4 min-h-[50px] border-2 border-black rounded-md min-w-[60svw] shadow-lg m-2 text-purpleMain bg-purpleSoft"
             onClick={registerAccountWithGoogle}
           >
             Sign in with Google
           </button>
         </div>
         <button
-          className="text-center underline text-blue-400 cursor-pointer justify-self-center self-center"
+          className="text-center underline text-purpleMain cursor-pointer justify-self-center self-center"
           onClick={() => {
             navigate("/login");
           }}

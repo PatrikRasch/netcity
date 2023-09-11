@@ -298,7 +298,7 @@ function PeopleUser({
             </div>
           </button>
           <button
-            className="absolute top-[100%] bg-red-400 rounded-b-md p-1 w-[110px] text-center"
+            className="absolute top-[100%] bg-redMain rounded-b-md p-1 w-[110px] text-center"
             onClick={() => {
               deleteFriend();
             }}
@@ -317,7 +317,7 @@ function PeopleUser({
               setIsFriendsDropdownMenuOpen(!isFriendsDropdownMenuOpen);
             }}
           >
-            <div className="bg-green-400 text-white rounded-md p-1 grid w-[110px] grid-cols-[70%,30%] items-center">
+            <div className="bg-purpleSoft text-purpleMain rounded-md p-1 grid w-[110px] grid-cols-[70%,30%] items-center">
               <div>Friends</div>
               <img src={arrowDropdown} alt="" className="max-w-[30px]" />
             </div>
@@ -350,7 +350,7 @@ function PeopleUser({
             sendFriendRequest();
           }}
         >
-          <div className="bg-[#00A7E1] text-white rounded-md p-1">
+          <div className="bg-purpleMain text-white rounded-md p-1">
             <div>Add Friend</div>
           </div>
         </button>
@@ -407,7 +407,7 @@ function PeopleUser({
             <div className="justify-self-center self-center">Reply to request</div>
             <div className="flex gap-3">
               <button
-                className="cursor-pointer bg-[#00A7E1] text-white rounded-md p-2 w-[85px]"
+                className="cursor-pointer bg-purpleMain text-white rounded-md p-2 w-[85px]"
                 onClick={() => {
                   acceptFriendRequest();
                 }}
@@ -415,7 +415,7 @@ function PeopleUser({
                 Accept
               </button>
               <button
-                className="cursor-pointer bg-red-300 text-white rounded-md p-2 w-[85px]"
+                className="cursor-pointer bg-graySoft text-grayMain rounded-md p-2 w-[85px]"
                 onClick={() => {
                   declineFriendRequest();
                 }}

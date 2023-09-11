@@ -256,7 +256,7 @@ const Profile = () => {
       <section className="pr-4 pt-2 grid absolute right-0 text-sm">
         <button
           className={`text-white rounded-md pb-[4px] pt-[4px] pl-[3px] pr-[3px] w-[100px] 
-          ${openProfile ? "bg-[#00A7E1]" : "bg-red-500"} `}
+          ${openProfile ? "bg-purpleMain" : "bg-redMain"} `}
           onClick={() => {
             openOrPrivateProfileSwitcher();
           }}
@@ -302,6 +302,7 @@ const Profile = () => {
       const loggedInUserDoc = await getDoc(loggedInUserDocRef);
       const loggedInUserData = loggedInUserDoc.data();
       setLoggedInUserData(loggedInUserData);
+      console.log(loggedInUserData);
     } catch (err) {
       console.error(err);
     }
@@ -562,7 +563,7 @@ const Profile = () => {
         <div>
           <div className="grid grid-cols-2 w-[190px] h-[40px]">
             <button
-              className="bg-green-400 rounded-tl-lg rounded-bl-lg"
+              className="bg-purpleSoft text-purpleMain rounded-tl-lg rounded-bl-lg"
               onClick={() => {
                 setIsDeleteFriendDropdownMenuOpen(
                   (prevIsDeleteFriendDropdownMenuOpen) => !prevIsDeleteFriendDropdownMenuOpen
@@ -572,7 +573,7 @@ const Profile = () => {
               Cancel
             </button>
             <button
-              className="bg-red-400 rounded-tr-lg rounded-br-lg"
+              className="bg-redMain text-redSoft rounded-tr-lg rounded-br-lg"
               onClick={() => {
                 deleteFriend();
               }}
@@ -586,7 +587,7 @@ const Profile = () => {
       return (
         <div>
           <button
-            className="bg-green-400 text-white rounded-lg w-[190px] h-[40px]"
+            className="bg-purpleSoft text-purpleMain rounded-lg w-[190px] h-[40px]"
             onClick={() => {
               setIsDeleteFriendDropdownMenuOpen(
                 (prevIsDeleteFriendDropdownMenuOpen) => !prevIsDeleteFriendDropdownMenuOpen
@@ -702,7 +703,7 @@ const Profile = () => {
         <div className="flex w-[65svw] rounded-lg h-12 border-2 border-black">
           <button
             className={`${
-              showPosts ? "bg-[#00A7E1] text-white" : ""
+              showPosts ? "bg-purpleMain text-white" : ""
             }  w-[100%] h-[100%] flex justify-center rounded-tl-md rounded-bl-md items-center`}
             onClick={() => setShowPosts(true)}
           >
@@ -710,7 +711,7 @@ const Profile = () => {
           </button>
           <button
             className={`${
-              !showPosts ? "bg-[#00A7E1] text-white" : ""
+              !showPosts ? "bg-purpleMain text-white" : ""
             } w-[100%] flex justify-center rounded-tr-md rounded-br-md items-center`}
             onClick={() => setShowPosts(false)}
           >

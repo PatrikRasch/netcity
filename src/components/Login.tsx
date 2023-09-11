@@ -67,14 +67,14 @@ const Login = () => {
         {/*//1 Login and Sign up with Google section */}
         <div className="flex flex-col items-center text-xl">
           <button
-            className="p-4 rounded-md border-2 border-black min-w-[60svw] shadow-lg min-h-[50px] m-2 text-white bg-[#00A7E1]"
+            className="p-4 rounded-md border-2 border-black min-w-[60svw] shadow-lg min-h-[50px] m-2 text-white bg-purpleMain"
             onClick={() => {
               handleLogin();
             }}
           >
             Log in
           </button>
-          <button className="p-4 min-h-[50px] border-2 border-black rounded-md min-w-[60svw] shadow-lg m-2 text-white bg-[#00AF54]">
+          <button className="p-4 min-h-[50px] border-2 border-black rounded-md min-w-[60svw] shadow-lg m-2 text-purpleMain bg-purpleSoft">
             Sign in with Google
           </button>
         </div>

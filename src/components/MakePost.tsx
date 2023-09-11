@@ -165,7 +165,7 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
           {displayUploadedImageOrNot()}
         </div>
         <button
-          className="min-h-[30px] w-full bg-[#00A7E1] text-white"
+          className="min-h-[30px] w-full bg-purpleMain text-white"
           onClick={(e) => {
             if (postInput.length === 0 && imageAddedToPost === "")
               return console.log("add text or image before posting");

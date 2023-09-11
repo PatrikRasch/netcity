@@ -225,7 +225,7 @@ const People = () => {
       <div className="grid grid-cols-4 gap-2 text-sm p-4">
         <button
           className={`text-white rounded-md pb-[4px] pt-[4px] pl-[3px] pr-[3px] 
-          ${showOtherUsers ? "bg-[#00A7E1]" : "bg-gray-400"} `}
+          ${showOtherUsers ? "bg-purpleMain" : "bg-gray-400"} `}
           onClick={() => {
             sectionControlSwitcher("setShowOtherUsers");
             updateOtherUsers();
@@ -235,7 +235,7 @@ const People = () => {
         </button>
         <button
           className={` text-white rounded-md pb-[4px] pt-[4px] pl-[3px] pr-[3px] ${
-            showFriends ? "bg-[#00A7E1]" : "bg-gray-400"
+            showFriends ? "bg-purpleMain" : "bg-gray-400"
           } `}
           onClick={() => {
             sectionControlSwitcher("setShowFriends");
@@ -246,7 +246,7 @@ const People = () => {
         </button>
         <button
           className={`relative text-white rounded-md pb-[4px] pt-[4px] pl-[3px] pr-[3px] ${
-            showReceivedFriendRequests ? "bg-[#00A7E1]" : "bg-gray-400"
+            showReceivedFriendRequests ? "bg-purpleMain" : "bg-gray-400"
           } `}
           onClick={() => {
             sectionControlSwitcher("setShowReceivedFriendRequests");
@@ -264,7 +264,7 @@ const People = () => {
         </button>
         <button
           className={`text-white rounded-md pb-[4px] pt-[4px] pl-[3px] pr-[3px] ${
-            showSentFriendRequests ? "bg-[#00A7E1]" : "bg-gray-400"
+            showSentFriendRequests ? "bg-purpleMain" : "bg-gray-400"
           } `}
           onClick={() => {
             sectionControlSwitcher("setShowSentFriendRequests");
