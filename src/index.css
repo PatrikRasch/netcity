@@ -3,6 +3,21 @@
 @tailwind utilities;
 
 @font-face {
+  font-family: "mainFont";
+  src: url("./assets/fonts/Eina01-Regular.ttf");
+}
+
+@font-face {
+  font-family: "mainFontSemiBold";
+  src: url("./assets/fonts/Eina01-SemiBold.ttf");
+}
+
+@font-face {
+  font-family: "mainFontBold";
+  src: url("./assets/fonts/Eina01Bold.ttf");
+}
+
+@font-face {
   font-family: "Roxborough";
   src: url("./assets/fonts/Roxborough.ttf");
 }
