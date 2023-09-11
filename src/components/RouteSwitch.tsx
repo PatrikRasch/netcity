@@ -1,6 +1,5 @@
-import React, { lazy, Suspense } from "react";
-import { Routes, Route } from "react-router-dom";
-import App from "./App";
+import React, { useState, useEffect, lazy, Suspense } from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Login from "./Login";
 import Register from "./Register";
 import Profile from "./Profile";
@@ -16,13 +15,32 @@ function RouteSwitch() {
   const { loggedInUserId } = useLoggedInUserId();
 
   const HeaderDisplaying = () => {
+    const [feedOpen, setFeedOpen] = useState(false);
+    const [peopleOpen, setPeopleOpen] = useState(false);
+
+    const location = useLocation();
+    const currentPath = location.pathname;
+
+    useEffect(() => {
+      if (currentPath === "/public") {
+        setFeedOpen(true);
+        setPeopleOpen(false);
+      }
+      if (currentPath === "/people") {
+        setFeedOpen(false);
+        setPeopleOpen(true);
+      }
+    }, []);
+
     if (!loggedInUserId) return <h1>Loading..</h1>;
     return (
       <Suspense fallback={<h1>Loading...</h1>}>
-        <Header />
+        <div className="fixed z-50">
+          <Header feedOpen={feedOpen} setFeedOpen={setFeedOpen} peopleOpen={peopleOpen} setPeopleOpen={setPeopleOpen} />
+        </div>
+        <div className="h-[80px]"></div>
         <Routes>
           <Route path="/profile/:openProfileId" element={<Profile />} />
-          {/* <Route path="/about" element={<About />} /> */}
           <Route path="/people" element={<People />} />
           <Route path="/public" element={<Public />} />
         </Routes>
