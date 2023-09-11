@@ -365,13 +365,13 @@ function PeopleUser({
           <img
             src={userProfilePicture === "" ? emptyProfilePicture : userProfilePicture}
             alt=""
-            className="rounded-[50%] aspect-square object-cover cursor-pointer"
+            className="rounded-[50%] object-cover cursor-pointer w-[100%] max-w-[180px] aspect-square"
             onClick={() => {
               navigateToUser();
             }}
           />
           <div
-            className="flex cursor-pointer"
+            className="flex cursor-pointer font-mainFontSemiBold"
             onClick={() => {
               navigateToUser();
             }}
@@ -385,17 +385,17 @@ function PeopleUser({
     if (receivedFriendRequestFromUser)
       return (
         <div className="rounded-lg bg-white shadow-md p-4">
-          <div className="grid grid-cols-[1fr,10fr] gap-[20px] items-center">
+          <div className="grid grid-cols-[4fr,10fr] gap-[20px] items-center">
             <img
               src={userProfilePicture === "" ? emptyProfilePicture : userProfilePicture}
               alt=""
-              className="rounded-[50%] aspect-square object-cover cursor-pointer max-w-[100px]"
+              className="rounded-[50%] object-cover cursor-pointer w-[100%] max-w-[180px] aspect-square"
               onClick={() => {
                 navigateToUser();
               }}
             />
             <div
-              className="flex cursor-pointer"
+              className="flex cursor-pointer font-mainFontSemiBold"
               onClick={() => {
                 navigateToUser();
               }}

@@ -397,7 +397,7 @@ const Post = ({
               <img
                 src={postProfilePicture === "" ? emptyProfilePicture : postProfilePicture}
                 alt="profile"
-                className="rounded-[50%] aspect-square object-cover"
+                className="rounded-[50%] object-cover w-[40px] h-[40px]"
                 onClick={() => {
                   navigateToUser();
                 }}
