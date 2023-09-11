@@ -19,6 +19,7 @@ module.exports = {
         redMain: "#e83640",
         redSoft: "#f9e5e4",
         grayMain: "#6a6b6b",
+        grayMedium: "#bbbbba",
         graySoft: "#e6e6e7",
         graySoftest: "#efeeef",
 
@@ -31,6 +32,7 @@ module.exports = {
       },
       fontSize: {
         verySmall: "11px",
+        smaller: "12px",
         small: "13px",
         medium: "15px",
         large: "20px",
