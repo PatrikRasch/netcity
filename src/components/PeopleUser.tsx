@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-import arrowDropdown from "../assets/icons/arrow-dropdown.png";
+import arrowDropdown from "../assets/icons/dropdownIcon/arrow-dropdown.png";
 
 import { db } from "../config/firebase.config";
 import { doc, getDoc, runTransaction, DocumentData } from "firebase/firestore";

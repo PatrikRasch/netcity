@@ -6,11 +6,11 @@ import Likes from "./Likes";
 import Dislikes from "./Dislikes";
 
 import emptyProfilePicture from "./../assets/icons/emptyProfilePicture.jpg";
-import commentIcon from "./../assets/icons/commentIcon.svg";
+import commentIcon from "./../assets/icons/commentIcon/commentIconUnselected.svg";
 import deleteIcon from "./../assets/icons/delete.png";
 import likeIcon from "./../assets/icons/likeIcon.svg";
 import dislikeIcon from "./../assets/icons/dislikeIcon.svg";
-import starIcon from "./../assets/icons/starIcon.svg";
+import starIcon from "./../assets/icons/starIcon/starIconGray.svg";
 
 import { db, storage } from "./../config/firebase.config";
 import {

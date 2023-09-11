@@ -3,7 +3,7 @@ import React, { useState, useRef } from "react";
 import { collection, doc, addDoc, DocumentReference } from "firebase/firestore";
 import { useDateFunctions } from "./custom-hooks/useDateFunctions";
 
-import postIcon from "./../assets/icons/post.png";
+import postIcon from "./../assets/icons/postIcon/post.png";
 import { useEmptyProfilePicture } from "./context/EmptyProfilePictureContextProvider";
 
 interface Props {
