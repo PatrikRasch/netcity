@@ -331,7 +331,7 @@ const Post = ({
     if (displayFullPostText && postText.length > 300)
       return (
         <div>
-          <div className="font-mainFont whitespace-pre">{postText + " "}</div>
+          <div className="font-mainFont">{postText + " "}</div>
           <span className="text-[#00A7E1]">
             <button
               onClick={() => {
@@ -345,7 +345,7 @@ const Post = ({
       );
     if (displayFullPostText) return postText;
     return (
-      <div className="font-mainFont whitespace-pre">
+      <div className="font-mainFont">
         {postText.slice(0, 300) + " "}
         <span className="text-[#00A7E1]">
           <button
