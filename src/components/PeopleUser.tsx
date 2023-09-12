@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import arrowDropdown from "../assets/icons/dropdownIcon/arrow-dropdown.png";
+import starIconFilled from "../assets/icons/starIcon/starIconGrayFilled.svg";
+import checkIcon from "../assets/icons/checkIcon/checkIcon.svg";
 
 import { db } from "../config/firebase.config";
 import { doc, getDoc, runTransaction, DocumentData } from "firebase/firestore";
@@ -292,13 +294,14 @@ function PeopleUser({
               setIsFriendsDropdownMenuOpen(!isFriendsDropdownMenuOpen);
             }}
           >
-            <div className="bg-green-400 text-white rounded-t-md p-1 grid w-[110px] grid-cols-[70%,30%] items-center">
+            <div className="bg-purpleSoft text-purpleMain text-medium gap-1 rounded-t-2xl p-2 w-[110px] flex items-center justify-center">
+              <img src={starIconFilled} alt="" className="h-[25px]" />
               <div>Friends</div>
-              <img src={arrowDropdown} alt="" className="max-w-[30px] rotate-180" />
+              {/* <img src={arrowDropdown} alt="" className="max-w-[30px] rotate-180" /> */}
             </div>
           </button>
           <button
-            className="absolute top-[100%] bg-redMain rounded-b-md p-1 w-[110px] text-center"
+            className="absolute top-[100%] bg-redMain text-medium gap-1 text-graySoft rounded-b-2xl p-2 w-[110px] text-center"
             onClick={() => {
               deleteFriend();
             }}
@@ -317,9 +320,10 @@ function PeopleUser({
               setIsFriendsDropdownMenuOpen(!isFriendsDropdownMenuOpen);
             }}
           >
-            <div className="bg-purpleSoft text-purpleMain rounded-md p-1 grid w-[110px] grid-cols-[70%,30%] items-center">
+            <div className="bg-purpleSoft text-purpleMain text-medium gap-1 font-semibold rounded-3xl p-2 w-[120px] flex items-center justify-center">
+              <img src={starIconFilled} alt="" className="h-[25px]" />
               <div>Friends</div>
-              <img src={arrowDropdown} alt="" className="max-w-[30px]" />
+              {/* <img src={arrowDropdown} alt="" className="max-w-[30px]" /> */}
             </div>
           </button>
         </div>
@@ -337,8 +341,9 @@ function PeopleUser({
             removeFriendRequest();
           }}
         >
-          <div className="bg-gray-400 text-white rounded-md p-1">
-            <div>Friend Request Sent</div>
+          <div className="bg-graySoft text-grayMain text-[14px] p-2 flex font-semibold rounded-3xl w-[120px] gap-[1px]">
+            <img src={checkIcon} alt="" />
+            <div>Requested</div>
           </div>
         </button>
       );
@@ -350,85 +355,83 @@ function PeopleUser({
             sendFriendRequest();
           }}
         >
-          <div className="bg-purpleMain text-white rounded-md p-1">
-            <div>Add Friend</div>
+          <div className="bg-purpleMain text-white text-[14px] font-semibold rounded-3xl p-2 w-[120px]">
+            <div>+ Add Friend</div>
           </div>
         </button>
       );
   };
 
-  const friendStatus = () => {
-    // - Renders the base set up most commonly used
+  const receivedFriendRequestFromUserOrNot = () => {
     if (!receivedFriendRequestFromUser)
       return (
-        <div className="p-4 grid grid-cols-[10fr,10fr,13fr] gap-[20px] items-center rounded-lg bg-white shadow-md">
-          <img
-            src={userProfilePicture === "" ? emptyProfilePicture : userProfilePicture}
-            alt=""
-            className="rounded-[50%] object-cover cursor-pointer w-[100%] max-w-[180px] aspect-square"
+        <>
+          {friendStatusButton()}
+          <button
             onClick={() => {
               navigateToUser();
             }}
-          />
+            className="bg-graySoftest text-grayMain text-[14px] w-[120px] rounded-3xl p-2"
+          >
+            View Profile
+          </button>
+        </>
+      );
+    if (receivedFriendRequestFromUser)
+      return (
+        <>
+          <button
+            className="cursor-pointer bg-purpleMain w-[120px]  text-medium font-semibold rounded-3xl text-white p-2"
+            onClick={() => {
+              acceptFriendRequest();
+            }}
+          >
+            <div className="flex mr-3 justify-center gap-1">
+              <img src={checkIcon} alt="" />
+              Accept
+            </div>
+          </button>
+          <button
+            className="cursor-pointer bg-graySoftest w-[120px] rounded-3xl font-semibold text-[14px] text-grayMain p-2"
+            onClick={() => {
+              declineFriendRequest();
+            }}
+          >
+            Deny Request
+          </button>
+        </>
+      );
+  };
+
+  const friendStatus = () => {
+    // - Renders the base set up most commonly used
+
+    return (
+      <div className="p-3 grid grid-cols-[9fr,22fr] gap-[12px] items-center bg-white shadow-md">
+        <img
+          src={userProfilePicture === "" ? emptyProfilePicture : userProfilePicture}
+          alt=""
+          className="rounded-[50%] object-cover cursor-pointer w-[100%] max-w-[180px] aspect-square"
+          onClick={() => {
+            navigateToUser();
+          }}
+        />
+        <div className="grid grid-rows-2">
           <div
-            className="flex cursor-pointer font-mainFontSemiBold"
+            className="flex cursor-pointer font-mainFont font-semibold text-large"
             onClick={() => {
               navigateToUser();
             }}
           >
             {userFirstName} {userLastName}
           </div>
-          {friendStatusButton()}
+          <div className="grid grid-cols-[1fr,1fr] gap-2">{receivedFriendRequestFromUserOrNot()}</div>
         </div>
-      );
-    // - Renders receivedFriendRequest set up
-    if (receivedFriendRequestFromUser)
-      return (
-        <div className="rounded-lg bg-white shadow-md p-4">
-          <div className="grid grid-cols-[4fr,10fr] gap-[20px] items-center">
-            <img
-              src={userProfilePicture === "" ? emptyProfilePicture : userProfilePicture}
-              alt=""
-              className="rounded-[50%] object-cover cursor-pointer w-[100%] max-w-[180px] aspect-square"
-              onClick={() => {
-                navigateToUser();
-              }}
-            />
-            <div
-              className="flex cursor-pointer font-mainFontSemiBold"
-              onClick={() => {
-                navigateToUser();
-              }}
-            >
-              {userFirstName} {userLastName}
-            </div>
-          </div>
-          <div className="grid grid-cols-[1fr,1fr] gap-2 justify-center mt-4">
-            <div className="justify-self-center self-center">Reply to request</div>
-            <div className="flex gap-3">
-              <button
-                className="cursor-pointer bg-purpleMain text-white rounded-md p-2 w-[85px]"
-                onClick={() => {
-                  acceptFriendRequest();
-                }}
-              >
-                Accept
-              </button>
-              <button
-                className="cursor-pointer bg-graySoft text-grayMain rounded-md p-2 w-[85px]"
-                onClick={() => {
-                  declineFriendRequest();
-                }}
-              >
-                Decline
-              </button>
-            </div>
-          </div>
-        </div>
-      );
+      </div>
+    );
   };
 
-  return <div className="pl-4 pr-4 pt-2 pb-2">{friendStatus()}</div>;
+  return <div>{friendStatus()}</div>;
 }
 
 export default PeopleUser;

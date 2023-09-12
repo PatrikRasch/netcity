@@ -94,7 +94,10 @@ const People = () => {
           // if (usersSentFriendRequestsIds.hasOwnProperty(doc.id))
           return usersSentFriendRequestsArray.push({ ...userData, id: doc.id });
         // Has logged in user already sent them a friend request?
-        else return otherUsersArray.push({ ...userData, id: doc.id });
+      });
+      allUsers?.forEach((doc: DocumentData) => {
+        const userData = doc.data() as UserData;
+        return otherUsersArray.push({ ...userData, id: doc.id });
       });
 
       setAllFriends(usersFriendsArray);
@@ -162,13 +165,14 @@ const People = () => {
       allUsers?.forEach((user: DocumentData) => {
         const userData = user.data() as UserData;
         if (user.id === loggedInUserId) return; // Remove logged in user from the list of users
-        if (
-          !loggedInUserData?.currentSentFriendRequests.hasOwnProperty(user.id) &&
-          !loggedInUserData?.currentReceivedFriendRequests.hasOwnProperty(user.id) &&
-          !loggedInUserData?.friends.hasOwnProperty(user.id)
-        )
-          return otherUsersArray.push({ ...userData, id: user.id });
-        else return;
+        otherUsersArray.push({ ...userData, id: user.id });
+        // if (
+        //   !loggedInUserData?.currentSentFriendRequests.hasOwnProperty(user.id) &&
+        //   !loggedInUserData?.currentReceivedFriendRequests.hasOwnProperty(user.id) &&
+        //   !loggedInUserData?.friends.hasOwnProperty(user.id)
+        // )
+        //   return otherUsersArray.push({ ...userData, id: user.id });
+        // else return;
       });
       setAllOtherUsers(otherUsersArray);
     } catch (err) {
@@ -220,22 +224,29 @@ const People = () => {
     ));
   };
 
+  const pageTitle = () => {
+    if (showOtherUsers) return "All People";
+    if (showFriends) return `My Friends (${allFriends.length})`;
+    if (showReceivedFriendRequests) return `Received Friend Requests (${allReceivedFriendRequests.length})`;
+    if (showSentFriendRequests) return `Sent Friend Requests (${allSentFriendRequests.length})`;
+  };
+
   return (
     <div>
       <div className="grid grid-cols-4 gap-2 text-sm p-4">
         <button
-          className={`text-white rounded-md pb-[4px] pt-[4px] pl-[3px] pr-[3px] 
-          ${showOtherUsers ? "bg-purpleMain" : "bg-gray-400"} `}
+          className={`rounded-2xl text-[12.5px] pb-[4px] pt-[4px] pl-[3px] pr-[3px] 
+          ${showOtherUsers ? "bg-purpleMain text-white" : "bg-graySoft text-black"} `}
           onClick={() => {
             sectionControlSwitcher("setShowOtherUsers");
             updateOtherUsers();
           }}
         >
-          Find People
+          All People
         </button>
         <button
-          className={` text-white rounded-md pb-[4px] pt-[4px] pl-[3px] pr-[3px] ${
-            showFriends ? "bg-purpleMain" : "bg-gray-400"
+          className={`rounded-2xl text-[12.5px] pb-[4px] pt-[4px] pl-[3px] pr-[3px] ${
+            showFriends ? "bg-purpleMain text-white" : "bg-graySoft text-black"
           } `}
           onClick={() => {
             sectionControlSwitcher("setShowFriends");
@@ -245,8 +256,8 @@ const People = () => {
           Friends
         </button>
         <button
-          className={`relative text-white rounded-md pb-[4px] pt-[4px] pl-[3px] pr-[3px] ${
-            showReceivedFriendRequests ? "bg-purpleMain" : "bg-gray-400"
+          className={`relative rounded-2xl text-[12.5px] leading-4 pb-[6px] pt-[6px] pl-[3px] pr-[3px] ${
+            showReceivedFriendRequests ? "bg-purpleMain text-white" : "bg-graySoft text-black"
           } `}
           onClick={() => {
             sectionControlSwitcher("setShowReceivedFriendRequests");
@@ -254,7 +265,7 @@ const People = () => {
           }}
         >
           <div
-            className={`absolute top-[-10%] left-[-5%] bg-red-500 rounded-[50%] w-[18px] h-[18px] flex items-center justify-center ${
+            className={`absolute top-[-10%] left-[-5%] text-white bg-red-500 rounded-[50%] w-[18px] h-[18px] flex items-center justify-center ${
               numOfReceivedFriendRequests > 0 ? "opacity-1" : "opacity-0"
             }`}
           >
@@ -263,8 +274,8 @@ const People = () => {
           Friend Requests
         </button>
         <button
-          className={`text-white rounded-md pb-[4px] pt-[4px] pl-[3px] pr-[3px] ${
-            showSentFriendRequests ? "bg-purpleMain" : "bg-gray-400"
+          className={`rounded-2xl text-[12.5px] leading-4 pb-[6px] pt-[6px] pl-[3px] pr-[3px] ${
+            showSentFriendRequests ? "bg-purpleMain text-white" : "bg-graySoft text-black"
           } `}
           onClick={() => {
             sectionControlSwitcher("setShowSentFriendRequests");
@@ -274,7 +285,8 @@ const People = () => {
           Sent Requests
         </button>
       </div>
-
+      <div className="font-mainFont font-semibold text-medium ml-4 mb-1">{pageTitle()}</div>
+      <div className="w-full h-[2px] bg-grayLineThin"></div>
       <div className="bg-gray-100 min-h-[87svh]">{populateUsersOnPage()}</div>
     </div>
   );
