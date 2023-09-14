@@ -12,6 +12,8 @@ import { FirstNameProp, LastNameProp, ProfilePicture, UserData } from "../interf
 
 import { useEmptyProfilePicture } from "./context/EmptyProfilePictureContextProvider";
 import { useLoggedInUserId } from "./context/LoggedInUserProfileDataContextProvider";
+import { loadingSkeletonTheme } from "./SkeletonTheme";
+import { SkeletonTheme } from "react-loading-skeleton";
 
 interface Props {
   userFirstName: FirstNameProp["firstName"];
@@ -43,6 +45,8 @@ function PeopleUser({
   const [sentFriendRequestToUser, setSentFriendRequestToUser] = useState(false);
   const [isFriendsDropdownMenuOpen, setIsFriendsDropdownMenuOpen] = useState(false);
   const [userData, setUserData] = useState<DocumentData>();
+  const [profilePictureLoading, setProfilePictureLoading] = useState(true);
+  const [componentLoading, setComponentLoading] = useState(true);
 
   useEffect(() => {
     getUserData();
@@ -52,7 +56,6 @@ function PeopleUser({
   }, []);
 
   useEffect(() => {
-    friendStatus();
     friendStatusButton();
   }, [friendsWithUser, receivedFriendRequestFromUser, sentFriendRequestToUser]);
 
@@ -403,35 +406,36 @@ function PeopleUser({
       );
   };
 
-  const friendStatus = () => {
-    // - Renders the base set up most commonly used
-
-    return (
-      <div className="p-3 grid grid-cols-[9fr,22fr] gap-[12px] items-center bg-white shadow-md">
-        <img
-          src={userProfilePicture === "" ? emptyProfilePicture : userProfilePicture}
-          alt=""
-          className="rounded-[50%] object-cover cursor-pointer w-[100%] max-w-[180px] aspect-square"
+  return (
+    <div className="p-3 grid grid-cols-[9fr,22fr] gap-[12px] items-center bg-white shadow-md">
+      <img
+        src={userProfilePicture === "" ? emptyProfilePicture : userProfilePicture}
+        alt=""
+        onLoad={() => {
+          setComponentLoading(false);
+        }}
+        className={`rounded-[50%] object-cover cursor-pointer h-[100px] w-[100px] aspect-square ${
+          componentLoading ? "hidden" : ""
+        }`}
+        onClick={() => {
+          navigateToUser();
+        }}
+      />
+      {/* Ensure loading skeleton works */}
+      {componentLoading && <div className="h-[100px] w-[100px]">{loadingSkeletonTheme()}</div>}
+      <div className="grid grid-rows-2">
+        <div
+          className="flex cursor-pointer font-mainFont font-semibold text-large"
           onClick={() => {
             navigateToUser();
           }}
-        />
-        <div className="grid grid-rows-2">
-          <div
-            className="flex cursor-pointer font-mainFont font-semibold text-large"
-            onClick={() => {
-              navigateToUser();
-            }}
-          >
-            {userFirstName} {userLastName}
-          </div>
-          <div className="grid grid-cols-[1fr,1fr] gap-2">{receivedFriendRequestFromUserOrNot()}</div>
+        >
+          {userFirstName} {userLastName}
         </div>
+        <div className="grid grid-cols-[1fr,1fr] gap-2">{receivedFriendRequestFromUserOrNot()}</div>
       </div>
-    );
-  };
-
-  return <div>{friendStatus()}</div>;
+    </div>
+  );
 }
 
 export default PeopleUser;
