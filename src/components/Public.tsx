@@ -88,7 +88,7 @@ function Public() {
     try {
       if (publicPostsCollection === undefined) return console.log("publicPostsCollection is undefined"); //6 Must be improved later
       const newPublicPost = await addDoc(publicPostsCollection, data);
-      console.log("Post written to Firestore");
+      // console.log("Post written to Firestore");
       setPostId(newPublicPost.id); // Set the ID of this post to the state newPost
     } catch (err) {
       console.error("Error writing to publicPosts: ", err);
@@ -238,43 +238,48 @@ function Public() {
   return (
     <div>
       {/* Choose posts to see */}
-      <section className="grid grid-cols-2 gap-8 text-sm p-4">
+      <section className="grid grid-cols-2 gap-2 text-sm p-4 max-w-[100svw] whitespace-nowrap">
         <button
-          className={`text-white rounded-3xl flex items-center gap-2 justify-center pb-[8px] pt-[8px] max-h-[45px] 
+          className={`text-white rounded-3xl flex items-center gap-2 justify-center pb-[8px] pt-[8px] max-h-[45px]
           ${showGlobalPosts ? "bg-grayMain" : "bg-graySoft"} `}
           onClick={() => {
             setShowGlobalPosts(true);
             setShowFriendsPosts(false);
             setPostsLoaded(10);
+            setPublicPost(true);
           }}
         >
           <img src={showGlobalPosts ? globalIconWhite : globalIconGray} alt="" className="max-h-[85%]" />
           <div
-            className={`font-mainFontSemiBold mr-2 tracking-wide ${showGlobalPosts ? "text-white" : "text-textMain"} `}
+            className={`font-mainFont font-semibold mr-2 tracking-wide ${
+              showGlobalPosts ? "text-white" : "text-textMain"
+            } `}
           >
             Public Posts
           </div>
         </button>
         <button
-          className={`rounded-3xl flex items-center gap-2 justify-center pb-[8px] pt-[8px] max-h-[45px]  ${
+          className={`rounded-3xl flex items-center gap-2 justify-center pb-[8px] pt-[8px] max-h-[45px] ${
             showFriendsPosts ? "bg-grayMain text-white" : "bg-graySoft text-textMain"
           } `}
           onClick={() => {
             setShowFriendsPosts(true);
             setShowGlobalPosts(false);
             setPostsLoaded(10);
+            setPublicPost(false);
           }}
         >
           <img src={showFriendsPosts ? starIconWhite : starIconGray} alt="" className="max-h-[85%]" />
-          <div className="font-mainFontSemiBold tracking-wide">Friends' Posts</div>
+          <div className="font-mainFont font-semibold tracking-wide">Friends' Posts</div>
         </button>
       </section>
       <div className="w-full h-[7px] bg-grayLineThick"></div>
 
-      <div className="font-mainFontSemiBold text-medium ml-4 mt-3">Create a Post</div>
-
       {/* Make a post row */}
-      <section className="grid grid-cols-[55px,1fr,55px] justify-items-center items-center gap-2 mt-2 mb-2">
+      <div className="font-mainFont font-semibold text-medium ml-4 mt-3 mb-1">Create a Post</div>
+      <div className="w-full h-[1.5px] bg-grayLineThin"></div>
+
+      <section className="grid grid-cols-[55px,1fr,55px] justify-items-center items-center gap-2 mt-1 mb-1">
         <img
           src={loggedInUserProfilePicture}
           alt=""
@@ -300,18 +305,18 @@ function Public() {
             e.target.value = "";
           }}
         />
-        <label htmlFor="addImageToPostFeedButton" className="hover:cursor-pointer mr-2 block">
-          <img src={imageIcon} alt="add and upload file to post" className="min-w-[55px]" />
-          {/* <div className="text-verySmall text-center">Photo</div> */}
+        <label htmlFor="addImageToPostFeedButton" className="hover:cursor-pointer mr-2 flex flex-col pt-2">
+          <img src={imageIcon} alt="add and upload file to post" className="max-w-[35px]" />
+          <div className="text-verySmall text-center">Photo</div>
         </label>
       </section>
 
       {/* Post section */}
-      <section className="grid grid-cols-[55px,1fr,55px] justify-items-center items-center gap-2 pb-4">
+      <section className="grid grid-cols-[55px,1fr,55px] justify-items-center items-center gap-2 pb-3">
         <div></div>
-        <div className="w-full flex justify-around items-center gap-9">
+        <div className="w-full flex justify-around items-center gap-6">
           <button
-            className="w-[70%] bg-purpleMain text-white rounded-3xl text-medium h-[28px]"
+            className="w-[70%] bg-purpleMain text-white rounded-3xl text-medium font-mainFont font-bold h-[30px]"
             onClick={(e) => {
               if (postInput.length === 0 && imageAddedToPostFeed === "")
                 return console.log("add text or image before posting");
@@ -337,14 +342,9 @@ function Public() {
           >
             Post
           </button>
-          <button
-            onClick={() => {
-              changePostDestination();
-            }}
-            className="bg-graySoft w-[70%] text-textMain rounded-3xl text-verySmall grid grid-cols-[20px,1fr] place-items-center pl-2 pr-2 h-[28px]"
-          >
-            <img src={showGlobalPosts ? globalIconGray : starIconGray} alt="" className="w-[20px]" />
-            <div className="text-start w-full pl-1">{postDestination()}</div>
+          <button className="bg-graySoft w-[70%] text-textMain rounded-3xl text-verySmall grid grid-cols-[20px,65px] justify-center items-center pl-2 pr-2 h-[30px]">
+            <img src={showGlobalPosts ? globalIconGray : starIconGray} alt="" className="max-w-[18px]" />
+            <div className="w-full text-center font-mainFont font-semibold whitespace-nowrap">{postDestination()}</div>
           </button>
         </div>
         <div></div>
