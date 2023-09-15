@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
+import profileEllipse from "../assets/icons/profileEllipse.svg";
+import globalIconWhite from "../assets/icons/globalIcon/globalIconWhite.svg";
+import starIconGrayFilled from "../assets/icons/starIcon/starIconGrayFilled.svg";
+import checkIcon from "../assets/icons/checkIcon/checkIcon.svg";
+import lockIcon from "../assets/icons/lockIcon/lockIcon.png";
+
 import { db, storage } from "./../config/firebase.config";
 import {
   doc,
@@ -14,12 +20,15 @@ import {
   DocumentData,
   runTransaction,
 } from "firebase/firestore";
-import { getAuth, signOut } from "firebase/auth";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 import MakePost from "./MakePost";
 import AllPosts from "./AllPosts";
 import About from "./About";
+
+import LoadingBar from "./LoadingBar";
+import LoadingScreen from "./LoadingScreen";
+import { loadingSkeletonTheme } from "./SkeletonTheme";
 
 import { useEmptyProfilePicture } from "./context/EmptyProfilePictureContextProvider";
 import { useLoggedInUserId } from "./context/LoggedInUserProfileDataContextProvider";
@@ -201,21 +210,13 @@ const Profile = () => {
     }
   };
 
-  const userSignOut = () => {
-    const auth = getAuth();
-    signOut(auth).then(() => {
-      console.log("Signed out");
-      navigate("/login");
-    });
-  };
-
   const displayProfilePicture = () => {
     if (!visitingUser) {
       return (
         <img
           src={loggedInUserProfilePicture === "" ? emptyProfilePicture : loggedInUserProfilePicture}
           alt="profile"
-          className="rounded-[50%] aspect-square object-cover"
+          className="rounded-[50%] object-cover w-[150px] h-[150px] aspect-square border-white border-4"
         />
       );
     }
@@ -224,7 +225,7 @@ const Profile = () => {
         <img
           src={otherProfilePicture === "" ? emptyProfilePicture : otherProfilePicture}
           alt="profile"
-          className="rounded-[50%] aspect-square object-cover"
+          className="rounded-[50%] object-cover w-[150px] h-[150px] aspect-square border-white border-4 z-10"
         />
       );
     }
@@ -253,17 +254,17 @@ const Profile = () => {
   const openProfileButton = () => {
     if (openProfileId !== loggedInUserId) return;
     return (
-      <section className="pr-4 pt-2 grid absolute right-0 text-sm">
-        <button
-          className={`text-white rounded-md pb-[4px] pt-[4px] pl-[3px] pr-[3px] w-[100px] 
-          ${openProfile ? "bg-purpleMain" : "bg-redMain"} `}
-          onClick={() => {
-            openOrPrivateProfileSwitcher();
-          }}
-        >
-          {openProfile ? "Open Profile" : "Private Profile"}
-        </button>
-      </section>
+      <button
+        className={`grid grid-cols-[2fr,4fr] pl-2 pr-2 items-center absolute bottom-[60px] left-[16px] text-verySmall z-10 text-white rounded-3xl w-[90px] h-[40px] text-start gap-1 ${
+          openProfile ? "bg-purpleMain" : "bg-redMain"
+        } `}
+        onClick={() => {
+          openOrPrivateProfileSwitcher();
+        }}
+      >
+        <img src={globalIconWhite} alt="" className="w-[25px]" />
+        <div>{openProfile ? "Open Profile" : "Private Profile"}</div>
+      </button>
     );
   };
 
@@ -302,7 +303,6 @@ const Profile = () => {
       const loggedInUserDoc = await getDoc(loggedInUserDocRef);
       const loggedInUserData = loggedInUserDoc.data();
       setLoggedInUserData(loggedInUserData);
-      console.log(loggedInUserData);
     } catch (err) {
       console.error(err);
     }
@@ -331,9 +331,12 @@ const Profile = () => {
     if (displayProfileContent) return;
     if (!displayProfileContent)
       return (
-        <div>
-          This profile is private. You need to be friends with this user to see their posts and to make posts on their
-          page.
+        <div className="flex flex-col justify-center items-center text-center pt-8 gap-2">
+          <img src={lockIcon} alt="" className="max-w-[30svw]" />
+          <div className="font-bold text-large">This Account is Private</div>
+          <div className="max-w-[50svw] opacity-70">
+            You need to be friends to see their posts & make posts on their page
+          </div>
         </div>
       );
   };
@@ -563,7 +566,7 @@ const Profile = () => {
         <div>
           <div className="grid grid-cols-2 w-[190px] h-[40px]">
             <button
-              className="bg-purpleSoft text-purpleMain rounded-tl-lg rounded-bl-lg"
+              className="bg-purpleSoft text-purpleMain rounded-tl-3xl rounded-bl-3xl"
               onClick={() => {
                 setIsDeleteFriendDropdownMenuOpen(
                   (prevIsDeleteFriendDropdownMenuOpen) => !prevIsDeleteFriendDropdownMenuOpen
@@ -573,7 +576,7 @@ const Profile = () => {
               Cancel
             </button>
             <button
-              className="bg-redMain text-redSoft rounded-tr-lg rounded-br-lg"
+              className="bg-redMain text-redSoft rounded-tr-3xl rounded-br-3xl"
               onClick={() => {
                 deleteFriend();
               }}
@@ -587,13 +590,14 @@ const Profile = () => {
       return (
         <div>
           <button
-            className="bg-purpleSoft text-purpleMain rounded-lg w-[190px] h-[40px]"
+            className="bg-purpleSoft text-purpleMain font-mainFont text-[17px] rounded-3xl w-[190px] h-[40px] flex justify-center items-center gap-1"
             onClick={() => {
               setIsDeleteFriendDropdownMenuOpen(
                 (prevIsDeleteFriendDropdownMenuOpen) => !prevIsDeleteFriendDropdownMenuOpen
               );
             }}
           >
+            <img src={starIconGrayFilled} alt="" className="w-[30px]" />
             Friends
           </button>
         </div>
@@ -608,55 +612,54 @@ const Profile = () => {
     if (sentFriendRequestToUser)
       return (
         <button
-          className="bg-gray-400 text-white rounded-lg w-[190px] h-[40px]"
+          className="bg-graySoft text-black font-mainFont text-[17px] rounded-3xl w-[190px] h-[40px] flex justify-center items-center gap-1"
           onClick={() => {
             if (userDocRef && userData && loggedInUserData) {
               removeFriendRequest();
             }
           }}
         >
-          Friend Request Sent
+          <img src={checkIcon} alt="" className="w-[30px]" />
+          Requested
         </button>
       );
     if (receivedFriendRequestFromUser)
       return (
-        <div className="grid grid-rows-[20px,50px] items-center justify-items-center">
-          <div className="text-center">Sent you a friend request</div>
-          <div className="grid grid-cols-2 gap-4 w-[190px]">
-            <button
-              className="bg-[#00A7E1] text-white rounded-lg h-[40px]"
-              onClick={() => {
-                if (userDocRef && userData && loggedInUserData) {
-                  acceptFriendRequest();
-                }
-              }}
-            >
-              Accept
-            </button>
-            <button
-              className="bg-red-400 text-white rounded-lg h-[40px]"
-              onClick={() => {
-                if (userDocRef && userData && loggedInUserData) {
-                  declineFriendRequest();
-                }
-              }}
-            >
-              Decline
-            </button>
-          </div>
+        <div className="flex w-[100svw] justify-evenly">
+          <button
+            className="bg-purpleMain text-white font-mainFont text-[15px] rounded-3xl w-[220px] h-[40px] flex justify-center items-center gap-1"
+            onClick={() => {
+              if (userDocRef && userData && loggedInUserData) {
+                acceptFriendRequest();
+              }
+            }}
+          >
+            <img src={checkIcon} alt="" className="w-[25px]" />
+            Accept Friend Request
+          </button>
+          <button
+            className="bg-graySoft text-black rounded-3xl h-[40px] w-[115px] text-[15px]"
+            onClick={() => {
+              if (userDocRef && userData && loggedInUserData) {
+                declineFriendRequest();
+              }
+            }}
+          >
+            Deny
+          </button>
         </div>
       );
     else
       return (
         <button
-          className="bg-[#00A7E1] text-white rounded-lg w-[190px] h-[40px]"
+          className="bg-purpleMain text-white font-mainFont text-[17px] rounded-3xl w-[190px] h-[40px] flex justify-center items-center gap-1"
           onClick={() => {
             if (userDocRef && userData && loggedInUserData) {
               sendFriendRequest();
             }
           }}
         >
-          Add Friend
+          + Add Friend
         </button>
       );
   };
@@ -673,12 +676,16 @@ const Profile = () => {
 
   return (
     <div>
-      {/* // - Open/Private profile button */}
-      {openProfileButton()}
       {/*//1 Profile picture and name */}
-      <div className="grid grid-cols-[120px,1fr] items-center justify-center gap-4 pl-8 pr-8 pt-4 pb-4">
-        <div>
-          <label htmlFor="fileInput" className="block h-max hover:cursor-pointer">
+      <div className="flex justify-center">
+        <div className="w-[93svw] absolute bg-purpleSoft h-[200px] top-[0%] rounded-3xl z-0">
+          {/* // - Open/Private profile button */}
+          {openProfileButton()}
+        </div>
+      </div>
+      <div className="grid items-center justify-center gap-2 pl-8 pr-8 pt-4">
+        <div className="relative">
+          <label htmlFor="fileInput" className="h-max flex justify-center hover:cursor-pointer">
             {displayProfilePicture()}
           </label>
           <input
@@ -692,40 +699,38 @@ const Profile = () => {
             disabled={visitingUser} // Disables fileInput if it's not your profile
           />
         </div>
-        <div className="text-3xl">{displayUserName()}</div>
+        <div className="text-3xl font-mainFont font-bold text-center pb-4">{displayUserName()}</div>
       </div>
 
       {/* // - Friend status */}
       {showFriendStatusWithUser()}
 
+      <div className="w-full h-[1.5px] bg-grayLineThin"></div>
+
       {/*// - Posts/About selection */}
-      <div className="grid w-[100svw] justify-center p-2">
-        <div className="flex w-[65svw] rounded-lg h-12 border-2 border-black">
-          <button
-            className={`${
-              showPosts ? "bg-purpleMain text-white" : ""
-            }  w-[100%] h-[100%] flex justify-center rounded-tl-md rounded-bl-md items-center`}
-            onClick={() => setShowPosts(true)}
-          >
-            Posts
-          </button>
-          <button
-            className={`${
-              !showPosts ? "bg-purpleMain text-white" : ""
-            } w-[100%] flex justify-center rounded-tr-md rounded-br-md items-center`}
-            onClick={() => setShowPosts(false)}
-          >
-            About
-          </button>
-        </div>
+      <div className="grid grid-cols-2 gap-4 pl-4 pr-4 rounded-lg h-[65px] p-3">
+        <button
+          className={`${
+            showPosts ? "bg-black text-white" : "bg-graySoft text-black"
+          }  w-[100%] h-[100%] flex justify-center rounded-3xl items-center font-mainFont font-bold`}
+          onClick={() => setShowPosts(true)}
+        >
+          Posts
+        </button>
+        <button
+          className={`${
+            !showPosts ? "bg-black text-white" : "bg-graySoft text-black"
+          } w-[100%] flex justify-center rounded-3xl items-center font-mainFont font-bold`}
+          onClick={() => setShowPosts(false)}
+        >
+          About Me
+        </button>
       </div>
 
-      <div className="w-full h-[12px] bg-gray-100"></div>
+      <div className="w-full h-[7px] bg-grayLineThick"></div>
       {/*//1 Posts or About */}
       <div>{publicOrPrivateProfile()}</div>
       <div>{showPostsOrAbout()}</div>
-      <div className="w-full h-[15px] bg-gray-100"></div>
-      <button onClick={() => userSignOut()}>{openProfileId === loggedInUserId ? "Sign out" : ""}</button>
     </div>
   );
 };
@@ -733,33 +738,3 @@ const Profile = () => {
 export default Profile;
 
 //6 Could change profilePicture in Firebase to be "pfPicture" or just "picture" in order to keep naming more concise. Currently it's a bit confusing as we are using "profilePicture" to indicate that it's the picture to be used on the profile being viewing, and "userPicture" to point to the picture of the viewer.
-
-//1 Feature work plan:
-//3 1. Fetch the data from firestore and display firstname + lastname
-//3       Gotta match the user from auth to users and then fetch the data
-//3 2. Allow user to make post. When text input and post clicked, add post to firebase user's post
-//3 3. Set up routing to about when about it clicked
-//3 4. Set up routing to and from public
-
-//3 It's going to be a problem down the line to separate a visiting user from the profile the
-//3 user is viewing. As of now I think it all goes under the same umbrella. We'll see.
-
-//3 When a user visits another user:
-//3   Perhaps having a UUID id for each user which would be
-//3   the route for a users profile would be a good idea.
-//3   So that when a user visits another user, the URL holds their UUID id.
-//3     Might also be able to use the userId for this, but that might cause security issues.
-//3 When a user visits another user, check if the userId matches the currently signed in user?...
-
-//3 Have to run a check to see if userProfileId matches logged in userId
-//3 If it does, display home profile and pass userId to profile
-//3 If it doesn't, pass userProfileId to the top (profile header), userId to MakePost, and let posts fetch their own
-
-//3 Currently, whenever this (Profile) component is navigated to, the getAllPosts(); effect is ran.
-//3 This is not necessary.
-
-//3 Only want getAllPosts() to run on initial load and when "posts" state changes
-//3 Store an "initialLoadCompleted: true" in localStorage after posts have been fetched
-//3 If there isn't any "initialLoadCompleted: true" in localStorage, run getAllPosts()
-//3 Run getAllPosts() whenever a post is altered or a new post is added.
-//3   Have a useEffect that only runs if there is no initialLoadCompleted on mount
