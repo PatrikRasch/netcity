@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useDateFunctions } from "./custom-hooks/useDateFunctions";
 
@@ -36,6 +36,9 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
   const loggedInUserProfilePicture = useLoggedInUserProfilePicture();
   const [imageAddedToPost, setImageAddedToPost] = useState<string>("");
   const [imageAddedToPostId, setImageAddedToPostId] = useState<string>("");
+  const [textareaActive, setTextareaActive] = useState(false);
+
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   //1 Gets the reference to the postsProfile collection for the user
   const getPostsProfileRef = () => {
@@ -97,9 +100,9 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
   const displayUploadedImageOrNot = () => {
     if (imageAddedToPost)
       return (
-        <div className="pb-4 pr-8">
+        <div className="">
           <div className="relative">
-            <img src={imageAddedToPost} alt="" className="rounded-xl shadow-xl border-black border-2 p-[3px]" />
+            <img src={imageAddedToPost} alt="" className="rounded-xl shadow-xl p-[3px]" />
             <div
               className="absolute top-[15px] right-[15px] bg-white drop-shadow-xl rounded-[50%] w-[22px] h-[22px] opacity-90 flex justify-center items-center hover:cursor-pointer"
               onClick={() => {
@@ -126,111 +129,108 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
     }
   };
 
+  //1 Changes the height of the comment input field dynamically
+  const handleTextareaChange = () => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    textarea.rows = 5; // Ensures textarea shrinks by trying to set the rows to 1
+    const computedHeight = textarea.scrollHeight; // Sets computedHeight to match scrollheight
+    console.log(computedHeight);
+    const rows = Math.ceil(computedHeight / 24); // Find new number of rows to be set. Line height id 24.
+    textarea.rows = rows - 1; // Sets new number of rows
+  };
+
+  const resetTextarea = () => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    textarea.rows = 1;
+  };
+
   return (
     <div>
-      <div className="w-full min-h-[150px] bg-white shadow-xl">
-        <div className="min-h-[120px] flex p-4 gap-2">
-          <div className="min-w-[50px] max-w-min">
-            <img
-              src={loggedInUserProfilePicture === "" ? emptyProfilePicture : loggedInUserProfilePicture}
-              alt="profile"
-              className="rounded-[50%] aspect-square object-cover"
-            />
-          </div>
-          <textarea
-            placeholder="Make a post"
-            className="w-full bg-transparent resize-none outline-none"
-            maxLength={1000}
-            value={postInput}
-            onChange={(e) => {
-              setPostInput(e.target.value);
-              setFullTimestamp(new Date());
-            }}
-          />
-        </div>
-        <div className="grid grid-cols-[80px,1fr]">
-          <input
-            type="file"
-            id="imageInput"
-            hidden
-            onChange={(e) => {
-              console.log("Change!");
-              addImageToPost(e.target.files?.[0] || null);
-              e.target.value = "";
-            }}
-          />
-          <label htmlFor="imageInput" className="hover:cursor-pointer block w-max">
-            <img src={imageIcon} alt="add and upload file to post" className="max-w-[50px]" />
-          </label>
-          {displayUploadedImageOrNot()}
-        </div>
-        <button
-          className="min-h-[30px] w-full bg-purpleMain text-white"
-          onClick={(e) => {
-            if (postInput.length === 0 && imageAddedToPost === "")
-              return console.log("add text or image before posting");
+      <div className="font-mainFont font-semibold pl-4 pt-3 pb-1">Create a Post</div>
+      <div className="w-full h-[1.5px] bg-grayLineThin"></div>
+
+      <section className="grid grid-cols-[55px,1fr,55px] justify-items-center items-center gap-2 pt-3 pb-3 pl-2 pr-2">
+        <img
+          src={loggedInUserProfilePicture}
+          alt=""
+          className="aspect-square object-cover h-[48px] self-start ml-2 rounded-[50px] font-mainFont"
+        />
+        <textarea
+          ref={textareaRef}
+          placeholder="Make a post"
+          className={`w-full resize-none overflow-y-auto self-start rounded-3xl p-3 transition-height duration-500 outline-none bg-graySoft ${
+            textareaActive ? "min-h-[144px]" : "min-h-[48px]"
+          }`}
+          maxLength={1000}
+          value={postInput}
+          onChange={(e) => {
+            setPostInput(e.target.value);
+            handleTextareaChange();
             setFullTimestamp(new Date());
-            writePost({
-              timestamp: fullTimestamp,
-              firstName: loggedInUserFirstName,
-              lastName: loggedInUserLastName,
-              text: postInput,
-              image: imageAddedToPost,
-              imageId: imageAddedToPostId,
-              date: dateDayMonthYear,
-              likes: {},
-              dislikes: {},
-              comments: {},
-              userId: loggedInUserId,
-            });
-            getAllPosts();
-            setPostInput("");
-            setImageAddedToPost("");
           }}
-        >
-          Post
-        </button>
-      </div>
-      <div className="w-full h-[15px] bg-gray-100"></div>
+          onFocus={() => {
+            setTextareaActive(true);
+          }}
+          rows={1}
+        />
+        <input
+          type="file"
+          id="addImageToPostFeedButton"
+          hidden
+          onChange={(e) => {
+            addImageToPost(e.target.files?.[0] || null);
+            e.target.value = "";
+          }}
+        />
+
+        <label htmlFor="addImageToPostFeedButton" className="hover:cursor-pointer mr-2 flex flex-col">
+          <img src={imageIcon} alt="add and upload file to post" className="max-w-[35px]" />
+          <div className="text-verySmall text-center">Photo</div>
+        </label>
+        <div className={`${imageAddedToPost ? "" : "absolute"}`}></div>
+        <div className={`${imageAddedToPost ? "" : "absolute"}`}>{displayUploadedImageOrNot()}</div>
+        <div className={`${imageAddedToPost ? "" : "absolute"}`}></div>
+      </section>
+
+      {/* Post section */}
+      <section className="grid grid-cols-[55px,1fr,55px] justify-items-center items-center gap-2 pb-3">
+        <div></div>
+        <div className="w-full">
+          <button
+            className="w-[100%] bg-purpleMain text-white rounded-3xl text-medium font-mainFont font-bold h-[33px]"
+            onClick={(e) => {
+              if (postInput.length === 0 && imageAddedToPost === "")
+                return console.log("add text or image before posting");
+              setFullTimestamp(new Date());
+              writePost({
+                timestamp: fullTimestamp,
+                firstName: loggedInUserFirstName,
+                lastName: loggedInUserLastName,
+                text: postInput,
+                image: imageAddedToPost,
+                imageId: imageAddedToPostId,
+                date: dateDayMonthYear,
+                likes: {},
+                dislikes: {},
+                comments: {},
+                userId: loggedInUserId,
+              });
+              getAllPosts();
+              setPostInput("");
+              setImageAddedToPost("");
+              resetTextarea();
+              setTextareaActive(false);
+            }}
+          >
+            Post
+          </button>
+        </div>
+      </section>
+      <div className="w-full h-[7px] bg-grayLineThick"></div>
     </div>
   );
 }
 
 export default MakePost;
-
-//1 Excess comments
-//2 When a post is made, the onClick of the post button returns a function that
-//2 makes another post, passing the props of the new post to it.
-//2 Then, this new post is also sent to firebase.
-//2 In this way, the new post can instantly render on the page, while also going into the backend.
-
-//2 What if a user tries to write another post right after? That would replace our first new post 🤔
-//2 Perhaps once the post has been written to the backend, it can be replaced by the backend post?
-//2 Or, instead of having the post show up immediately (optimistic UI), we wait until the post
-//2 has been written and fetched before displaying it.
-//2 We would only need to fetch the most recent post once its written, which sounds straight-fowards.
-//2 This would add some minor wait time, but would reduce complexity.
-
-//5 Don't need this as all posts are currently fetched together from Firestore.
-// await fetchPost(); // Callback for fetchPost that gets the recent post
-// //1 Fetch the newest post from Firestore using the postId state
-// const fetchPost = async () => {
-//   try {
-//     const docRef = doc(db, "users", userId, "postsProfile", postId);
-//     const fetchedDocument = await getDoc(docRef);
-//     console.log("Post fetched from Firestore");
-//     if (fetchedDocument) {
-//       const fetchedDocumentData = fetchedDocument.data();
-//     }
-//   } catch (err) {
-//     console.error("Error fetching post from postsProfile: ", err);
-//   }
-// };
-
-//5 Don't need this one as we pass the user ID from profile as a prop
-//1 // Get the current user's ID and set it to the userId state on "componentWillMount"
-// useEffect(() => {
-//   onAuthStateChanged(getAuth(), async (user) => {
-//     if (user) setUserId(user.uid);
-//   });
-// }, []);
