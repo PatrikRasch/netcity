@@ -93,7 +93,7 @@ const Profile = () => {
     if (loggedInUserId === openProfileId) {
       setFeaturedPhoto(loggedInUserData?.featuredPhoto);
       if (loggedInUserData?.bio === "") setBioText("Write a bio about yourself");
-      else setBioText(loggedInUserData?.bioText);
+      else setBioText(loggedInUserData?.bio);
     }
   }, [openProfileId, userData, loggedInUserData]);
 
