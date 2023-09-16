@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import signoutIconWhite from "../assets/icons/signoutIcon/signoutIconWhite.png";
 import imageIcon from "../assets/icons/imageIcon/imageIcon.png";
+import editIcon from "../assets/icons/editIcon/editIcon.svg";
 
 import { db, storage } from "./../config/firebase.config";
 import { updateDoc, doc, getDoc, collection } from "firebase/firestore";
@@ -21,32 +22,27 @@ interface Props {
   visitingUser: boolean;
   bioText: string;
   setBioText: (value: string) => void;
+  featuredPhoto: string;
+  setFeaturedPhoto: (value: string) => void;
+  displayUserName: () => string | undefined;
 }
 
-const About = ({ openProfileId, visitingUser, bioText, setBioText }: Props) => {
+const About = ({
+  openProfileId,
+  visitingUser,
+  bioText,
+  setBioText,
+  featuredPhoto,
+  setFeaturedPhoto,
+  displayUserName,
+}: Props) => {
   const { loggedInUserId } = useLoggedInUserId();
   const [editButtonText, setEditButtonText] = useState("");
   const [editMode, setEditMode] = useState(false);
   const [bioRows, setBioRows] = useState(5);
-  const [featuredPhoto, setFeaturedPhoto] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const loadUserAbout = async () => {
-      if (!loggedInUserId) return;
-      const openProfileDoc = doc(db, "users", openProfileId);
-      try {
-        const openProfileData = await getDoc(openProfileDoc);
-        const data = openProfileData.data();
-        setBioText(data?.bio);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    loadUserAbout();
-  }, []);
 
   useEffect(() => {
     setEditButtonText(editMode ? "Save bio" : "Edit bio");
@@ -63,13 +59,14 @@ const About = ({ openProfileId, visitingUser, bioText, setBioText }: Props) => {
     if (visitingUser) return;
     return (
       <button
-        className="text-medium font-mainFont bg-purpleSoft font-semibold text-purpleMain w-[90svw] p-1 text-center rounded-3xl"
+        className="text-medium font-mainFont bg-purpleSoft font-semibold text-purpleMain w-[90svw] p-1 text-center rounded-3xl flex justify-center items-center gap-1"
         onClick={() => {
           setEditMode(!editMode);
           saveAboutInput();
         }}
       >
-        {editButtonText}
+        <img src={editIcon} alt="" className="w-[15px]" />
+        <div>{editButtonText}</div>
       </button>
     );
   };
@@ -126,55 +123,68 @@ const About = ({ openProfileId, visitingUser, bioText, setBioText }: Props) => {
   const featuredPhotoSection = () => {
     return (
       <div>
-        <div className="grid grid-cols-[1fr,9fr,1fr] pl-6 pr-6">
+        <div className="grid grid-cols-[1fr,9fr,1fr] pl-6 pr-6 p-3 gap-2 items-center font-semibold">
           <img src={imageIcon} alt="" className="w-[25px]" />
-          <div>Featured Photo</div>
-          <div>Edit</div>
+          <div className="text-medium">Featured Photo</div>
+          {visitingUser ? (
+            ""
+          ) : (
+            <>
+              <label
+                htmlFor="featuredPhotoInput"
+                className="flex justify-center hover:cursor-pointer bg-purpleSoft text-purpleMain rounded-3xl pl-5 pr-5 text-medium gap-1"
+              >
+                <img src={editIcon} alt="" className="w-[12px]" />
+                <div>Edit</div>
+              </label>
+              <input
+                type="file"
+                id="featuredPhotoInput"
+                className="opacity-0"
+                hidden
+                onChange={(e) => {
+                  uploadFeaturedPhoto(e.target.files?.[0] || null);
+                }}
+                disabled={visitingUser} // Disables fileInput if it's not your profile
+              />
+            </>
+          )}
         </div>
-        Featured photo is currently a work in progress
         <div className="w-full h-[1.5px] bg-grayLineThin"></div>
-        <label htmlFor="fileInput" className="h-max flex justify-center hover:cursor-pointer">
-          {/* {displayFeaturedPhoto()} */}
-        </label>
-        <input
-          type="file"
-          id="fileInput"
-          className="opacity-0"
-          hidden
-          onChange={(e) => {
-            uploadFeaturedPhoto(e.target.files?.[0] || null);
-          }}
-          disabled={visitingUser} // Disables fileInput if it's not your profile
-        />
-        <div></div>
+        {displayFeaturedPhoto()}
       </div>
     );
   };
 
   const displayFeaturedPhoto = () => {
-    return (
-      <img
-        src={featuredPhoto === "" ? "emptyProfilePicture" : featuredPhoto}
-        alt="profile"
-        className="rounded-[50%] object-cover w-[150px] h-[150px] aspect-square border-white border-4"
-      />
-    );
+    if (featuredPhoto === undefined && loggedInUserId !== openProfileId)
+      return (
+        <div className="grid justify-items-center items-center p-2">
+          <div className="text-grayMain">The user hasn't chosen a featured photo yet</div>
+        </div>
+      );
+    if (featuredPhoto === undefined)
+      return (
+        <div className="grid justify-items-center items-center p-2">
+          <div className="p-2">Upload a featured photo, click "Edit"</div>
+        </div>
+      );
+    return <img src={featuredPhoto} alt="featured on profile" className="object-cover p-4 rounded-3xl" />;
   };
 
   // - Allows user to select profile picture. Writes and stores the profile picture in Firebase Storage.
   // - Also updates the user in the Firestore database with URL to the photo.
-  const uploadFeaturedPhoto = async (newProfilePicture: File | null) => {
-    if (newProfilePicture === null) return; // Return if no imagine is uploaded
+  const uploadFeaturedPhoto = async (newFeaturedPhoto: File | null) => {
+    if (newFeaturedPhoto === null) return; // Return if no imagine is uploaded
     const storageRef = ref(storage, `/featuredPhotos/${loggedInUserId}`); // Connect to storage
     try {
-      const uploadedPicture = await uploadBytes(storageRef, newProfilePicture); // Upload the image
+      const uploadedPicture = await uploadBytes(storageRef, newFeaturedPhoto); // Upload the image
       const downloadURL = await getDownloadURL(uploadedPicture.ref); // Get the downloadURL for the image
       setFeaturedPhoto(downloadURL); // Set the downloadURL for the image in state to use across the app.
       // Update Firestore Database with image:
       const usersCollectionRef = collection(db, "users"); // Grabs the users collection
       const userDocRef = doc(usersCollectionRef, loggedInUserId); // Grabs the doc where the user is
-      await updateDoc(userDocRef, { profilePicture: downloadURL }); // Add the image into Firestore
-      // alert("Profile picture uploaded"); //6 Should be sexified
+      await updateDoc(userDocRef, { featuredPhoto: downloadURL }); // Add the image into Firestore
     } catch (err) {
       console.error(err);
       //6 Need a "Something went wrong, please try again"
@@ -209,7 +219,9 @@ const About = ({ openProfileId, visitingUser, bioText, setBioText }: Props) => {
   return (
     <div>
       {aboutInformation()}
+      <div className="w-full h-[7px] bg-grayLineThick"></div>
       {featuredPhotoSection()}
+      <div className="w-full h-[7px] bg-grayLineThick"></div>
       {signOutButton()}
     </div>
   );

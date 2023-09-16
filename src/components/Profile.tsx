@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import profileEllipse from "../assets/icons/profileEllipse.svg";
 import globalIconWhite from "../assets/icons/globalIcon/globalIconWhite.svg";
 import starIconGrayFilled from "../assets/icons/starIcon/starIconGrayFilled.svg";
 import checkIcon from "../assets/icons/checkIcon/checkIcon.svg";
@@ -25,10 +24,6 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import MakePost from "./MakePost";
 import AllPosts from "./AllPosts";
 import About from "./About";
-
-import LoadingBar from "./LoadingBar";
-import LoadingScreen from "./LoadingScreen";
-import { loadingSkeletonTheme } from "./SkeletonTheme";
 
 import { useEmptyProfilePicture } from "./context/EmptyProfilePictureContextProvider";
 import { useLoggedInUserId } from "./context/LoggedInUserProfileDataContextProvider";
@@ -77,6 +72,8 @@ const Profile = () => {
 
   const [isDeleteFriendDropdownMenuOpen, setIsDeleteFriendDropdownMenuOpen] = useState(false);
 
+  const [featuredPhoto, setFeaturedPhoto] = useState("");
+
   //- Navigation declarations:
   const navigate = useNavigate();
   //- useParams:
@@ -93,6 +90,11 @@ const Profile = () => {
   useEffect(() => {
     publicOrPrivateProfile();
     showProfileContentOrNot();
+    if (loggedInUserId === openProfileId) {
+      setFeaturedPhoto(loggedInUserData?.featuredPhoto);
+      if (loggedInUserData?.bio === "") setBioText("Write a bio about yourself");
+      else setBioText(loggedInUserData?.bioText);
+    }
   }, [openProfileId, userData, loggedInUserData]);
 
   useEffect(() => {
@@ -127,6 +129,8 @@ const Profile = () => {
           setOtherFirstName(profileData?.firstName);
           setOtherLastName(profileData?.lastName);
           setOtherProfilePicture(profileData?.profilePicture);
+          setFeaturedPhoto(profileData?.featuredPhoto);
+          setOtherProfileBio(profileData);
           setDataLoaded(true);
         } catch (err) {
           console.error(err);
@@ -134,7 +138,13 @@ const Profile = () => {
       }
     };
     getOtherProfileData();
+    setShowPosts(true);
   }, [openProfileId]);
+
+  const setOtherProfileBio = (profileData: DocumentData | undefined) => {
+    if (profileData?.bio === "") setBioText("The user hasn't written a bio yet");
+    else setBioText(profileData?.bio);
+  };
 
   //1 GET POSTS FOR PROFILE CURRENTLY BEING VIEWED
   //  - Gets all the posts (profilePosts in Firestore) from the current profile subcollection.
@@ -185,6 +195,9 @@ const Profile = () => {
             visitingUser={visitingUser}
             bioText={bioText}
             setBioText={setBioText}
+            featuredPhoto={featuredPhoto}
+            setFeaturedPhoto={setFeaturedPhoto}
+            displayUserName={displayUserName}
           />
         </>
       );
