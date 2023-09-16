@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import AllPosts from "./AllPosts";
 
 import { db, storage } from "../config/firebase.config";
@@ -67,6 +67,9 @@ function Public() {
   const [publicPost, setPublicPost] = useState(true);
   const [imageAddedToPostFeed, setImageAddedToPostFeed] = useState<string>("");
   const [imageAddedToPostFeedId, setImageAddedToPostFeedId] = useState<string>("");
+  const [textareaActive, setTextareaActive] = useState(false);
+
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   //1 Gets the reference to the publicPosts collection
   const publicPostsCollection = collection(db, "publicPosts");
@@ -235,12 +238,28 @@ function Public() {
     }
   };
 
+  // - Changes the height of the input field dynamically
+  const handleTextareaChange = () => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    textarea.rows = 5; // Ensures textarea shrinks by trying to set the rows to 1
+    const computedHeight = textarea.scrollHeight; // Sets computedHeight to match scrollheight
+    const rows = Math.ceil(computedHeight / 24); // Find new number of rows to be set. Line height id 24.
+    textarea.rows = rows - 1; // Sets new number of rows
+  };
+
+  const resetTextarea = () => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    textarea.rows = 1;
+  };
+
   return (
     <div>
       {/* Choose posts to see */}
       <section className="grid grid-cols-2 gap-2 text-sm p-4 max-w-[100svw] whitespace-nowrap">
         <button
-          className={`text-white rounded-3xl flex items-center gap-2 justify-center pb-[8px] pt-[8px] max-h-[45px]
+          className={`text-white rounded-3xl flex items-center gap-2 justify-center pb-[8px] pt-[8px] h-[45px]
           ${showGlobalPosts ? "bg-grayMain" : "bg-graySoft"} `}
           onClick={() => {
             setShowGlobalPosts(true);
@@ -249,12 +268,8 @@ function Public() {
             setPublicPost(true);
           }}
         >
-          <img src={showGlobalPosts ? globalIconWhite : globalIconGray} alt="" className="max-h-[85%]" />
-          <div
-            className={`font-mainFont font-semibold mr-2 tracking-wide ${
-              showGlobalPosts ? "text-white" : "text-textMain"
-            } `}
-          >
+          <img src={showGlobalPosts ? globalIconWhite : globalIconGray} alt="" className="h-[28px]" />
+          <div className={`font-mainFont font-semibold mr-2 ${showGlobalPosts ? "text-white" : "text-textMain"} `}>
             Public Posts
           </div>
         </button>
@@ -269,8 +284,8 @@ function Public() {
             setPublicPost(false);
           }}
         >
-          <img src={showFriendsPosts ? starIconWhite : starIconGray} alt="" className="max-h-[85%]" />
-          <div className="font-mainFont font-semibold tracking-wide">Friends' Posts</div>
+          <img src={showFriendsPosts ? starIconWhite : starIconGray} alt="" className="h-[28px]" />
+          <div className="font-mainFont font-semibold">Friends' Posts</div>
         </button>
       </section>
       <div className="w-full h-[7px] bg-grayLineThick"></div>
@@ -279,7 +294,7 @@ function Public() {
       <div className="font-mainFont font-semibold text-medium ml-4 mt-3 mb-1">Create a Post</div>
       <div className="w-full h-[1.5px] bg-grayLineThin"></div>
 
-      <section className="grid grid-cols-[55px,1fr,55px] justify-items-center items-center gap-2 mt-1 mb-1">
+      <section className="grid grid-cols-[55px,1fr,55px] justify-items-center gap-2 pt-4 pb-2 items-start">
         <img
           src={loggedInUserProfilePicture}
           alt=""
@@ -287,14 +302,22 @@ function Public() {
         />
         <div className={`${imageAddedToPostFeed ? "" : "absolute"}`}>{displayUploadedImageOrNot()}</div>
         <textarea
+          ref={textareaRef}
           placeholder="Make a post"
-          className="w-full h-[39px] rounded-3xl p-2 pl-4 resize-none text-medium outline-none bg-graySoft"
+          className={`w-full resize-none overflow-y-auto rounded-3xl p-3 transition-height duration-500 outline-none bg-graySoft ${
+            textareaActive ? "min-h-[144px]" : "min-h-[48px]"
+          }`}
           maxLength={1000}
           value={postInput}
           onChange={(e) => {
             setPostInput(e.target.value);
+            handleTextareaChange();
             setFullTimestamp(new Date());
           }}
+          onFocus={() => {
+            setTextareaActive(true);
+          }}
+          rows={1}
         />
         <input
           type="file"
@@ -305,7 +328,7 @@ function Public() {
             e.target.value = "";
           }}
         />
-        <label htmlFor="addImageToPostFeedButton" className="hover:cursor-pointer mr-2 flex flex-col pt-2">
+        <label htmlFor="addImageToPostFeedButton" className="hover:cursor-pointer mr-2 flex flex-col">
           <img src={imageIcon} alt="add and upload file to post" className="max-w-[35px]" />
           <div className="text-verySmall text-center">Photo</div>
         </label>
@@ -338,6 +361,8 @@ function Public() {
               getGlobalPosts();
               setPostInput("");
               setImageAddedToPostFeed("");
+              resetTextarea();
+              setTextareaActive(false);
             }}
           >
             Post
