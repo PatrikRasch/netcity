@@ -6,6 +6,8 @@ import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "firebas
 import { useLoggedInUserId } from "./context/LoggedInUserProfileDataContextProvider";
 
 import logoIcon from "../assets/icons/logoIcon.png";
+import mailIconPurple from "../assets/icons/mailIcon.svg";
+import lockIconPurple from "../assets/icons/lockIcon/lockIcon-purple.svg";
 import googleIcon from "../assets/icons/googleIcon.svg";
 
 const Login = () => {
@@ -53,18 +55,24 @@ const Login = () => {
       {/*// - The rest */}
       <div className="">
         <div className="grid text-xl gap-6 p-3">
-          <input
-            type="email"
-            className="p-3 pl-6 min-h-[40px] w-[75svw] rounded-3xl bg-graySoft text-black outline-purpleMain"
-            placeholder="Email"
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <input
-            type="password"
-            className="p-3 pl-6 min-h-[40px] w-[75svw] rounded-3xl bg-graySoft text-black outline-purpleMain"
-            placeholder="Password"
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <div className="flex items-center bg-graySoft rounded-3xl w-[75svw]">
+            <img src={mailIconPurple} alt="" className="h-[33px] absolute pl-4" />
+            <input
+              type="email"
+              className="p-3 min-h-[40px] w-full pl-16 rounded-3xl bg-graySoft text-black outline-purpleMain text-medium"
+              placeholder="John@gmail.com"
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div className="flex items-center bg-graySoft rounded-3xl w-[75svw]">
+            <img src={lockIconPurple} alt="" className="h-[33px] absolute pl-4" />
+            <input
+              type="password"
+              className="p-3 pl-16 min-h-[40px] w-full rounded-3xl bg-graySoft text-black outline-purpleMain text-medium"
+              placeholder="Password"
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
         </div>
 
         {/*// - Login and Sign up with Google section */}
@@ -82,7 +90,12 @@ const Login = () => {
             <div className="text-medium text-grayMain">OR</div>
           </div>
 
-          <button className="flex p-3 min-h-[40px] justify-center gap-2 rounded-3xl min-w-[65svw] text-black text-[14px] bg-graySoft outline-purpleMain">
+          <button
+            className="flex p-3 min-h-[40px] justify-center gap-2 rounded-3xl min-w-[65svw] text-black text-[14px] bg-graySoft outline-purpleMain"
+            onClick={() => {
+              alert("This feature is coming soon");
+            }}
+          >
             <img src={googleIcon} alt="" className="w-[26px]" />
             <div>Sign-In with Google</div>
           </button>
