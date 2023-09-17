@@ -5,6 +5,9 @@ import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "firebas
 
 import { useLoggedInUserId } from "./context/LoggedInUserProfileDataContextProvider";
 
+import logoIcon from "../assets/icons/logoIcon.png";
+import googleIcon from "../assets/icons/googleIcon.svg";
+
 const Login = () => {
   const { loggedInUserId, setLoggedInUserId } = useLoggedInUserId();
 
@@ -30,7 +33,7 @@ const Login = () => {
     const auth = getAuth();
     try {
       await signInWithEmailAndPassword(auth, email, password).then((userCredentials) => {
-        console.log("User logged in: ", userCredentials);
+        // console.log("User logged in: ", userCredentials);
         navigate(`/profile/${userCredentials.user.uid}`);
       });
     } catch (err) {
@@ -40,67 +43,64 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-[100svh]">
-      <div className="min-h-[80svh] grid justify-center">
-        {/*//1 Header */}
-        <div className="flex flex-col pt-4 justify-center text-center">
-          <div className="text-2xl">Welcome to</div>
-          <div className="text-6xl font-Hertical">NetCity</div>
-        </div>
+    <div className="grid grid-rows-[1fr,1fr] justify-center">
+      {/*// - Header */}
+      <div className="flex flex-col items-center pt-4 justify-center text-center">
+        <img src={logoIcon} alt="" className="w-[150px]" />
+        <div className="text-purpleMain font-mainFont font-bold text-[40px]">NetCity</div>
+      </div>
 
-        {/*//1 Input section */}
-        <div className="grid text-xl gap-4 m-4">
+      {/*// - The rest */}
+      <div className="">
+        <div className="grid text-xl gap-6 p-3">
           <input
             type="email"
-            className="p-2 pl-4 border-2 min-h-[40px] min-w-[75svw] rounded-md border-black shadow-lg"
+            className="p-3 pl-6 min-h-[40px] w-[75svw] rounded-3xl bg-graySoft text-black outline-purpleMain"
             placeholder="Email"
             onChange={(e) => setEmail(e.target.value)}
           />
           <input
             type="password"
-            className="p-2 pl-4 border-2 min-h-[40px] min-w-[75svw] rounded-md border-black shadow-lg"
+            className="p-3 pl-6 min-h-[40px] w-[75svw] rounded-3xl bg-graySoft text-black outline-purpleMain"
             placeholder="Password"
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
 
-        {/*//1 Login and Sign up with Google section */}
-        <div className="flex flex-col items-center text-xl">
+        {/*// - Login and Sign up with Google section */}
+        <div className="flex flex-col items-center text-xl p-2 gap-3">
           <button
-            className="p-4 rounded-md border-2 border-black min-w-[60svw] shadow-lg min-h-[50px] m-2 text-white bg-purpleMain"
+            className="p-3 rounded-3xl w-[75svw] min-h-[40px] text-white bg-black outline-purpleMain"
             onClick={() => {
               handleLogin();
             }}
           >
-            Log in
+            Login with e-mail
           </button>
-          <button className="p-4 min-h-[50px] border-2 border-black rounded-md min-w-[60svw] shadow-lg m-2 text-purpleMain bg-purpleSoft">
-            Sign in with Google
+          {/*// - "or" divider */}
+          <div className="flex items-center justify-around">
+            <div className="text-medium text-grayMain">OR</div>
+          </div>
+
+          <button className="flex p-3 min-h-[40px] justify-center gap-2 rounded-3xl min-w-[65svw] text-black text-[14px] bg-graySoft outline-purpleMain">
+            <img src={googleIcon} alt="" className="w-[26px]" />
+            <div>Sign-In with Google</div>
           </button>
         </div>
 
-        {/*//1 "or" divider */}
-        <div className="flex items-center justify-around">
-          <div className="w-[28svw] h-[2px] bg-black"></div>
-          <div className="text-xl">or</div>
-          <div className="w-[28svw] h-[2px] bg-black"></div>
-        </div>
-
-        {/*//1 Create new account button */}
-        <div className="justify-self-center self-center">
+        {/*// - Create new account button */}
+        <div className="p-3 flex justify-center">
+          <div className="text-medium text-grayMain">Don't have an account?</div>
           <button
-            className="p-4 text-xl border-2 min-h-[50px] shadow-lg border-black min-w-[60svw] rounded-md m-2 bg-gray-300"
+            className="text-medium pl-1 text-purpleMain underline font-semibold"
             onClick={() => {
               setCreateNewAccount(true);
             }}
           >
-            Create new account
+            Signup
           </button>
         </div>
       </div>
-
-      {/*//1 Footer */}
-      <div className="flex justify-center items-end text-3xl min-h-[20svh] pb-12 font-Hertical">NetCity</div>
     </div>
   );
 };
