@@ -5,6 +5,10 @@ import { auth, googleProvider, db } from "./../config/firebase.config";
 import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { collection, doc, setDoc } from "firebase/firestore";
 
+import mailIconPurple from "../assets/icons/mailIcon.svg";
+import lockIconPurple from "../assets/icons/lockIcon/lockIcon-purple.svg";
+import googleIcon from "../assets/icons/googleIcon.svg";
+
 import LoadingBar from "./LoadingBar";
 
 const Register = () => {
@@ -104,7 +108,7 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-[100svh]">
+    <div>
       <div className={`${showLoadingBar ? "opacity-100" : "opacity-0"} pointer-events-none transition`}>
         <div className="absolute inset-0 flex justify-center items-center z-20">
           <LoadingBar />
@@ -114,92 +118,114 @@ const Register = () => {
       <div className={`${accountCreated ? "opacity-100" : "opacity-0"} pointer-events-none transition`}>
         {accountCreatedJSX()}
       </div>
-      <div className="min-h-[90svh] grid justify-center">
-        <div className="flex flex-col pt-4 justify-center text-center">
-          <div className="text-2xl">Become a citizen of</div>
-          <div className="text-6xl font-Hertical">NetCity</div>
+      <div className="grid justify-center pt-14 pb-20 h-[100svh]">
+        {/* // - Header */}
+        <div className="flex flex-col justify-center text-center">
+          <div className="text-2xl text-purpleMain opacity-60">Become a citizen of</div>
+          <div className="text-6xl font-bold  text-purpleMain">NetCity</div>
         </div>
-        {/*//1 Name section */}
-        <div className="grid text-xl gap-4 m-4">
-          <div className="text-base text-center">You can use your real name or an alias</div>
-          <input
-            type="text"
-            className="p-2 pl-4 border-2 min-h-[40px] min-w-[75svw] rounded-md border-black shadow-lg"
-            placeholder="First name"
-            onChange={(e) => {
-              setFirstName(e.target.value);
-            }}
-          />
-          <input
-            type="text"
-            className="p-2 pl-4 border-2 min-h-[40px] min-w-[75svw] rounded-md border-black shadow-lg"
-            placeholder="Surname"
-            onChange={(e) => {
-              setLastName(e.target.value);
-            }}
-          />
-        </div>
-        <div className="flex items-center justify-around">
-          <div className="w-[20svw] h-[2px] bg-black"></div>
-          <div className="text-xl">Login details</div>
-          <div className="w-[20svw] h-[2px] bg-black"></div>
-        </div>
-        {/*//1 Email and password section */}
-        <div className="grid text-xl gap-4 m-4">
-          <input
-            type="email"
-            className="p-2 pl-4 border-2 min-h-[40px] min-w-[75svw] rounded-md border-black shadow-lg"
-            placeholder="Email"
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <input
-            type="password"
-            className="p-2 pl-4 border-2 min-h-[40px] min-w-[75svw] rounded-md border-black shadow-lg"
-            placeholder="Password"
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <input
-            type="password"
-            className="p-2 pl-4 border-2 min-h-[40px] min-w-[75svw] rounded-md border-black shadow-lg"
-            placeholder="Confirm Password"
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
-        </div>
-        {/*//1 Register account button */}
-        <div className="flex flex-col items-center text-xl">
+        {/*// - Account Details */}
+        <section className="grid justify-center pt-6 gap-3">
+          <div className="grid gap-1">
+            <div className="text-center text-[18px]">Account Details</div>
+            <div className="w-full h-[1.5px] bg-grayLineThin"></div>
+          </div>
+          <div className="text-base text-center text-grayMain text-[13px]">You can use your real name or an alias</div>
+          <div className="grid gap-4">
+            <input
+              type="text"
+              className="p-2 pl-6 h-[40px] w-[75svw] rounded-3xl bg-graySoft text-black outline-purpleMain text-[16px]"
+              placeholder="First name"
+              onChange={(e) => {
+                setFirstName(e.target.value);
+              }}
+            />
+            <input
+              type="text"
+              className="p-2 pl-6 h-[40px] w-[75svw] rounded-3xl bg-graySoft text-black outline-purpleMain text-[16px]"
+              placeholder="Surname"
+              onChange={(e) => {
+                setLastName(e.target.value);
+              }}
+            />
+          </div>
+        </section>
+        {/* // - Login Details */}
+        <section>
+          <div className="flex flex-col items-center justify-around pt-4 pb-4 gap-1">
+            <div className="text-[18px]">Login Details</div>
+            <div className="w-full h-[1.5px] bg-grayLineThin"></div>
+          </div>
+          {/*//1 Email and password section */}
+          <div className="grid text-xl gap-4">
+            <div className="flex items-center bg-graySoft rounded-3xl w-[75svw]">
+              <img src={mailIconPurple} alt="" className="h-[33px] absolute pl-4" />
+              <input
+                type="email"
+                className="p-2 pl-16 h-[40px] w-full rounded-3xl bg-graySoft text-black outline-purpleMain text-[16px]"
+                placeholder="Email"
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+
+            <div className="flex items-center bg-graySoft rounded-3xl w-[75svw]">
+              <img src={lockIconPurple} alt="" className="h-[33px] absolute pl-4" />
+              <input
+                type="password"
+                className="p-2 pl-16 h-[40px] w-full rounded-3xl bg-graySoft text-black outline-purpleMain text-[16px]"
+                placeholder="Password"
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+            <div className="flex items-center bg-graySoft rounded-3xl w-[75svw]">
+              <img src={lockIconPurple} alt="" className="h-[33px] absolute pl-4" />
+              <input
+                type="password"
+                className="p-2 pl-16 h-[45px] w-full rounded-3xl bg-graySoft text-black outline-purpleMain text-[16px]"
+                placeholder="Confirm Password"
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+            </div>
+          </div>
+        </section>
+        {/*// - Register account button */}
+        <div className="text-xl pt-6">
           <button
-            className="p-4 rounded-md border-2 border-black min-w-[60svw] shadow-lg min-h-[50px] m-2 text-white bg-purpleMain"
+            className="flex items-center justify-center p-3 rounded-3xl w-[75svw] h-[45px] text-white bg-black outline-purpleMain"
             onClick={registerAccountWithEmail}
           >
             Register account
           </button>
         </div>
-        {/*//1 "or" dividor */}
-        <div className="flex items-center justify-around">
-          <div className="w-[28svw] h-[2px] bg-black"></div>
-          <div className="text-xl">or</div>
-          <div className="w-[28svw] h-[2px] bg-black"></div>
+        {/*// - "or" dividor */}
+        <div className="flex items-center justify-around pt-4">
+          <div className="text-medium text-grayMain">OR</div>
         </div>
-        {/*//1 Sign up with Google button */}
-        <div className="flex flex-col items-center text-xl">
+        {/*// - Sign up with Google button */}
+        <div className="flex flex-col items-center text-xl pt-4">
           <button
-            className="p-4 min-h-[50px] border-2 border-black rounded-md min-w-[60svw] shadow-lg m-2 text-purpleMain bg-purpleSoft"
-            onClick={registerAccountWithGoogle}
+            className="flex p-3 h-[45px] items-center justify-center gap-2 rounded-3xl w-[65svw] text-black text-[14px] bg-graySoft outline-purpleMain"
+            onClick={() => {
+              // onClick={registerAccountWithGoogle}
+              alert("This feature is coming soon");
+            }}
           >
-            Sign in with Google
+            <img src={googleIcon} alt="" className="w-[26px]" />
+            <div>Sign-In with Google</div>
           </button>
         </div>
-        <button
-          className="text-center underline text-purpleMain cursor-pointer justify-self-center self-center"
-          onClick={() => {
-            navigate("/login");
-          }}
-        >
-          Already have an account?
-        </button>
+        <div className="flex justify-center items-center p-4">
+          <div className="text-medium text-grayMain">Already have an account?</div>
+          <button
+            className="text-medium pl-1 text-purpleMain underline font-semibold"
+            onClick={() => {
+              navigate("/login");
+            }}
+          >
+            Login
+          </button>
+        </div>
       </div>
-      {/*//1 Footer */}
-      <div className="flex justify-center items-end text-3xl min-h-[10svh] pb-8 font-Hertical">NetCity</div>
     </div>
   );
 };

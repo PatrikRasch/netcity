@@ -45,40 +45,38 @@ const Login = () => {
   };
 
   return (
-    <div className="grid grid-rows-[1fr,1fr] justify-center">
+    <div className="grid grid-rows-[9fr,11fr] gap-10 justify-center h-[100vh]">
       {/*// - Header */}
-      <div className="flex flex-col items-center pt-4 justify-center text-center">
+      <div className="justify-self-center self-end text-center">
         <img src={logoIcon} alt="" className="w-[150px]" />
         <div className="text-purpleMain font-mainFont font-bold text-[40px]">NetCity</div>
       </div>
 
       {/*// - The rest */}
-      <div className="">
-        <div className="grid text-xl gap-6 p-3">
-          <div className="flex items-center bg-graySoft rounded-3xl w-[75svw]">
-            <img src={mailIconPurple} alt="" className="h-[33px] absolute pl-4" />
-            <input
-              type="email"
-              className="p-3 min-h-[40px] w-full pl-16 rounded-3xl bg-graySoft text-black outline-purpleMain text-medium"
-              placeholder="John@gmail.com"
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div className="flex items-center bg-graySoft rounded-3xl w-[75svw]">
-            <img src={lockIconPurple} alt="" className="h-[33px] absolute pl-4" />
-            <input
-              type="password"
-              className="p-3 pl-16 min-h-[40px] w-full rounded-3xl bg-graySoft text-black outline-purpleMain text-medium"
-              placeholder="Password"
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
+      <div className="grid content-start text-xl gap-4">
+        <div className="flex items-center bg-graySoft rounded-3xl w-[75svw]">
+          <img src={mailIconPurple} alt="" className="h-[33px] absolute pl-4" />
+          <input
+            type="email"
+            className="h-[45px] w-full pl-16 rounded-3xl bg-graySoft text-black outline-purpleMain text-[16px]"
+            placeholder="John@gmail.com"
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+        <div className="flex items-center bg-graySoft rounded-3xl w-[75svw]">
+          <img src={lockIconPurple} alt="" className="h-[33px] absolute pl-4" />
+          <input
+            type="password"
+            className="pl-16 h-[45px] w-full rounded-3xl bg-graySoft text-black outline-purpleMain text-[16px]"
+            placeholder="Password"
+            onChange={(e) => setPassword(e.target.value)}
+          />
         </div>
 
         {/*// - Login and Sign up with Google section */}
-        <div className="flex flex-col items-center text-xl p-2 gap-3">
+        <div className="grid text-xl gap-4">
           <button
-            className="p-3 rounded-3xl w-[75svw] min-h-[40px] text-white bg-black outline-purpleMain"
+            className="rounded-3xl w-[75svw] h-[45px] text-white bg-black outline-purpleMain"
             onClick={() => {
               handleLogin();
             }}
@@ -90,28 +88,30 @@ const Login = () => {
             <div className="text-medium text-grayMain">OR</div>
           </div>
 
-          <button
-            className="flex p-3 min-h-[40px] justify-center gap-2 rounded-3xl min-w-[65svw] text-black text-[14px] bg-graySoft outline-purpleMain"
-            onClick={() => {
-              alert("This feature is coming soon");
-            }}
-          >
-            <img src={googleIcon} alt="" className="w-[26px]" />
-            <div>Sign-In with Google</div>
-          </button>
-        </div>
+          <div className="grid gap-2 justify-center">
+            <button
+              className="flex p-3 h-[45px] justify-center items-center gap-2 rounded-3xl w-[65svw] text-black text-[14px] bg-graySoft outline-purpleMain"
+              onClick={() => {
+                alert("This feature is coming soon");
+              }}
+            >
+              <img src={googleIcon} alt="" className="w-[26px]" />
+              <div>Sign-In with Google</div>
+            </button>
 
-        {/*// - Create new account button */}
-        <div className="p-3 flex justify-center">
-          <div className="text-medium text-grayMain">Don't have an account?</div>
-          <button
-            className="text-medium pl-1 text-purpleMain underline font-semibold"
-            onClick={() => {
-              setCreateNewAccount(true);
-            }}
-          >
-            Signup
-          </button>
+            {/*// - Create new account button */}
+            <div className="flex justify-center">
+              <div className="text-medium text-grayMain">Don't have an account?</div>
+              <button
+                className="text-medium pl-1 text-purpleMain underline font-semibold"
+                onClick={() => {
+                  setCreateNewAccount(true);
+                }}
+              >
+                Signup
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
