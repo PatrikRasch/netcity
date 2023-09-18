@@ -21,3 +21,10 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+/designs-by-annabelle
+/src/deprecated
+/src/assets/fonts/ignore
+/src/assets/ignore-icons
+/src/assets/images/ignore-images
+/public/ignore-favicons

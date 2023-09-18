@@ -73,7 +73,7 @@ function Dislikes({
       return (
         <button
           onClick={() => handleClickDislike()}
-          className={`w-full flex gap-2 justify-center rounded-3xl p-1 font-mainFontSemiBold cursor-pointer ${
+          className={`w-full flex gap-2 justify-center rounded-3xl p-1 font-mainFont font-semibold weight cursor-pointer ${
             disliked ? "bg-redSoft text-redMain" : "bg-graySoft text-grayMain"
           }`}
         >

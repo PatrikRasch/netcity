@@ -77,7 +77,7 @@ function Likes({
       return (
         <button
           onClick={() => handleClickLike()}
-          className={`w-full flex gap-2 justify-center rounded-3xl p-1 font-mainFontSemiBold cursor-pointer ${
+          className={`w-full flex gap-2 justify-center rounded-3xl p-1 font-mainFont font-semibold cursor-pointer ${
             liked ? "bg-purpleSoft text-purpleMain" : "bg-graySoft text-grayMain"
           }`}
         >

@@ -195,7 +195,6 @@ const About = ({
   const userSignOut = () => {
     const auth = getAuth();
     signOut(auth).then(() => {
-      console.log("Signed out");
       navigate("/login");
     });
   };

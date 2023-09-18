@@ -19,12 +19,7 @@ interface Props {
   setNumOfCommentsShowing: (value: number) => void;
 }
 
-function MakeCommentPublic({
-  postId,
-  numOfCommentsShowing,
-  setNumOfCommentsShowing,
-  getAllComments,
-}: Props) {
+function MakeCommentPublic({ postId, numOfCommentsShowing, setNumOfCommentsShowing, getAllComments }: Props) {
   const { loggedInUserId, setLoggedInUserId } = useLoggedInUserId();
   const { loggedInUserFirstName, setLoggedInUserFirstName } = useLoggedInUserFirstName();
   const { loggedInUserLastName, setLoggedInUserLastName } = useLoggedInUserLastName();
@@ -54,7 +49,7 @@ function MakeCommentPublic({
     try {
       const commentCollection = collection(postDoc, "comments");
       await addDoc(commentCollection, commentData);
-      console.log("Comment added to Firebase");
+      // console.log("Comment added to Firebase");
       setNumOfCommentsShowing(numOfCommentsShowing + 1);
       getAllComments();
     } catch (err) {
@@ -97,8 +92,7 @@ function MakeCommentPublic({
         <button
           className="justify-self-center self-center rounded-[50%]"
           onClick={(e) => {
-            if (postCommentInput.length === 0)
-              return console.log("add text to input before posting");
+            if (postCommentInput.length === 0) return console.log("add text to input before posting");
             postComment({
               timestamp: fullTimestamp,
               firstName: loggedInUserFirstName,

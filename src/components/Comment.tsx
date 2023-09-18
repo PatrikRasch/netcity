@@ -143,7 +143,7 @@ const Comment = ({
   const deletePostClicked = async () => {
     try {
       await deleteDoc(commentDocRef);
-      console.log("Doc deleted");
+      // console.log("Doc deleted");
     } catch (err) {
       console.error(err);
     }
@@ -161,23 +161,22 @@ const Comment = ({
           }}
         />
         <div className="flex flex-col">
-          <div className="bg-gray-200 rounded-xl p-2">
-            <div className="grid grid-cols-[20fr,2fr] text-[12px]">
-              <div className="flex gap-4">
+          <div className="bg-gray-200 rounded-xl p-2.5">
+            <div className="grid grid-cols-[20fr,2fr]">
+              <div className="flex flex-col">
                 <div
-                  className="font-bold"
+                  className="font-bold text-[14px]"
                   onClick={() => {
                     navigateToUser();
                   }}
                 >
                   {commentFirstName + " " + commentLastName}
                 </div>
-                <div className="opacity-50 text-[10px] self-center">{commentDate}</div>
+                <div className="opacity-50 text-[11px]">{commentDate}</div>
+                <div className="gap-4 hyphens-auto">{commentText}</div>
               </div>
               <div>{showDeleteCommentOrNot()}</div>
             </div>
-
-            <div className=" grid grid-cols-[4fr,1fr] gap-4 hyphens-auto">{commentText}</div>
           </div>
           <div className="grid grid-cols-[50px,50px] h-max mt-1 mb-1 items-start justify-items-start">
             {/*//1 Like/Dislike */}

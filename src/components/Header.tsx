@@ -37,6 +37,7 @@ const Header = ({ feedOpen, setFeedOpen, peopleOpen, setPeopleOpen }: Props) => 
           }}
         >
           <img src={feedOpen ? feedIconSelected : feedIconUnselected} alt="" className="w-[50px]" />
+          <div className={`w-[50px] bg-purpleMain rounded-3xl h-1 absolute bottom-0 ${feedOpen ? "" : "hidden"}`}></div>
         </div>
         <div
           className="cursor-pointer justify-self-center"
@@ -48,19 +49,26 @@ const Header = ({ feedOpen, setFeedOpen, peopleOpen, setPeopleOpen }: Props) => 
           }}
         >
           <img src={peopleOpen ? peopleIconSelected : peopleIconUnselected} alt="" className="w-[50px]" />
+          <div
+            className={`w-[50px] bg-purpleMain rounded-3xl h-1 absolute bottom-0 ${peopleOpen ? "" : "hidden"}`}
+          ></div>
         </div>
-
-        <img
-          src={loggedInUserProfilePicture === "" ? emptyProfilePicture : loggedInUserProfilePicture}
-          alt=""
-          className="rounded-[50px] justify-self-center cursor-pointer aspect-square object-cover max-h-[55px] mb-[1px]"
-          onClick={() => {
-            navigate(`/profile/${loggedInUserId}`);
-            setFeedOpen(false);
-            setPeopleOpen(false);
-            setProfileOpen(true);
-          }}
-        />
+        <div className="justify-self-center">
+          <img
+            src={loggedInUserProfilePicture === "" ? emptyProfilePicture : loggedInUserProfilePicture}
+            alt=""
+            className="rounded-[50px] justify-self-center cursor-pointer object-cover max-h-[55px] aspect-square"
+            onClick={() => {
+              navigate(`/profile/${loggedInUserId}`);
+              setFeedOpen(false);
+              setPeopleOpen(false);
+              setProfileOpen(true);
+            }}
+          />
+          <div
+            className={`w-[50px] bg-purpleMain rounded-3xl h-1 absolute bottom-0 ${profileOpen ? "" : "hidden"}`}
+          ></div>
+        </div>
       </div>
       <div className="h-[2px] bg-grayLineThin w-[100vw]"></div>
     </div>

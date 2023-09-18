@@ -9,7 +9,6 @@ import { useLoggedInUserId } from "./context/LoggedInUserProfileDataContextProvi
 
 const People = lazy(() => import("./People"));
 const Public = lazy(() => import("./Public"));
-// const About = lazy(() => import("./About"));
 
 function RouteSwitch() {
   const { loggedInUserId } = useLoggedInUserId();

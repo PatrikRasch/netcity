@@ -93,7 +93,6 @@ function MakeComment({
       <div className="bg-gray-200 rounded-3xl pl-1 grid grid-cols-[4fr,1fr] gap-4 font-mainFont">
         <textarea
           ref={textareaRef}
-          // style={{ height: textareaHeight }}
           placeholder="Write a comment"
           className="w-full bg-transparent m-2 flex-grow resize-none overflow-y-auto outline-none"
           maxLength={1000}

@@ -84,9 +84,10 @@ const AllPosts = ({ posts, openProfileId, globalPosts, friendsPosts, showGlobalP
               postIndex={index}
               postUserId={post.userId}
               context={context}
+              friendsOnlyPost={false}
             />
           </div>
-          <div className="w-full h-[15px] bg-gray-100"></div>
+          <div className="w-full h-[7px] bg-grayLineThick"></div>
         </div>
       ));
     }
@@ -110,9 +111,10 @@ const AllPosts = ({ posts, openProfileId, globalPosts, friendsPosts, showGlobalP
               postIndex={index}
               postUserId={post.userId}
               context={context}
+              friendsOnlyPost={true}
             />
           </div>
-          <div className="w-full h-[15px] bg-gray-100"></div>
+          <div className="w-full h-[7px] bg-grayLineThick"></div>
         </div>
       ));
     }

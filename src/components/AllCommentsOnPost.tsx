@@ -41,10 +41,9 @@ const AllCommentsOnPost = ({
   setShowMakeComment,
 }: Props) => {
   const { loggedInUserId } = useLoggedInUserId();
-  if (numOfCommentsShowing === 0) setShowLoadMoreCommentsButton(false);
-  if (postTotalNumOfComments > numOfCommentsShowing && numOfCommentsShowing !== 0) {
-    setShowLoadMoreCommentsButton(true);
-  }
+  // if (postTotalNumOfComments > numOfCommentsShowing && numOfCommentsShowing !== 0) {
+  //   setShowLoadMoreCommentsButton(true);
+  // }
 
   const showMoreCommentsButton = () => {
     if (postTotalNumOfComments === 0 || !showMakeComment || !showLoadMoreCommentsButton) return;
@@ -53,7 +52,7 @@ const AllCommentsOnPost = ({
     if (postTotalNumOfComments > numOfCommentsShowing) {
       return (
         <button
-          className="text-blue-500"
+          className="text-grayMedium font-mainFont font-semibold"
           onClick={() => {
             setNumOfCommentsShowing(numOfCommentsShowing + 5);
           }}
@@ -65,7 +64,7 @@ const AllCommentsOnPost = ({
     if (postTotalNumOfComments <= numOfCommentsShowing) {
       return (
         <button
-          className="text-blue-500"
+          className="text-grayMedium font-mainFont font-semibold"
           onClick={() => {
             setNumOfCommentsShowing(0);
             setShowMakeComment(false);
@@ -100,7 +99,12 @@ const AllCommentsOnPost = ({
             </div>
           );
         })}
-        {showMoreCommentsButton()}
+        <div className="grid pt-2 pl-4 pr-4">
+          <div className="grid grid-cols-[1fr,8fr] gap-4 items-center">
+            <div></div>
+            <div>{showMoreCommentsButton()}</div>
+          </div>
+        </div>
       </div>
     );
   };

@@ -9,9 +9,9 @@ module.exports = {
         ArialBlack: "Arial-Black",
         Geneva: "Geneva",
         Helvetica: "Helvetica",
-        mainFont: "Eina01-Regular",
-        mainFontSemiBold: "Eina01-SemiBold",
-        mainFontBold: "Eina01-Bold",
+        // mainFont: "Eina01-Regular",
+        // mainFontSemiBold: "Eina01-SemiBold",
+        // mainFontBold: "Eina01-Bold",
       },
       colors: {
         purpleMain: "#8186dc",

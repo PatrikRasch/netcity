@@ -292,7 +292,7 @@ const Post = ({
         const postImageRef = ref(storage, `postImages/${postImageId}`);
         await deleteObject(postImageRef);
       }
-      console.log("Doc deleted");
+      // console.log("Doc deleted");
     } catch (err) {
       console.error(err);
     }
@@ -408,7 +408,7 @@ const Post = ({
                 onClick={() => {
                   navigateToUser();
                 }}
-                className="font-mainFontSemiBold tracking-wide"
+                className="font-mainFont font-semibold tracking-wide"
               >
                 {postFirstName + " " + postLastName}
               </div>
@@ -463,7 +463,7 @@ const Post = ({
           onClick={(e) => handleCommentButtonClicked()}
         >
           <div className="flex gap-2">
-            <img src={commentIcon} alt="" className="max-h-6 scale-x-[-1]" />
+            <img src={commentIcon} alt="" className="max-h-6" />
             <div>{postTotalNumOfComments}</div>
           </div>
         </div>

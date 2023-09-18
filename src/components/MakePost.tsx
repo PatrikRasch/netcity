@@ -12,7 +12,7 @@ import { useLoggedInUserLastName } from "./context/LoggedInUserProfileDataContex
 import { useLoggedInUserProfilePicture } from "./context/LoggedInUserProfileDataContextProvider";
 
 import { db, storage } from "./../config/firebase.config";
-import { doc, addDoc, collection, updateDoc } from "firebase/firestore";
+import { doc, addDoc, collection } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 
 import imageIcon from "./../assets/icons/imageIcon/imageIcon.png";
@@ -46,10 +46,6 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
     const targetUser = doc(db, "users", openProfileId);
     return collection(targetUser, "postsProfile");
   };
-
-  //1 Current problems:
-  //3 Posts don't load in order, need to add a post timestamp to sort posts.
-  //2 All posts load together no matter how many when a profile is visited. Need to add some form of lazyloading.
 
   //1 Write the post to Firestore
   const writePost = async (data: {
@@ -129,13 +125,12 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
     }
   };
 
-  //1 Changes the height of the comment input field dynamically
+  // - Changes the height of the input field dynamically
   const handleTextareaChange = () => {
     const textarea = textareaRef.current;
     if (!textarea) return;
     textarea.rows = 5; // Ensures textarea shrinks by trying to set the rows to 1
     const computedHeight = textarea.scrollHeight; // Sets computedHeight to match scrollheight
-    console.log(computedHeight);
     const rows = Math.ceil(computedHeight / 24); // Find new number of rows to be set. Line height id 24.
     textarea.rows = rows - 1; // Sets new number of rows
   };
@@ -155,7 +150,7 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
         <img
           src={loggedInUserProfilePicture}
           alt=""
-          className="aspect-square object-cover h-[48px] self-start ml-2 rounded-[50px] font-mainFont"
+          className="aspect-square object-cover h-[48px] self-start rounded-[50px] font-mainFont"
         />
         <textarea
           ref={textareaRef}
