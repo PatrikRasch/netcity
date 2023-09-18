@@ -94,12 +94,8 @@ const People = () => {
           // if (usersSentFriendRequestsIds.hasOwnProperty(doc.id))
           return usersSentFriendRequestsArray.push({ ...userData, id: doc.id });
         // Has logged in user already sent them a friend request?
+        else return otherUsersArray.push({ ...userData, id: doc.id });
       });
-      allUsers?.forEach((doc: DocumentData) => {
-        const userData = doc.data() as UserData;
-        return otherUsersArray.push({ ...userData, id: doc.id });
-      });
-
       setAllFriends(usersFriendsArray);
       setAllReceivedFriendRequests(usersReceivedFriendRequestsArray);
       setAllSentFriendRequests(usersSentFriendRequestsArray);
@@ -160,24 +156,27 @@ const People = () => {
 
   // - Updates the list of users the logged in user has no connections with
   const updateOtherUsers = async () => {
-    try {
-      const otherUsersArray: UserData[] = [];
-      allUsers?.forEach((user: DocumentData) => {
-        const userData = user.data() as UserData;
-        if (user.id === loggedInUserId) return; // Remove logged in user from the list of users
-        otherUsersArray.push({ ...userData, id: user.id });
-        // if (
-        //   !loggedInUserData?.currentSentFriendRequests.hasOwnProperty(user.id) &&
-        //   !loggedInUserData?.currentReceivedFriendRequests.hasOwnProperty(user.id) &&
-        //   !loggedInUserData?.friends.hasOwnProperty(user.id)
-        // )
-        //   return otherUsersArray.push({ ...userData, id: user.id });
-        // else return;
-      });
-      setAllOtherUsers(otherUsersArray);
-    } catch (err) {
-      console.error(err);
-    }
+    const otherUsersArray: UserData[] = [];
+    const usersFriendsArray: UserData[] = [];
+    const usersSentFriendRequestsArray: UserData[] = [];
+    const usersReceivedFriendRequestsArray: UserData[] = [];
+
+    allUsers?.forEach((doc: DocumentData) => {
+      const userData = doc.data() as UserData;
+      if (doc.id === loggedInUserId) return; // Remove logged in user from the list of users
+      if (loggedInUserData?.friends.hasOwnProperty(doc.id)) return usersFriendsArray.push({ ...userData, id: doc.id }); // Are they already friends?
+      if (loggedInUserData?.currentReceivedFriendRequests.hasOwnProperty(doc.id))
+        return usersReceivedFriendRequestsArray.push({ ...userData, id: doc.id }); // Have they requested to be friends with loggedInUser?
+      if (loggedInUserData?.currentSentFriendRequests.hasOwnProperty(doc.id))
+        // if (usersSentFriendRequestsIds.hasOwnProperty(doc.id))
+        return usersSentFriendRequestsArray.push({ ...userData, id: doc.id });
+      // Has logged in user already sent them a friend request?
+      else return otherUsersArray.push({ ...userData, id: doc.id });
+    });
+    setAllFriends(usersFriendsArray);
+    setAllReceivedFriendRequests(usersReceivedFriendRequestsArray);
+    setAllSentFriendRequests(usersSentFriendRequestsArray);
+    setAllOtherUsers(otherUsersArray);
   };
 
   // - Allows for switching of the categories when called with the correct string
@@ -199,7 +198,8 @@ const People = () => {
 
   // - Returns the category that is to be rendered
   const getUsersToRender = () => {
-    if (showOtherUsers) return allOtherUsers;
+    if (showOtherUsers)
+      return [...allOtherUsers, ...allReceivedFriendRequests, ...allSentFriendRequests, ...allFriends];
     if (showFriends) return allFriends;
     if (showReceivedFriendRequests) return allReceivedFriendRequests;
     if (showSentFriendRequests) return allSentFriendRequests;
