@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import AllPosts from "./AllPosts";
+import MakePost from "./MakePost";
 
 import { db, storage } from "../config/firebase.config";
 import {
@@ -188,9 +189,9 @@ function Public() {
   const displayUploadedImageOrNot = () => {
     if (imageAddedToPostFeed)
       return (
-        <div className="pb-4 pr-8">
+        <div className="">
           <div className="relative">
-            <img src={imageAddedToPostFeed} alt="" className="rounded-xl shadow-xl border-black border-2 p-[3px]" />
+            <img src={imageAddedToPostFeed} alt="" className="rounded-xl shadow-xl p-[3px]" />
             <div
               className="absolute top-[15px] right-[15px] bg-white drop-shadow-xl rounded-[50%] w-[22px] h-[22px] opacity-90 flex justify-center items-center hover:cursor-pointer"
               onClick={() => {
@@ -291,6 +292,7 @@ function Public() {
       <div className="w-full h-[7px] bg-grayLineThick"></div>
 
       {/* Make a post row */}
+      {/* <MakePost /> */}
       <div className="font-mainFont font-semibold text-medium ml-4 mt-3 mb-1">Create a Post</div>
       <div className="w-full h-[1.5px] bg-grayLineThin"></div>
 
@@ -300,7 +302,6 @@ function Public() {
           alt=""
           className="aspect-square object-cover h-[45px] ml-2 rounded-[50px]"
         />
-        <div className={`${imageAddedToPostFeed ? "" : "absolute"}`}>{displayUploadedImageOrNot()}</div>
         <textarea
           ref={textareaRef}
           placeholder="Make a post"
@@ -332,6 +333,9 @@ function Public() {
           <img src={imageIcon} alt="add and upload file to post" className="max-w-[35px]" />
           <div className="text-verySmall text-center">Photo</div>
         </label>
+        <div className={`${imageAddedToPostFeed ? "" : "absolute"}`}></div>
+        <div className={`${imageAddedToPostFeed ? "" : "absolute"}`}>{displayUploadedImageOrNot()}</div>
+        <div className={`${imageAddedToPostFeed ? "" : "absolute"}`}></div>
       </section>
 
       {/* Post section */}
