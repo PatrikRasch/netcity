@@ -1,84 +1,105 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
+import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth'
+
+import Register from './Register'
 //6 Login user alert error must be sexified later on.
 
-import { useLoggedInUserId } from "./context/LoggedInUserProfileDataContextProvider";
+import { useLoggedInUserId } from './context/LoggedInUserProfileDataContextProvider'
 
-import logoIcon from "../assets/icons/logoIcon.png";
-import mailIconPurple from "../assets/icons/mailIcon.svg";
-import lockIconPurple from "../assets/icons/lockIcon/lockIcon-purple.svg";
-import googleIcon from "../assets/icons/googleIcon.svg";
+import logoIcon from '../assets/icons/logoIcon.png'
+import mailIconPurple from '../assets/icons/mailIcon.svg'
+import lockIconPurple from '../assets/icons/lockIcon/lockIcon-purple.svg'
+import googleIcon from '../assets/icons/googleIcon.svg'
 
 const Login = () => {
-  const { loggedInUserId, setLoggedInUserId } = useLoggedInUserId();
+  const { loggedInUserId, setLoggedInUserId } = useLoggedInUserId()
 
-  const [createNewAccount, setCreateNewAccount] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const navigate = useNavigate();
+  const [createNewAccount, setCreateNewAccount] = useState(false)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const navigate = useNavigate()
 
   //1 Check if user is signed in
   useEffect(() => {
     onAuthStateChanged(getAuth(), async (user) => {
-      if (user) navigate(`/profile/${user.uid}`);
-    });
-  }, []);
+      if (user) navigate(`/profile/${user.uid}`)
+    })
+  }, [])
 
   const redirect = () => {
-    if (createNewAccount === true) navigate("/register");
-  };
+    if (createNewAccount === true) navigate('/register')
+  }
 
-  redirect();
+  redirect()
 
   const handleLogin = async () => {
-    const auth = getAuth();
+    const auth = getAuth()
     try {
       await signInWithEmailAndPassword(auth, email, password).then((userCredentials) => {
-        // console.log("User logged in: ", userCredentials);
-        navigate(`/profile/${userCredentials.user.uid}`);
-      });
+        navigate(`/profile/${userCredentials.user.uid}`)
+      })
     } catch (err) {
-      console.error(err);
-      alert("Username and/or password does not match");
+      console.error(err)
+      alert('Username and/or password does not match')
     }
-  };
+  }
 
   return (
-    <div className="grid grid-rows-[9fr,11fr] gap-10 justify-center h-[100vh]">
-      {/*// - Header */}
-      <div className="justify-self-center self-end text-center">
-        <img src={logoIcon} alt="" className="w-[150px]" />
-        <div className="text-purpleMain font-mainFont font-bold text-[40px]">NetCity</div>
+    <div className="grid h-[100vh] grid-rows-[9fr,11fr] justify-items-center gap-4 lg:flex lg:items-center lg:justify-evenly lg:p-10">
+      {/*// - Logo & Title */}
+      <div className="grid justify-items-center self-end text-center lg:self-center">
+        <img src={logoIcon} alt="" className="w-[150px] lg:w-[clamp(100px,20svw,300px)]" />
+        <div className="font-mainFont text-[40px] font-bold text-purpleMain lg:text-[clamp(40px,5svw,70px)]">
+          NetCity
+        </div>
+
+        {/* // - Patrik Rasch info */}
+        <div className="grid pt-2">
+          <div className="text-small italic">A social media project by Patrik Rasch</div>
+          <a
+            href="https://www.GitHub.com/PatrikRasch"
+            className="text-small font-semibold text-purpleMain"
+          >
+            GitHub.com/PatrikRasch
+          </a>
+          <div className="w-[60svw] text-small italic lg:w-[clamp(100px,40svw,400px)]">
+            Developed with React, TypeScript, Tailwind and Firebase
+          </div>
+        </div>
       </div>
 
       {/*// - The rest */}
-      <div className="grid content-start text-xl gap-4">
-        <div className="flex items-center bg-graySoft rounded-3xl w-[75svw]">
-          <img src={mailIconPurple} alt="" className="h-[33px] absolute pl-4" />
+      <div className="grid content-start justify-items-center gap-6 text-xl">
+        <div className="hidden w-full gap-4 lg:grid">
+          <div className="text-center text-[30px] font-bold">Login</div>
+          <div className=" h-[2px] w-full bg-grayLineThin"></div>
+        </div>
+        <div className="flex w-[clamp(100px,75svw,400px)] items-center rounded-3xl bg-graySoft">
+          <img src={mailIconPurple} alt="" className="absolute h-[33px] pl-4" />
           <input
             type="email"
-            className="h-[45px] w-full pl-16 rounded-3xl bg-graySoft text-black outline-purpleMain text-[16px]"
-            placeholder="John@gmail.com"
+            className="h-[45px] w-full rounded-3xl bg-graySoft pl-16 text-[16px] text-black outline-purpleMain"
+            placeholder="test@gmail.com"
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
-        <div className="flex items-center bg-graySoft rounded-3xl w-[75svw]">
-          <img src={lockIconPurple} alt="" className="h-[33px] absolute pl-4" />
+        <div className="flex w-[clamp(100px,75svw,400px)] items-center rounded-3xl bg-graySoft">
+          <img src={lockIconPurple} alt="" className="absolute h-[33px] pl-4" />
           <input
             type="password"
-            className="pl-16 h-[45px] w-full rounded-3xl bg-graySoft text-black outline-purpleMain text-[16px]"
-            placeholder="Password"
+            className="h-[45px] w-full rounded-3xl bg-graySoft pl-16 text-[16px] text-black outline-purpleMain"
+            placeholder="123123"
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
 
         {/*// - Login and Sign up with Google section */}
-        <div className="grid text-xl gap-4">
+        <div className="grid justify-items-center gap-4 text-xl">
           <button
-            className="rounded-3xl w-[75svw] h-[45px] text-white bg-black outline-purpleMain"
+            className="h-[45px] w-[clamp(100px,75svw,400px)] rounded-3xl bg-black text-white outline-purpleMain"
             onClick={() => {
-              handleLogin();
+              handleLogin()
             }}
           >
             Login with e-mail
@@ -88,11 +109,11 @@ const Login = () => {
             <div className="text-medium text-grayMain">OR</div>
           </div>
 
-          <div className="grid gap-2 justify-center">
+          <div className="grid justify-center gap-2 lg:gap-6">
             <button
-              className="flex p-3 h-[45px] justify-center items-center gap-2 rounded-3xl w-[65svw] text-black text-[14px] bg-graySoft outline-purpleMain"
+              className="flex h-[45px] w-[clamp(100px,65svw,350px)] items-center justify-center gap-2 rounded-3xl bg-graySoft p-3 text-[14px] text-black outline-purpleMain"
               onClick={() => {
-                alert("This feature is coming soon");
+                alert('This feature is coming soon')
               }}
             >
               <img src={googleIcon} alt="" className="w-[26px]" />
@@ -103,9 +124,9 @@ const Login = () => {
             <div className="flex justify-center">
               <div className="text-medium text-grayMain">Don't have an account?</div>
               <button
-                className="text-medium pl-1 text-purpleMain underline font-semibold"
+                className="pl-1 text-medium font-semibold text-purpleMain underline"
                 onClick={() => {
-                  setCreateNewAccount(true);
+                  setCreateNewAccount(true)
                 }}
               >
                 Signup
@@ -114,8 +135,14 @@ const Login = () => {
           </div>
         </div>
       </div>
+      {/* //6 animate in "register" if clicked on desktop */}
+      <div className="absolute hidden h-[90svh] rounded-3xl bg-blue-200 lg:block">
+        <div className="">
+          <Register />
+        </div>
+      </div>
     </div>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login
