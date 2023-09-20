@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth'
 
-import Register from './Register'
+import DisplayRegister from './DisplayRegister'
 //6 Login user alert error must be sexified later on.
 
 import { useLoggedInUserId } from './context/LoggedInUserProfileDataContextProvider'
@@ -133,12 +133,6 @@ const Login = () => {
               </button>
             </div>
           </div>
-        </div>
-      </div>
-      {/* //6 animate in "register" if clicked on desktop */}
-      <div className="absolute hidden h-[90svh] rounded-3xl bg-blue-200 lg:block">
-        <div className="">
-          <Register />
         </div>
       </div>
     </div>

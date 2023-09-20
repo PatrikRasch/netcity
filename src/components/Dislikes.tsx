@@ -1,24 +1,24 @@
-import React, { useEffect, useState } from "react";
-import { updateDoc, DocumentReference } from "firebase/firestore";
+import React, { useEffect, useState } from 'react'
+import { updateDoc, DocumentReference } from 'firebase/firestore'
 
-import dislikeIconUnselected from "./../assets/icons/dislikeIcon/dislikeIconUnselected.svg";
-import dislikeIconSelected from "./../assets/icons/dislikeIcon/dislikeIconSelected.svg";
+import dislikeIconUnselected from './../assets/icons/dislikeIcon/dislikeIconUnselected.svg'
+import dislikeIconSelected from './../assets/icons/dislikeIcon/dislikeIconSelected.svg'
 
-import { TargetData, TargetCommentData } from "../interfaces";
+import { TargetData, TargetCommentData } from '../interfaces'
 
 interface Props {
-  totalDislikes: object;
-  liked: boolean;
-  disliked: boolean;
-  setDisliked: (value: boolean) => void;
-  numOfDislikes: number;
-  setNumOfDislikes: (value: number) => void;
-  removeLike: (value: DocumentReference) => Promise<void>;
-  removeDislike: (value: DocumentReference) => Promise<void>;
-  loggedInUserId: string;
-  docRef?: DocumentReference;
-  data: TargetData | TargetCommentData | null;
-  isPost: boolean;
+  totalDislikes: object
+  liked: boolean
+  disliked: boolean
+  setDisliked: (value: boolean) => void
+  numOfDislikes: number
+  setNumOfDislikes: (value: number) => void
+  removeLike: (value: DocumentReference) => Promise<void>
+  removeDislike: (value: DocumentReference) => Promise<void>
+  loggedInUserId: string
+  docRef?: DocumentReference
+  data: TargetData | TargetCommentData | null
+  isPost: boolean
 }
 
 function Dislikes({
@@ -36,66 +36,68 @@ function Dislikes({
   isPost,
 }: Props) {
   const addDislike = async (commentDocRef: DocumentReference) => {
-    setDisliked(true); // Set disliked to true, makes heart black
+    setDisliked(true) // Set disliked to true, makes heart black
     // Frontend updates:
-    (totalDislikes as { [key: string]: boolean })[loggedInUserId] = true; // Add the userId into postDislikes as true
-    setNumOfDislikes(Object.keys(totalDislikes).length); // Update state for number of dislikes to display
+    ;(totalDislikes as { [key: string]: boolean })[loggedInUserId] = true // Add the userId into postDislikes as true
+    setNumOfDislikes(Object.keys(totalDislikes).length) // Update state for number of dislikes to display
     // Backend updates:
-    const newDislikes = { ...data?.dislikes, [loggedInUserId]: true }; // Define new object to hold the dislikes
-    await updateDoc(commentDocRef, { dislikes: newDislikes }); // Update the backend with the new dislikes
-  };
+    const newDislikes = { ...data?.dislikes, [loggedInUserId]: true } // Define new object to hold the dislikes
+    await updateDoc(commentDocRef, { dislikes: newDislikes }) // Update the backend with the new dislikes
+  }
 
   const handleClickDislike = async () => {
     if (docRef !== undefined) {
       if (!disliked) {
         if (liked) {
-          removeLike(docRef);
+          removeLike(docRef)
         }
-        addDislike(docRef);
+        addDislike(docRef)
       }
       if (disliked) {
-        removeDislike(docRef);
+        removeDislike(docRef)
       }
     }
-  };
+  }
 
   //1 The dislike icon on each post. Shows if the user has disliked a post.
   const showDislikedOrNot = () => {
     if (!disliked) {
-      return <img src={dislikeIconUnselected} alt="" className="max-h-6" />;
+      return <img src={dislikeIconUnselected} alt="" className="max-h-6" />
     } else {
-      return <img src={dislikeIconSelected} alt="" className="max-h-6" />;
+      return <img src={dislikeIconSelected} alt="" className="max-h-6" />
     }
-  };
+  }
 
   const postOrComment = () => {
     if (isPost) {
       return (
         <button
           onClick={() => handleClickDislike()}
-          className={`w-full flex gap-2 justify-center rounded-3xl p-1 font-mainFont font-semibold weight cursor-pointer ${
-            disliked ? "bg-redSoft text-redMain" : "bg-graySoft text-grayMain"
+          className={`font-mainFont weight flex w-full cursor-pointer items-center justify-center gap-2 rounded-3xl p-1 font-semibold lg:h-[40px] ${
+            disliked ? 'bg-redSoft text-redMain' : 'bg-graySoft text-grayMain'
           }`}
         >
           {showDislikedOrNot()}
           <div>{numOfDislikes}</div>
         </button>
-      );
+      )
     } else {
       return (
         <button
-          className={`w-full flex gap-1 justify-center font-mainFont ${disliked ? "text-redMain" : "text-grayMain"}`}
+          className={`font-mainFont flex w-full justify-center gap-1 ${
+            disliked ? 'text-redMain' : 'text-grayMain'
+          }`}
         >
           <div onClick={() => handleClickDislike()} className="cursor-pointer">
             {showDislikedOrNot()}
           </div>
           <div className="cursor-default">{numOfDislikes}</div>
         </button>
-      );
+      )
     }
-  };
+  }
 
-  return postOrComment();
+  return postOrComment()
 }
 
-export default Dislikes;
+export default Dislikes

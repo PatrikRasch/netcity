@@ -143,7 +143,6 @@ const Comment = ({
   const deletePostClicked = async () => {
     try {
       await deleteDoc(commentDocRef);
-      // console.log("Doc deleted");
     } catch (err) {
       console.error(err);
     }
