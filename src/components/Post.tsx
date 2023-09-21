@@ -4,6 +4,7 @@ import AllCommentsOnPost from './AllCommentsOnPost'
 import MakeComment from './MakeComment'
 import Likes from './Likes'
 import Dislikes from './Dislikes'
+import './post.css'
 
 import emptyProfilePicture from './../assets/icons/emptyProfilePicture.jpg'
 import commentIcon from './../assets/icons/commentIcon/commentIconUnselected.svg'
@@ -97,12 +98,16 @@ const Post = ({
 
   const [showFullImage, setShowFullImage] = useState(false)
   const [imageTooLargeToShowFull, setImageTooLargeToShowFull] = useState(false)
+  const [hoverImage, setHoverImage] = useState(false)
+  const [imageHeight, setImageHeight] = useState<Number | undefined>(Number)
 
   const imageHeightRef = useRef<HTMLImageElement>(null)
 
   const [displayFullPostText, setDisplayFullPostText] = useState(false)
 
   const [postDocRef, setPostDocRef] = useState<DocumentReference>(null!)
+  const [viewportWidth, setViewportWidth] = useState<Number>(Number)
+  const [viewportHeight, setViewportheight] = useState<Number>(Number)
 
   const navigate = useNavigate()
 
@@ -238,6 +243,7 @@ const Post = ({
     const img = new Image()
     img.src = postImage
     img.onload = () => {
+      setImageHeight(imageHeightRef.current?.getBoundingClientRect().height)
       if (imageHeightRef && imageHeightRef.current) {
         const divHeight = imageHeightRef.current.clientHeight
         if (divHeight > window.innerHeight * 0.7) {
@@ -246,6 +252,30 @@ const Post = ({
       }
     }
   }, [])
+
+  useEffect(() => {
+    if (imageHeightRef && imageHeightRef.current) {
+      const divHeight = imageHeightRef.current.clientHeight
+      if (divHeight > window.innerHeight * 0.7) {
+        setImageTooLargeToShowFull(true)
+        setShowFullImage(false)
+      } else {
+        setShowFullImage(true)
+        setImageTooLargeToShowFull(false)
+      }
+    }
+  }, [viewportWidth, viewportHeight])
+
+  useEffect(() => {
+    const handleResize = () => {
+      setViewportWidth(window.innerWidth)
+      setViewportheight(window.innerHeight)
+    }
+    window.addEventListener('resize', handleResize)
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [window.innerHeight, window.innerWidth])
 
   // - Determines if the comment input field is to be displayed on the post
   const displayMakeCommentOrNot = () => {
@@ -312,24 +342,34 @@ const Post = ({
   const displayPostImageOrNot = () => {
     if (postImage)
       return (
-        <div className={`relative overflow-hidden ${showFullImage ? '' : 'max-h-[70vh]'}`}>
+        <div
+          className={`relative overflow-hidden duration-500 ease-in-out ${
+            showFullImage ? '' : `max-h-[70vh]`
+          }`}
+          style={{ maxHeight: showFullImage || hoverImage ? `${imageHeight}px` : '70vh' }}
+        >
           <img
             src={postImage}
             alt="attached to post"
             ref={imageHeightRef}
-            className="overflow-hidden rounded-2xl"
+            className="w-full rounded-2xl"
             onClick={() => {
               if (imageTooLargeToShowFull) {
                 setShowFullImage((prevShowFullImage) => !prevShowFullImage)
               }
             }}
+            onMouseEnter={() => {
+              setHoverImage(true)
+            }}
+            onMouseLeave={() => setHoverImage(false)}
           />
           <div
             className={`absolute bottom-0 ${
               showFullImage
                 ? ''
-                : 'h-[50px] w-[100%] bg-gradient-to-b from-transparent via-white to-white p-2'
-            }`}
+                : 'h-[50px] w-[100%] bg-gradient-to-b from-transparent via-white to-white p-2 duration-500 ease-in-out'
+            }
+            ${hoverImage ? 'h-0 opacity-0' : ''}`}
           ></div>
         </div>
       )
