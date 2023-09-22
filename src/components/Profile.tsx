@@ -353,7 +353,7 @@ const Profile = () => {
     if (!displayProfileContent)
       return (
         <div className="flex flex-col items-center justify-center gap-2 pt-8 text-center">
-          <img src={lockIcon} alt="" className="max-w-[30svw]" />
+          <img src={lockIcon} alt="" className="w-[clamp(50px,30svw,150px)]" />
           <div className="text-large font-bold">This Account is Private</div>
           <div className="max-w-[50svw] opacity-70">
             You need to be friends to see their posts & make posts on their page
@@ -651,7 +651,7 @@ const Profile = () => {
       )
     if (receivedFriendRequestFromUser)
       return (
-        <div className="flex w-[100svw] justify-evenly">
+        <div className="flex max-w-[390px] justify-evenly gap-4">
           <button
             className="font-mainFont flex h-[33px] w-[220px] items-center justify-center gap-1 rounded-3xl bg-purpleMain text-[15px] text-white"
             onClick={() => {
@@ -703,7 +703,7 @@ const Profile = () => {
   return (
     <div className="grid w-screen justify-center bg-graySoft">
       {/*//1 Profile picture and name */}
-      <div className="justify-center bg-white lg:grid lg:w-[clamp(600px,60svw,1500px)]">
+      <div className="w-[100svw] bg-white lg:grid lg:w-[clamp(600px,60svw,1500px)]">
         <div className="flex justify-center">
           <div className="absolute top-[0%] z-0 h-[200px] w-[93svw] rounded-3xl bg-purpleSoft lg:w-[clamp(200px,53svw,1300px)]">
             {/* // - Open/Private profile button */}
@@ -741,11 +741,11 @@ const Profile = () => {
         <div className="h-[1.5px] w-full bg-grayLineThin"></div>
 
         {/*// - Posts/About selection */}
-        <div className="grid h-[65px] grid-cols-2 gap-4 rounded-lg p-3 pl-4 pr-4 ">
+        <div className="grid h-[65px] grid-cols-2 gap-4 rounded-lg p-3 pl-4 pr-4 lg:flex lg:justify-center lg:gap-[clamp(10px,5svw,150px)]">
           <button
             className={`${
               showPosts ? 'bg-black text-white' : 'bg-graySoft text-black'
-            }  font-mainFont flex h-[100%] w-[100%] items-center justify-center gap-2 rounded-3xl font-bold`}
+            }  font-mainFont flex h-full w-full items-center justify-center gap-2 rounded-3xl font-bold lg:w-48 `}
             onClick={() => setShowPosts(true)}
           >
             <img src={showPosts ? postsIconWhite : postsIconBlack} alt="" className="w-[24px]" />
@@ -754,7 +754,7 @@ const Profile = () => {
           <button
             className={`${
               !showPosts ? 'bg-black text-white' : 'bg-graySoft text-black'
-            } font-mainFont flex w-[100%] items-center justify-center gap-1 rounded-3xl font-bold`}
+            } font-mainFont flex w-full items-center justify-center gap-1 rounded-3xl font-bold lg:w-48`}
             onClick={() => setShowPosts(false)}
           >
             <img src={showPosts ? userIconBlack : userIconWhite} alt="" className="w-[27px]" />
