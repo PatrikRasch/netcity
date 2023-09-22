@@ -4,47 +4,51 @@
 
 @layer base {
   @font-face {
-    font-family: "mainFont", Arial, sans-serif;
+    font-family: 'mainFont', Arial, sans-serif;
     font-weight: 500;
-    src: url("./assets/fonts/Eina01-Regular.woff2") format("woff2"),
-      url("./assets/fonts/Eina01-Regular.woff") format("woff");
+    src:
+      url('./assets/fonts/Eina01-Regular.woff2') format('woff2'),
+      url('./assets/fonts/Eina01-Regular.woff') format('woff');
   }
 
   @font-face {
-    font-family: "mainFont", Arial, sans-serif;
+    font-family: 'mainFont', Arial, sans-serif;
     font-weight: 600;
-    src: url("./assets/fonts/Eina01-SemiBold.woff2") format("woff2"),
-      url("./assets/fonts/Eina01-SemiBold.woff") format("woff");
+    src:
+      url('./assets/fonts/Eina01-SemiBold.woff2') format('woff2'),
+      url('./assets/fonts/Eina01-SemiBold.woff') format('woff');
   }
 
   @font-face {
-    font-family: "mainFont", Arial, sans-serif;
+    font-family: 'mainFont', Arial, sans-serif;
     font-weight: 700;
-    src: url("./assets/fonts/Eina01-Bold.woff") format("woff2"), url("./assets/fonts/Eina01-Bold.woff") format("woff");
+    src:
+      url('./assets/fonts/Eina01-Bold.woff') format('woff2'),
+      url('./assets/fonts/Eina01-Bold.woff') format('woff');
   }
 
   @font-face {
-    font-family: "Roxborough", Arial, sans-serif;
-    src: url("./assets/fonts/Roxborough.ttf");
+    font-family: 'Roxborough', Arial, sans-serif;
+    src: url('./assets/fonts/Roxborough.ttf');
   }
 
   @font-face {
-    font-family: "Hertical", Arial, sans-serif;
-    src: url("./assets/fonts/HerticalSans.ttf");
+    font-family: 'Hertical', Arial, sans-serif;
+    src: url('./assets/fonts/HerticalSans.ttf');
   }
 
   @font-face {
-    font-family: "Arial-Black", Arial, sans-serif;
-    src: url("./assets/fonts/Arial-Black.ttf");
+    font-family: 'Arial-Black', Arial, sans-serif;
+    src: url('./assets/fonts/Arial-Black.ttf');
   }
 
   @font-face {
-    font-family: "Geneva", Arial, sans-serif;
-    src: url("./assets/fonts/Geneva.ttf");
+    font-family: 'Geneva', Arial, sans-serif;
+    src: url('./assets/fonts/Geneva.ttf');
   }
 
   @font-face {
-    font-family: "Helvetica", Arial, sans-serif;
-    src: url("./assets/fonts/Helvetica.ttc");
+    font-family: 'Helvetica', Arial, sans-serif;
+    src: url('./assets/fonts/Helvetica.ttc');
   }
 }

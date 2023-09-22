@@ -1,14 +1,14 @@
-import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
-import "react-loading-skeleton/dist/skeleton.css";
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 
-export function loadingSkeletonTheme() {
+export function loadingSkeletonTheme(numOfRows: number) {
   return (
     <SkeletonTheme baseColor="#e2e5f8" highlightColor="#8186dc">
       <p>
-        <Skeleton count={4} />
+        <Skeleton count={numOfRows} />
       </p>
     </SkeletonTheme>
-  );
+  )
 }
 // purpleMain: "#8186dc",
 //         purpleSoft: "#e2e5f8",

@@ -52,7 +52,6 @@ function MakeComment({
     try {
       const commentCollection = collection(postDocRef, "comments");
       await addDoc(commentCollection, commentData);
-      console.log("Comment added to Firebase");
       setNumOfCommentsShowing(numOfCommentsShowing + 1);
       getAllComments(postDocRef);
     } catch (err) {

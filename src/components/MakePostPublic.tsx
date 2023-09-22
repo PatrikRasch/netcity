@@ -44,7 +44,6 @@ function MakePost(props: Props) {
     try {
       const postsProfileRef = getPostsProfileRef();
       const newPost = await addDoc(postsProfileRef, data);
-      console.log("Post written to Firestore");
       setPostId(newPost.id); // Set the ID of this post to the state newPost
     } catch (err) {
       console.error("Error writing to postsProfile: ", err);

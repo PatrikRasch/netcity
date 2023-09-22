@@ -701,7 +701,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="grid w-screen justify-center bg-graySoft">
+    <div className="grid min-h-[calc(100svh-80px)] w-screen items-start justify-center bg-graySoft">
       {/*//1 Profile picture and name */}
       <div className="w-[100svw] bg-white lg:grid lg:w-[clamp(600px,60svw,1500px)]">
         <div className="flex justify-center">
@@ -727,9 +727,7 @@ const Profile = () => {
             />
           </div>
           <div
-            className={`${
-              openProfileId === loggedInUserId ? 'pb-2' : ''
-            } font-mainFont text-center text-3xl font-bold`}
+            className={`${openProfileId === loggedInUserId ? 'pb-2' : ''} font-mainFont text-center text-3xl font-bold`}
           >
             {displayUserName()}
           </div>

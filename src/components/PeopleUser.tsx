@@ -51,11 +51,9 @@ function PeopleUser({
 
   useEffect(() => {
     getUserData()
-    if (loggedInUserData?.currentReceivedFriendRequests.hasOwnProperty(userId))
-      setReceivedFriendRequestFromUser(true)
+    if (loggedInUserData?.currentReceivedFriendRequests.hasOwnProperty(userId)) setReceivedFriendRequestFromUser(true)
     if (loggedInUserData?.friends.hasOwnProperty(userId)) setFriendsWithUser(true)
-    if (loggedInUserData?.currentSentFriendRequests.hasOwnProperty(userId))
-      setSentFriendRequestToUser(true)
+    if (loggedInUserData?.currentSentFriendRequests.hasOwnProperty(userId)) setSentFriendRequestToUser(true)
   }, [])
 
   useEffect(() => {
@@ -277,10 +275,7 @@ function PeopleUser({
       setFriendsWithUser(false)
       await runTransaction(db, async (transaction) => {
         // Checks that the two people are already friends before proceeding
-        if (
-          userData?.friends.hasOwnProperty(loggedInUserId) &&
-          loggedInUserData?.friends.hasOwnProperty(userId)
-        ) {
+        if (userData?.friends.hasOwnProperty(loggedInUserId) && loggedInUserData?.friends.hasOwnProperty(userId)) {
           // Deletes the users from each other's state
           delete userData?.friends[loggedInUserId]
           delete loggedInUserData?.friends[userId]
@@ -433,7 +428,7 @@ function PeopleUser({
         }}
       />
       {/* Ensure loading skeleton works */}
-      {componentLoading && <div className="h-[100px] w-[100px]">{loadingSkeletonTheme()}</div>}
+      {componentLoading && <div className="h-[100px] w-[100px]">{loadingSkeletonTheme(4)}</div>}
       <div className="grid grid-rows-2">
         <div
           className="font-mainFont flex cursor-pointer text-large font-semibold"

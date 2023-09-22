@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
+import { loadingSkeletonTheme } from './SkeletonTheme'
+
 import signoutIconWhite from '../assets/icons/signoutIcon/signoutIconWhite.png'
 import imageIcon from '../assets/icons/imageIcon/imageIcon.png'
 import editIcon from '../assets/icons/editIcon/editIcon.svg'
@@ -42,11 +44,19 @@ const About = ({
   const [bioRows, setBioRows] = useState(5)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
 
+  const [componentLoading, setComponentLoading] = useState(true)
+
+  const featuredPhotoRef = useRef<HTMLImageElement>(null)
+
   const navigate = useNavigate()
 
   useEffect(() => {
     setEditButtonText(editMode ? 'Save bio' : 'Edit bio')
   }, [editMode])
+
+  useEffect(() => {
+    if (featuredPhoto === undefined) setComponentLoading(false)
+  }, [])
 
   const saveAboutInput = async () => {
     if (!editMode) return
@@ -59,7 +69,7 @@ const About = ({
     if (visitingUser) return
     return (
       <button
-        className="font-mainFont flex w-[90svw] items-center justify-center gap-1 rounded-3xl bg-purpleSoft p-1 text-center text-medium font-semibold text-purpleMain lg:w-[55svw]"
+        className="font-mainFont flex w-[90svw] items-center justify-center gap-1 rounded-3xl bg-purpleSoft p-1 text-center text-medium font-semibold text-purpleMain lg:w-[clamp(400px,55svw,1400px)]"
         onClick={() => {
           setEditMode(!editMode)
           saveAboutInput()
@@ -86,10 +96,13 @@ const About = ({
     if (!editMode) {
       return (
         <div className="grid justify-center justify-items-center gap-3 p-3 lg:w-[clamp(600px,60svw,1500px)]">
-          <div className="font-mainFont w-[90svw] rounded-3xl bg-purpleMain p-1 text-center text-large font-semibold text-white lg:w-[55svw] ">
+          <div
+            className="font-mainFont w-[90svw] rounded-3xl bg-purpleMain p-1 text-center text-large font-semibold text-white 
+          lg:w-[clamp(400px,55svw,1400px)]"
+          >
             Bio
           </div>
-          <div className="min-h-min w-[90svw] resize-none break-words rounded-3xl bg-graySoft p-4 text-center text-grayMain lg:w-[55svw]">
+          <div className="min-h-min w-[90svw] resize-none break-words rounded-3xl bg-graySoft p-4 text-center text-grayMain lg:w-[clamp(400px,55svw,1400px)]">
             {bioText}
           </div>
           {showEditButton()}
@@ -99,13 +112,13 @@ const About = ({
     if (editMode)
       return (
         <div className="grid justify-center justify-items-center gap-3 p-3 lg:w-[clamp(600px,60svw,1500px)]">
-          <div className="font-mainFont w-[90svw] rounded-3xl bg-purpleMain p-1 text-center text-large font-semibold text-white lg:w-[55svw]">
+          <div className="font-mainFont w-[90svw] rounded-3xl bg-purpleMain p-1 text-center text-large font-semibold text-white lg:w-[clamp(400px,55svw,1400px)]">
             Bio
           </div>
           <textarea
             ref={textareaRef}
             placeholder="Write a bio about yourself"
-            className="min-h-min w-[90svw] resize-none break-words rounded-3xl bg-graySoft p-4 text-center text-grayMain lg:w-[55svw]"
+            className="min-h-min w-[90svw] resize-none break-words rounded-3xl bg-graySoft p-4 text-center text-grayMain lg:w-[clamp(400px,55svw,1400px)]"
             onChange={(e) => {
               setBioText(e.target.value)
               handleTextareaChange()
@@ -123,7 +136,7 @@ const About = ({
   const featuredPhotoSection = () => {
     return (
       <div>
-        <div className="grid grid-cols-[1fr,9fr,1fr] items-center gap-2 p-3 pl-6 pr-6 font-semibold">
+        <div className="flex items-center gap-3 p-3 pl-6 pr-6 font-semibold">
           <img src={imageIcon} alt="" className="w-[25px]" />
           <div className="text-medium">Featured Photo</div>
           {visitingUser ? (
@@ -152,6 +165,7 @@ const About = ({
         </div>
         <div className="h-[1.5px] w-full bg-grayLineThin"></div>
         {displayFeaturedPhoto()}
+        {componentLoading && <div className="h-[500px] p-3 pl-6 pr-6">{loadingSkeletonTheme(15)}</div>}
       </div>
     )
   }
@@ -159,7 +173,7 @@ const About = ({
   const displayFeaturedPhoto = () => {
     if (featuredPhoto === undefined && loggedInUserId !== openProfileId)
       return (
-        <div className="grid items-center justify-items-center p-2">
+        <div className="grid items-center justify-items-center  p-2">
           <div className="text-grayMain">The user hasn't chosen a featured photo yet</div>
         </div>
       )
@@ -170,7 +184,17 @@ const About = ({
         </div>
       )
     return (
-      <img src={featuredPhoto} alt="featured on profile" className="rounded-3xl object-cover p-4" />
+      <div className="grid justify-center">
+        <img
+          src={featuredPhoto}
+          ref={featuredPhotoRef}
+          alt="featured on profile"
+          className="rounded-3xl object-cover p-4"
+          onLoad={() => {
+            setComponentLoading(false)
+          }}
+        />
+      </div>
     )
   }
 

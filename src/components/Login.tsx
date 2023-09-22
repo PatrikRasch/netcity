@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth'
 
-import DisplayRegister from './DisplayRegister'
 //6 Login user alert error must be sexified later on.
 
 import { useLoggedInUserId } from './context/LoggedInUserProfileDataContextProvider'
@@ -18,6 +17,7 @@ const Login = () => {
   const [createNewAccount, setCreateNewAccount] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [languageToDisplay, setLanguageToDisplay] = useState<string>('')
   const navigate = useNavigate()
 
   //1 Check if user is signed in
@@ -45,6 +45,35 @@ const Login = () => {
     }
   }
 
+  useEffect(() => {
+    const programmingLanguagesUsed = ['React', 'TypeScript', 'Tailwind', 'Firebase']
+    let i = 0
+    const programmingLanguagesUsedInterval = setInterval(() => {
+      i++
+      if (i === programmingLanguagesUsed.length) i = 0
+      setLanguageToDisplay(programmingLanguagesUsed[i])
+    }, 1500)
+    return () => clearInterval(programmingLanguagesUsedInterval)
+  }, [])
+
+  const rollingInformation = () => {
+    return (
+      <div className="grid pt-2">
+        <div className="text-small italic">A social media project by Patrik Rasch</div>
+        <a
+          href="https://www.GitHub.com/PatrikRasch"
+          className="text-small font-semibold text-purpleMain"
+        >
+          GitHub.com/PatrikRasch
+        </a>
+        <div className="w-[60svw] text-small italic lg:w-[clamp(100px,40svw,400px)]">
+          Built with
+        </div>
+        <div className="h-[30px]">{languageToDisplay}</div>
+      </div>
+    )
+  }
+
   return (
     <div className="grid h-[100vh] grid-rows-[9fr,11fr] justify-items-center gap-4 lg:flex lg:items-center lg:justify-evenly lg:p-10">
       {/*// - Logo & Title */}
@@ -55,18 +84,7 @@ const Login = () => {
         </div>
 
         {/* // - Patrik Rasch info */}
-        <div className="grid pt-2">
-          <div className="text-small italic">A social media project by Patrik Rasch</div>
-          <a
-            href="https://www.GitHub.com/PatrikRasch"
-            className="text-small font-semibold text-purpleMain"
-          >
-            GitHub.com/PatrikRasch
-          </a>
-          <div className="w-[60svw] text-small italic lg:w-[clamp(100px,40svw,400px)]">
-            Developed with React, TypeScript, Tailwind and Firebase
-          </div>
-        </div>
+        {rollingInformation()}
       </div>
 
       {/*// - The rest */}

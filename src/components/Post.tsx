@@ -4,13 +4,9 @@ import AllCommentsOnPost from './AllCommentsOnPost'
 import MakeComment from './MakeComment'
 import Likes from './Likes'
 import Dislikes from './Dislikes'
-import './post.css'
 
-import emptyProfilePicture from './../assets/icons/emptyProfilePicture.jpg'
 import commentIcon from './../assets/icons/commentIcon/commentIconUnselected.svg'
 import deleteIcon from './../assets/icons/delete.png'
-import likeIcon from './../assets/icons/likeIcon.svg'
-import dislikeIcon from './../assets/icons/dislikeIcon.svg'
 import starIcon from './../assets/icons/starIcon/starIconGray.svg'
 import trianglePointerIcon from './../assets/icons/trianglePointerIcon.svg'
 
@@ -99,7 +95,7 @@ const Post = ({
   const [showFullImage, setShowFullImage] = useState(false)
   const [imageTooLargeToShowFull, setImageTooLargeToShowFull] = useState(false)
   const [hoverImage, setHoverImage] = useState(false)
-  const [imageHeight, setImageHeight] = useState<Number | undefined>(Number)
+  const [imageHeight, setImageHeight] = useState<Number | undefined>()
 
   const imageHeightRef = useRef<HTMLImageElement>(null)
 

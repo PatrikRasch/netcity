@@ -1,0 +1,39 @@
+Date : 2023-09-21 17:37:43
+Directory : /Users/patrikrasch/Documents/CODE/the-odin-project/113. JavaScript/Finishing-Up-With-JavaScript/top-netcity/src/components
+Total : 14 files,  237 codes, 11 comments, 18 blanks, all 266 lines
+
+Languages
++----------------+------------+------------+------------+------------+------------+
+| language       | files      | code       | comment    | blank      | total      |
++----------------+------------+------------+------------+------------+------------+
+| TypeScript JSX |         13 |        237 |         11 |         17 |        265 |
+| CSS            |          1 |          0 |          0 |          1 |          1 |
++----------------+------------+------------+------------+------------+------------+
+
+Directories
++------------------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                                                           | files      | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                                                              |         14 |        237 |         11 |         18 |        266 |
++------------------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++------------------------------------------------------------------------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+
+| filename                                                                                                                                       | language       | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+
+| /Users/patrikrasch/Documents/CODE/the-odin-project/113. JavaScript/Finishing-Up-With-JavaScript/top-netcity/src/components/AllPosts.tsx        | TypeScript JSX |         15 |          0 |          0 |         15 |
+| /Users/patrikrasch/Documents/CODE/the-odin-project/113. JavaScript/Finishing-Up-With-JavaScript/top-netcity/src/components/Dislikes.tsx        | TypeScript JSX |          2 |          0 |          0 |          2 |
+| /Users/patrikrasch/Documents/CODE/the-odin-project/113. JavaScript/Finishing-Up-With-JavaScript/top-netcity/src/components/DisplayRegister.tsx | TypeScript JSX |         45 |          1 |         10 |         56 |
+| /Users/patrikrasch/Documents/CODE/the-odin-project/113. JavaScript/Finishing-Up-With-JavaScript/top-netcity/src/components/Header.tsx          | TypeScript JSX |         -1 |          0 |          1 |          0 |
+| /Users/patrikrasch/Documents/CODE/the-odin-project/113. JavaScript/Finishing-Up-With-JavaScript/top-netcity/src/components/Likes.tsx           | TypeScript JSX |          2 |          0 |          0 |          2 |
+| /Users/patrikrasch/Documents/CODE/the-odin-project/113. JavaScript/Finishing-Up-With-JavaScript/top-netcity/src/components/Login.tsx           | TypeScript JSX |          6 |          0 |          1 |          7 |
+| /Users/patrikrasch/Documents/CODE/the-odin-project/113. JavaScript/Finishing-Up-With-JavaScript/top-netcity/src/components/MakePost.tsx        | TypeScript JSX |         15 |          0 |          0 |         15 |
+| /Users/patrikrasch/Documents/CODE/the-odin-project/113. JavaScript/Finishing-Up-With-JavaScript/top-netcity/src/components/People.tsx          | TypeScript JSX |         12 |          0 |          0 |         12 |
+| /Users/patrikrasch/Documents/CODE/the-odin-project/113. JavaScript/Finishing-Up-With-JavaScript/top-netcity/src/components/Post.tsx            | TypeScript JSX |         83 |          0 |          3 |         86 |
+| /Users/patrikrasch/Documents/CODE/the-odin-project/113. JavaScript/Finishing-Up-With-JavaScript/top-netcity/src/components/Profile.tsx         | TypeScript JSX |         10 |          0 |          0 |         10 |
+| /Users/patrikrasch/Documents/CODE/the-odin-project/113. JavaScript/Finishing-Up-With-JavaScript/top-netcity/src/components/Public.tsx          | TypeScript JSX |          0 |         10 |          0 |         10 |
+| /Users/patrikrasch/Documents/CODE/the-odin-project/113. JavaScript/Finishing-Up-With-JavaScript/top-netcity/src/components/Register.tsx        | TypeScript JSX |         43 |          0 |          2 |         45 |
+| /Users/patrikrasch/Documents/CODE/the-odin-project/113. JavaScript/Finishing-Up-With-JavaScript/top-netcity/src/components/RouteSwitch.tsx     | TypeScript JSX |          5 |          0 |          0 |          5 |
+| /Users/patrikrasch/Documents/CODE/the-odin-project/113. JavaScript/Finishing-Up-With-JavaScript/top-netcity/src/components/post.css            | CSS            |          0 |          0 |          1 |          1 |
+| Total                                                                                                                                          |                |        237 |         11 |         18 |        266 |
++------------------------------------------------------------------------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+

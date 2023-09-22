@@ -1,44 +1,56 @@
-import React, { useState } from "react";
-import Post from "./Post";
-import MakeComment from "./MakeComment";
+import React, { useState } from 'react'
+import Post from './Post'
 
-import { useEmptyProfilePicture } from "./context/EmptyProfilePictureContextProvider";
+import { useEmptyProfilePicture } from './context/EmptyProfilePictureContextProvider'
 
 interface posts {
-  posts: PostData[];
+  posts: PostData[]
 }
 
 interface PostData {
-  userId: string;
-  firstName: string;
-  lastName: string;
-  text: string;
-  image: string;
-  imageId: string;
-  date: string;
-  likes: object;
-  dislikes: object;
-  comments: object;
-  timestamp: object;
-  id: string;
+  userId: string
+  firstName: string
+  lastName: string
+  text: string
+  image: string
+  imageId: string
+  date: string
+  likes: object
+  dislikes: object
+  comments: object
+  timestamp: object
+  id: string
 }
 
 interface Props {
-  openProfileId?: string;
-  posts?: posts["posts"];
-  globalPosts?: PostData[];
-  friendsPosts?: PostData[];
-  showGlobalPosts?: boolean;
-  context: "profile" | "feed";
+  openProfileId?: string
+  posts?: posts['posts']
+  globalPosts?: PostData[]
+  friendsPosts?: PostData[]
+  showGlobalPosts?: boolean
+  context: 'profile' | 'feed'
+  openProfileFirstName?: string
+  openProfileLastName?: string
+  visitingUser?: boolean
 }
 
-const AllPosts = ({ posts, openProfileId, globalPosts, friendsPosts, showGlobalPosts, context }: Props) => {
-  const emptyProfilePicture = useEmptyProfilePicture();
-  const [loggedInUserProfilePicture, setLoggedInUserProfilePicture] = useState(emptyProfilePicture);
+const AllPosts = ({
+  posts,
+  openProfileId,
+  globalPosts,
+  friendsPosts,
+  showGlobalPosts,
+  context,
+  openProfileFirstName,
+  openProfileLastName,
+  visitingUser,
+}: Props) => {
+  const emptyProfilePicture = useEmptyProfilePicture()
+  const [loggedInUserProfilePicture, setLoggedInUserProfilePicture] = useState(emptyProfilePicture)
 
   // - Adds all the posts on Firebase onto the page.
   const populatePostsOnPage = () => {
-    if (context === "profile" && posts && openProfileId)
+    if (context === 'profile' && posts && openProfileId)
       return posts.map((post, index) => (
         <div key={post.id}>
           <div>
@@ -59,12 +71,15 @@ const AllPosts = ({ posts, openProfileId, globalPosts, friendsPosts, showGlobalP
               postIndex={index}
               postUserId={post.userId}
               context={context}
+              openProfileFirstName={openProfileFirstName}
+              openProfileLastName={openProfileLastName}
+              visitingUser={visitingUser}
             />
           </div>
-          <div className="w-full h-[15px] bg-gray-100"></div>
+          <div className="h-[15px] w-full bg-gray-100"></div>
         </div>
-      ));
-    if (context === "feed" && showGlobalPosts && globalPosts) {
+      ))
+    if (context === 'feed' && showGlobalPosts && globalPosts) {
       return globalPosts.map((post, index) => (
         <div key={post.id}>
           <div>
@@ -87,11 +102,11 @@ const AllPosts = ({ posts, openProfileId, globalPosts, friendsPosts, showGlobalP
               friendsOnlyPost={false}
             />
           </div>
-          <div className="w-full h-[7px] bg-grayLineThick"></div>
+          <div className="h-[7px] w-full bg-grayLineThick"></div>
         </div>
-      ));
+      ))
     }
-    if (context === "feed" && !showGlobalPosts && friendsPosts) {
+    if (context === 'feed' && !showGlobalPosts && friendsPosts) {
       return friendsPosts.map((post, index) => (
         <div key={post.id}>
           <div>
@@ -114,13 +129,13 @@ const AllPosts = ({ posts, openProfileId, globalPosts, friendsPosts, showGlobalP
               friendsOnlyPost={true}
             />
           </div>
-          <div className="w-full h-[7px] bg-grayLineThick"></div>
+          <div className="h-[7px] w-full bg-grayLineThick"></div>
         </div>
-      ));
+      ))
     }
-  };
+  }
 
-  return <div>{populatePostsOnPage()}</div>;
-};
+  return <div>{populatePostsOnPage()}</div>
+}
 
-export default AllPosts;
+export default AllPosts

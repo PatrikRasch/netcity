@@ -49,7 +49,6 @@ function MakeCommentPublic({ postId, numOfCommentsShowing, setNumOfCommentsShowi
     try {
       const commentCollection = collection(postDoc, "comments");
       await addDoc(commentCollection, commentData);
-      // console.log("Comment added to Firebase");
       setNumOfCommentsShowing(numOfCommentsShowing + 1);
       getAllComments();
     } catch (err) {

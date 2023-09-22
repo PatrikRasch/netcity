@@ -2,7 +2,12 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { auth, googleProvider, db } from './../config/firebase.config'
-import { createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth'
+import {
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  getAuth,
+  fetchSignInMethodsForEmail,
+} from 'firebase/auth'
 import { collection, doc, setDoc } from 'firebase/firestore'
 
 import mailIconPurple from '../assets/icons/mailIcon.svg'
@@ -25,11 +30,22 @@ const Register = () => {
 
   //1 Runs if the "Register account" button is clicked
   const registerAccountWithEmail = async () => {
-    checkIfAllFieldsEntered()
-    checkIfPasswordsMatch()
     //2 Need to fetch the datand check if the entered email already exists.
     //2 If it does, make the user fill in a different email or try to login.
-    if (formFilled && passwordsMatch) {
+    console.log(formFilled)
+    console.log(passwordsMatch)
+    if (
+      checkIfAllFieldsEntered() &&
+      checkIfPasswordsMatch() &&
+      !(await checkIfEmailIsAlreadyRegistered(email).then((exists) => {
+        if (exists) {
+          alert('Email is already registered. Try logging in instead')
+          return true
+        } else {
+          return false
+        }
+      }))
+    ) {
       setShowLoadingBar(true)
       try {
         const userCredentials = await createUserWithEmailAndPassword(auth, email, password) // Stores user credentials/details
@@ -37,8 +53,8 @@ const Register = () => {
         const usersCollection = collection(db, 'users') // Grabs the collection from Firebase
         // Defines the data to be added into Firestore for the user
         const dataToAdd = {
-          firstName: firstName,
-          lastName: lastName,
+          firstName: capitalizeFirstLetterOfWords(firstName),
+          lastName: capitalizeFirstLetterOfWords(lastName),
           bio: '',
           profilePicture: '',
           friends: {},
@@ -54,6 +70,21 @@ const Register = () => {
         console.error(err)
       }
     }
+  }
+
+  const capitalizeFirstLetterOfWords = (str: string) => {
+    return str.replace(/\b\w/g, (match: string) => match.toUpperCase())
+  }
+
+  const checkIfEmailIsAlreadyRegistered = (email: string) => {
+    return fetchSignInMethodsForEmail(auth, email)
+      .then((signInMethods) => {
+        return signInMethods.length > 0
+      })
+      .catch((error) => {
+        console.error('Error checking email existence:', error)
+        return false
+      })
   }
 
   //1 Runs if the "Sign in with Google" button is clicked
@@ -79,16 +110,24 @@ const Register = () => {
       password.length === 0
     ) {
       setFormFilled(false)
+      return false
       alert('All fields are required (change this to better form validation later)')
-    } else setFormFilled(true)
+    } else {
+      setFormFilled(true)
+      return true
+    }
   }
 
   //1 Runs every time a user tries to register
   const checkIfPasswordsMatch = () => {
     if (password !== confirmPassword) {
       setPasswordsMatch(false)
+      return false
       alert('Passwords must match (change this to better form validation later)')
-    } else setPasswordsMatch(true)
+    } else {
+      setPasswordsMatch(true)
+      return true
+    }
   }
 
   const redirect = () => {
@@ -185,7 +224,9 @@ const Register = () => {
                 type="password"
                 className="h-[40px] w-full rounded-3xl bg-graySoft p-2 pl-16 text-[16px] text-black outline-purpleMain"
                 placeholder="Password"
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value)
+                }}
               />
             </div>
             <div className="flex w-[clamp(100px,75svw,400px)] items-center rounded-3xl bg-graySoft">
@@ -194,7 +235,9 @@ const Register = () => {
                 type="password"
                 className="h-[45px] w-full rounded-3xl bg-graySoft p-2 pl-16 text-[16px] text-black outline-purpleMain"
                 placeholder="Confirm Password"
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value)
+                }}
               />
             </div>
           </div>
@@ -203,7 +246,9 @@ const Register = () => {
         <div className="pt-6 text-xl lg:flex lg:justify-center">
           <button
             className="flex h-[45px] w-[clamp(100px,75svw,400px)] items-center justify-center rounded-3xl bg-black p-3 text-white outline-purpleMain"
-            onClick={registerAccountWithEmail}
+            onClick={() => {
+              registerAccountWithEmail()
+            }}
           >
             Register account
           </button>

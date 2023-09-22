@@ -239,67 +239,73 @@ const People = () => {
   }
 
   return (
-    <div className="lg:grid lg:justify-center lg:bg-graySoft">
-      <div className="bg-white lg:grid lg:w-[clamp(600px,60svw,1500px)]">
-        <div className="grid grid-cols-4 gap-2 bg-white p-4 text-sm">
-          <button
-            className={`rounded-2xl pb-[4px] pl-[3px] pr-[3px] pt-[4px] text-[12.5px] 
-          ${showOtherUsers ? 'bg-purpleMain text-white' : 'bg-graySoft text-black'} `}
-            onClick={() => {
-              sectionControlSwitcher('setShowOtherUsers')
-              updateOtherUsers()
-            }}
-          >
-            All People
-          </button>
-          <button
-            className={`rounded-2xl pb-[4px] pl-[3px] pr-[3px] pt-[4px] text-[12.5px] ${
-              showFriends ? 'bg-purpleMain text-white' : 'bg-graySoft text-black'
-            } `}
-            onClick={() => {
-              sectionControlSwitcher('setShowFriends')
-              updateFriends()
-            }}
-          >
-            Friends
-          </button>
-          <button
-            className={`relative rounded-2xl pb-[6px] pl-[3px] pr-[3px] pt-[6px] text-[12.5px] leading-4 ${
-              showReceivedFriendRequests ? 'bg-purpleMain text-white' : 'bg-graySoft text-black'
-            } `}
-            onClick={() => {
-              sectionControlSwitcher('setShowReceivedFriendRequests')
-              updateReceivedFriendRequests()
-            }}
-          >
-            <div
-              className={`absolute left-[85%] top-[-10%] flex h-[18px] w-[18px] items-center justify-center rounded-[50%] bg-red-500 text-white ${
-                numOfReceivedFriendRequests > 0 ? 'opacity-1' : 'opacity-0'
-              }`}
+    <div className="items-start lg:grid lg:justify-center lg:bg-graySoft">
+      <div className="min-h-[calc(100svh-80px)] bg-white">
+        <div className="items-start bg-white lg:grid lg:w-[clamp(600px,60svw,1500px)]">
+          <div className="grid grid-cols-4 gap-2 bg-white p-4 text-sm">
+            <button
+              className={`rounded-2xl pb-[4px] pl-[3px] pr-[3px] pt-[4px] text-[12.5px] 
+          ${showOtherUsers ? 'bg-black text-white' : 'bg-graySoft text-black'} `}
+              onClick={() => {
+                sectionControlSwitcher('setShowOtherUsers')
+                updateOtherUsers()
+              }}
             >
-              {numOfReceivedFriendRequests}
-            </div>
-            Friend Requests
-          </button>
-          <button
-            className={`rounded-2xl pb-[6px] pl-[3px] pr-[3px] pt-[6px] text-[12.5px] leading-4 ${
-              showSentFriendRequests ? 'bg-purpleMain text-white' : 'bg-graySoft text-black'
-            } `}
-            onClick={() => {
-              sectionControlSwitcher('setShowSentFriendRequests')
-              updateSentFriendRequests()
-            }}
-          >
-            Sent Requests
-          </button>
+              All People
+            </button>
+            <button
+              className={`rounded-2xl pb-[4px] pl-[3px] pr-[3px] pt-[4px] text-[12.5px] ${
+                showFriends ? 'bg-black text-white' : 'bg-graySoft text-black'
+              } `}
+              onClick={() => {
+                sectionControlSwitcher('setShowFriends')
+                updateFriends()
+              }}
+            >
+              Friends
+            </button>
+            <button
+              className={`relative rounded-2xl pb-[6px] pl-[3px] pr-[3px] pt-[6px] text-[12.5px] leading-4 ${
+                showReceivedFriendRequests ? 'bg-black text-white' : 'bg-graySoft text-black'
+              } `}
+              onClick={() => {
+                sectionControlSwitcher('setShowReceivedFriendRequests')
+                updateReceivedFriendRequests()
+              }}
+            >
+              <div
+                className={`absolute left-[85%] top-[-10%] flex h-[18px] w-[18px] items-center justify-center rounded-[50%] bg-red-500 text-white ${
+                  numOfReceivedFriendRequests > 0 ? 'opacity-1' : 'opacity-0'
+                }`}
+              >
+                {numOfReceivedFriendRequests}
+              </div>
+              Friend Requests
+            </button>
+            <button
+              className={`rounded-2xl pb-[6px] pl-[3px] pr-[3px] pt-[6px] text-[12.5px] leading-4 ${
+                showSentFriendRequests ? 'bg-black text-white' : 'bg-graySoft text-black'
+              } `}
+              onClick={() => {
+                sectionControlSwitcher('setShowSentFriendRequests')
+                updateSentFriendRequests()
+              }}
+            >
+              Sent Requests
+            </button>
+          </div>
+          <div className="h-[7px] w-full bg-graySoft"></div>
+          <div className="font-mainFont pb-1 pl-4 pt-2 text-medium font-semibold">
+            {pageTitle()}
+          </div>
+          <div className="h-[2px] w-full bg-grayLineThin"></div>
+          <div className="grid flex-col justify-center justify-items-center bg-white lg:grid lg:grid-cols-[repeat(auto-fit,390px)]">
+            {populateUsersOnPage()}
+          </div>
+          <div className="p-8 pb-16 text-center text-medium font-semibold opacity-30">
+            No more to show
+          </div>
         </div>
-        <div className="h-[7px] w-full bg-graySoft"></div>
-        <div className="font-mainFont pb-1 pl-4 pt-2 text-medium font-semibold">{pageTitle()}</div>
-        <div className="h-[2px] w-full bg-grayLineThin"></div>
-        <div className="grid flex-col justify-center justify-items-center bg-white lg:grid lg:grid-cols-[repeat(auto-fit,390px)]">
-          {populateUsersOnPage()}
-        </div>
-        <div className="p-8 pb-16 text-center text-large font-bold opacity-30">No more to show</div>
       </div>
     </div>
   )

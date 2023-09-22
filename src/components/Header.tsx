@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useLocation, useParams } from 'react-router-dom'
 import { useEmptyProfilePicture } from './context/EmptyProfilePictureContextProvider'
 
 import { useLoggedInUserId } from './context/LoggedInUserProfileDataContextProvider'
@@ -22,8 +22,15 @@ const Header = ({ feedOpen, setFeedOpen, peopleOpen, setPeopleOpen }: Props) => 
   const emptyProfilePicture = useEmptyProfilePicture()
   const loggedInUserProfilePicture = useLoggedInUserProfilePicture()
   const { loggedInUserId } = useLoggedInUserId()
-  const [profileOpen, setProfileOpen] = useState(false)
   const navigate = useNavigate()
+  const location = useLocation()
+  const [profileOpen, setProfileOpen] = useState(false)
+
+  useEffect(() => {
+    setProfileOpen(location.pathname.includes('profile'))
+    setFeedOpen(location.pathname.includes('public'))
+    setPeopleOpen(location.pathname.includes('people'))
+  }, [location.pathname])
 
   return (
     <div className="lg:w-100svw bg-white lg:grid lg:justify-items-center">
@@ -32,9 +39,6 @@ const Header = ({ feedOpen, setFeedOpen, peopleOpen, setPeopleOpen }: Props) => 
           className="cursor-pointer justify-self-center"
           onClick={() => {
             navigate('/public')
-            setFeedOpen(true)
-            setPeopleOpen(false)
-            setProfileOpen(false)
           }}
         >
           <img src={logoIcon} alt="" className="absolute left-10 hidden w-[50px] lg:block" />
@@ -49,9 +53,6 @@ const Header = ({ feedOpen, setFeedOpen, peopleOpen, setPeopleOpen }: Props) => 
           className="cursor-pointer justify-self-center"
           onClick={() => {
             navigate('/people')
-            setFeedOpen(false)
-            setPeopleOpen(true)
-            setProfileOpen(false)
           }}
         >
           <img
@@ -74,9 +75,6 @@ const Header = ({ feedOpen, setFeedOpen, peopleOpen, setPeopleOpen }: Props) => 
             className="aspect-square max-h-[55px] cursor-pointer justify-self-center rounded-[50px] object-cover"
             onClick={() => {
               navigate(`/profile/${loggedInUserId}`)
-              setFeedOpen(false)
-              setPeopleOpen(false)
-              setProfileOpen(true)
             }}
           />
           <div
