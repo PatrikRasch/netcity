@@ -36,7 +36,7 @@ module.exports = {
       },
       keyframes: {
         'slide-in-and-out1': {
-          '0%, 15%': { transform: 'translateY(24px)' },
+          '0%, 15%': { transform: 'translateY(24px)', opacity: '100%' },
           '15%, 25%': { transform: 'translateY(0px)' },
           '40%, 100%': { transform: 'translateY(-24px)' },
         },

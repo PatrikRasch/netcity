@@ -47,31 +47,23 @@ const Login = () => {
     }
   }
 
-  // useEffect(() => {
-  //   const programmingLanguagesUsed = ['React', 'TypeScript', 'Tailwind', 'Firebase']
-  //   let i = 0
-  //   const programmingLanguagesUsedInterval = setInterval(() => {
-  //     i++
-  //     if (i === programmingLanguagesUsed.length) i = 0
-  //     setLanguageToDisplay(programmingLanguagesUsed[i])
-  //   }, 2500)
-  //   return () => clearInterval(programmingLanguagesUsedInterval)
-  // }, [])
-
   const projectInformation = () => {
     return (
-      <div className="grid pt-2 text-small ">
+      <div className="grid pt-2 text-small">
         <div className="italic">A social media project by Patrik Rasch</div>
-        <a href="https://www.GitHub.com/PatrikRasch" className="font-semibold text-purpleMain">
+        <a
+          href="https://www.GitHub.com/PatrikRasch"
+          className="w-min justify-self-center font-semibold text-purpleMain"
+        >
           GitHub.com/PatrikRasch
         </a>
         <div className="">
           <div className="w-[60svw] italic lg:w-[clamp(100px,40svw,400px)]">Built with</div>
           <div className="relative flex h-[24px] justify-center overflow-hidden font-semibold">
-            <div className="animate-slide-in-and-out1 absolute">React</div>
-            <div className="animate-slide-in-and-out2 absolute">TypeScript</div>
-            <div className="animate-slide-in-and-out3 absolute">Tailwind</div>
-            <div className="animate-slide-in-and-out4 absolute">Firebase</div>
+            <div className="animate-slide-in-and-out1 absolute opacity-0">React</div>
+            <div className="animate-slide-in-and-out2 absolute opacity-0">TypeScript</div>
+            <div className="animate-slide-in-and-out3 absolute opacity-0">Tailwind</div>
+            <div className="animate-slide-in-and-out4 absolute opacity-0">Firebase</div>
           </div>
         </div>
       </div>
