@@ -34,6 +34,19 @@ module.exports = {
         medium: '15px',
         large: '20px',
       },
+      keyframes: {
+        'slide-in-and-out1': {
+          '0%, 15%': { transform: 'translateY(24px)' },
+          '15%, 25%': { transform: 'translateY(0px)' },
+          '40%, 100%': { transform: 'translateY(-24px)' },
+        },
+      },
+      animation: {
+        'slide-in-and-out1': 'slide-in-and-out1 8s ease-in-out infinite',
+        'slide-in-and-out2': 'slide-in-and-out1 8s ease-in-out 2s infinite',
+        'slide-in-and-out3': 'slide-in-and-out1 8s ease-in-out 4s infinite',
+        'slide-in-and-out4': 'slide-in-and-out1 8s ease-in-out 6s infinite',
+      },
     },
   },
   plugins: [],

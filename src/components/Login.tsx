@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth'
 
+import './login.css'
+
 //6 Login user alert error must be sexified later on.
 
 import { useLoggedInUserId } from './context/LoggedInUserProfileDataContextProvider'
@@ -45,31 +47,33 @@ const Login = () => {
     }
   }
 
-  useEffect(() => {
-    const programmingLanguagesUsed = ['React', 'TypeScript', 'Tailwind', 'Firebase']
-    let i = 0
-    const programmingLanguagesUsedInterval = setInterval(() => {
-      i++
-      if (i === programmingLanguagesUsed.length) i = 0
-      setLanguageToDisplay(programmingLanguagesUsed[i])
-    }, 1500)
-    return () => clearInterval(programmingLanguagesUsedInterval)
-  }, [])
+  // useEffect(() => {
+  //   const programmingLanguagesUsed = ['React', 'TypeScript', 'Tailwind', 'Firebase']
+  //   let i = 0
+  //   const programmingLanguagesUsedInterval = setInterval(() => {
+  //     i++
+  //     if (i === programmingLanguagesUsed.length) i = 0
+  //     setLanguageToDisplay(programmingLanguagesUsed[i])
+  //   }, 2500)
+  //   return () => clearInterval(programmingLanguagesUsedInterval)
+  // }, [])
 
-  const rollingInformation = () => {
+  const projectInformation = () => {
     return (
-      <div className="grid pt-2">
-        <div className="text-small italic">A social media project by Patrik Rasch</div>
-        <a
-          href="https://www.GitHub.com/PatrikRasch"
-          className="text-small font-semibold text-purpleMain"
-        >
+      <div className="grid pt-2 text-small ">
+        <div className="italic">A social media project by Patrik Rasch</div>
+        <a href="https://www.GitHub.com/PatrikRasch" className="font-semibold text-purpleMain">
           GitHub.com/PatrikRasch
         </a>
-        <div className="w-[60svw] text-small italic lg:w-[clamp(100px,40svw,400px)]">
-          Built with
+        <div className="">
+          <div className="w-[60svw] italic lg:w-[clamp(100px,40svw,400px)]">Built with</div>
+          <div className="relative flex h-[24px] justify-center overflow-hidden font-semibold">
+            <div className="animate-slide-in-and-out1 absolute">React</div>
+            <div className="animate-slide-in-and-out2 absolute">TypeScript</div>
+            <div className="animate-slide-in-and-out3 absolute">Tailwind</div>
+            <div className="animate-slide-in-and-out4 absolute">Firebase</div>
+          </div>
         </div>
-        <div className="h-[30px]">{languageToDisplay}</div>
       </div>
     )
   }
@@ -84,7 +88,7 @@ const Login = () => {
         </div>
 
         {/* // - Patrik Rasch info */}
-        {rollingInformation()}
+        {projectInformation()}
       </div>
 
       {/*// - The rest */}
