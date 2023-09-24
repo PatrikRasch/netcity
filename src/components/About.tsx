@@ -165,7 +165,6 @@ const About = ({
         </div>
         <div className="h-[1.5px] w-full bg-grayLineThin"></div>
         {displayFeaturedPhoto()}
-        {componentLoading && <div className="h-[500px] p-3 pl-6 pr-6">{loadingSkeletonTheme(15)}</div>}
       </div>
     )
   }
@@ -189,11 +188,12 @@ const About = ({
           src={featuredPhoto}
           ref={featuredPhotoRef}
           alt="featured on profile"
-          className="rounded-3xl object-cover p-4"
+          className={`rounded-3xl object-cover p-4 ${componentLoading ? 'hidden' : ''}`}
           onLoad={() => {
             setComponentLoading(false)
           }}
         />
+        {componentLoading && <div className="h-[500px] p-3 pl-6 pr-6">{loadingSkeletonTheme(20)}</div>}
       </div>
     )
   }

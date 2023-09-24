@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth'
 
-import './login.css'
-
 //6 Login user alert error must be sexified later on.
 
 import { useLoggedInUserId } from './context/LoggedInUserProfileDataContextProvider'
@@ -16,7 +14,6 @@ import googleIcon from '../assets/icons/googleIcon.svg'
 const Login = () => {
   const { loggedInUserId, setLoggedInUserId } = useLoggedInUserId()
 
-  const [createNewAccount, setCreateNewAccount] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [languageToDisplay, setLanguageToDisplay] = useState<string>('')
@@ -28,12 +25,6 @@ const Login = () => {
       if (user) navigate(`/profile/${user.uid}`)
     })
   }, [])
-
-  const redirect = () => {
-    if (createNewAccount === true) navigate('/register')
-  }
-
-  redirect()
 
   const handleLogin = async () => {
     const auth = getAuth()
@@ -49,7 +40,7 @@ const Login = () => {
 
   const projectInformation = () => {
     return (
-      <div className="grid pt-2 text-small">
+      <div className="grid gap-1 pt-2 text-[16px]">
         <div className="italic">A social media project by Patrik Rasch</div>
         <a
           href="https://www.GitHub.com/PatrikRasch"
@@ -57,13 +48,13 @@ const Login = () => {
         >
           GitHub.com/PatrikRasch
         </a>
-        <div className="">
-          <div className="w-[60svw] italic lg:w-[clamp(100px,40svw,400px)]">Built with</div>
+        <div className="grid gap-1">
+          <div className="w-[60svw] italic lg:w-[clamp(100px,40svw,400px)]">Built from scratch with</div>
           <div className="relative flex h-[24px] justify-center overflow-hidden font-semibold">
-            <div className="animate-slide-in-and-out1 absolute opacity-0">React</div>
-            <div className="animate-slide-in-and-out2 absolute opacity-0">TypeScript</div>
-            <div className="animate-slide-in-and-out3 absolute opacity-0">Tailwind</div>
-            <div className="animate-slide-in-and-out4 absolute opacity-0">Firebase</div>
+            <div className="absolute animate-slide-in-and-out1 opacity-0">React</div>
+            <div className="absolute animate-slide-in-and-out2 opacity-0">TypeScript</div>
+            <div className="absolute animate-slide-in-and-out3 opacity-0">Tailwind</div>
+            <div className="absolute animate-slide-in-and-out4 opacity-0">Firebase</div>
           </div>
         </div>
       </div>
@@ -140,7 +131,7 @@ const Login = () => {
               <button
                 className="pl-1 text-medium font-semibold text-purpleMain underline"
                 onClick={() => {
-                  setCreateNewAccount(true)
+                  navigate('/register')
                 }}
               >
                 Signup
