@@ -86,8 +86,7 @@ const People = () => {
       allUsers?.forEach((doc: DocumentData) => {
         const userData = doc.data() as UserData
         if (doc.id === loggedInUserId) return // Remove logged in user from the list of users
-        if (loggedInUserData?.friends.hasOwnProperty(doc.id))
-          return usersFriendsArray.push({ ...userData, id: doc.id }) // Are they already friends?
+        if (loggedInUserData?.friends.hasOwnProperty(doc.id)) return usersFriendsArray.push({ ...userData, id: doc.id }) // Are they already friends?
         if (loggedInUserData?.currentReceivedFriendRequests.hasOwnProperty(doc.id))
           return usersReceivedFriendRequestsArray.push({ ...userData, id: doc.id }) // Have they requested to be friends with loggedInUser?
         if (loggedInUserData?.currentSentFriendRequests.hasOwnProperty(doc.id))
@@ -164,8 +163,7 @@ const People = () => {
     allUsers?.forEach((doc: DocumentData) => {
       const userData = doc.data() as UserData
       if (doc.id === loggedInUserId) return // Remove logged in user from the list of users
-      if (loggedInUserData?.friends.hasOwnProperty(doc.id))
-        return usersFriendsArray.push({ ...userData, id: doc.id }) // Are they already friends?
+      if (loggedInUserData?.friends.hasOwnProperty(doc.id)) return usersFriendsArray.push({ ...userData, id: doc.id }) // Are they already friends?
       if (loggedInUserData?.currentReceivedFriendRequests.hasOwnProperty(doc.id))
         return usersReceivedFriendRequestsArray.push({ ...userData, id: doc.id }) // Have they requested to be friends with loggedInUser?
       if (loggedInUserData?.currentSentFriendRequests.hasOwnProperty(doc.id))
@@ -199,13 +197,7 @@ const People = () => {
 
   // - Returns the category that is to be rendered
   const getUsersToRender = () => {
-    if (showOtherUsers)
-      return [
-        ...allOtherUsers,
-        ...allReceivedFriendRequests,
-        ...allSentFriendRequests,
-        ...allFriends,
-      ]
+    if (showOtherUsers) return [...allOtherUsers, ...allReceivedFriendRequests, ...allSentFriendRequests, ...allFriends]
     if (showFriends) return allFriends
     if (showReceivedFriendRequests) return allReceivedFriendRequests
     if (showSentFriendRequests) return allSentFriendRequests
@@ -233,8 +225,7 @@ const People = () => {
   const pageTitle = () => {
     if (showOtherUsers) return 'All People'
     if (showFriends) return `My Friends (${allFriends.length})`
-    if (showReceivedFriendRequests)
-      return `Received Friend Requests (${allReceivedFriendRequests.length})`
+    if (showReceivedFriendRequests) return `Received Friend Requests (${allReceivedFriendRequests.length})`
     if (showSentFriendRequests) return `Sent Friend Requests (${allSentFriendRequests.length})`
   }
 
@@ -242,9 +233,9 @@ const People = () => {
     <div className="items-start lg:grid lg:justify-center lg:bg-graySoft">
       <div className="min-h-[calc(100svh-80px)] bg-white">
         <div className="items-start bg-white lg:grid lg:w-[clamp(600px,60svw,1500px)]">
-          <div className="grid grid-cols-4 gap-2 bg-white p-4 text-sm">
+          <div className="grid grid-cols-4 gap-2 bg-white p-4 lg:gap-5">
             <button
-              className={`rounded-2xl pb-[4px] pl-[3px] pr-[3px] pt-[4px] text-[12.5px] 
+              className={`rounded-2xl pb-[4px] pl-[3px] pr-[3px] pt-[4px] text-[12.5px] font-semibold lg:rounded-3xl lg:p-2 lg:text-medium 
           ${showOtherUsers ? 'bg-black text-white' : 'bg-graySoft text-black'} `}
               onClick={() => {
                 sectionControlSwitcher('setShowOtherUsers')
@@ -254,7 +245,7 @@ const People = () => {
               All People
             </button>
             <button
-              className={`rounded-2xl pb-[4px] pl-[3px] pr-[3px] pt-[4px] text-[12.5px] ${
+              className={`rounded-2xl pb-[4px] pl-[3px] pr-[3px] pt-[4px] text-[12.5px] font-semibold lg:rounded-3xl lg:p-2 lg:text-medium ${
                 showFriends ? 'bg-black text-white' : 'bg-graySoft text-black'
               } `}
               onClick={() => {
@@ -265,7 +256,7 @@ const People = () => {
               Friends
             </button>
             <button
-              className={`relative rounded-2xl pb-[6px] pl-[3px] pr-[3px] pt-[6px] text-[12.5px] leading-4 ${
+              className={`relative rounded-2xl pb-[6px] pl-[3px] pr-[3px] pt-[6px] text-[12.5px] font-semibold leading-4 lg:rounded-3xl lg:p-2 lg:text-medium ${
                 showReceivedFriendRequests ? 'bg-black text-white' : 'bg-graySoft text-black'
               } `}
               onClick={() => {
@@ -274,7 +265,7 @@ const People = () => {
               }}
             >
               <div
-                className={`absolute left-[85%] top-[-10%] flex h-[18px] w-[18px] items-center justify-center rounded-[50%] bg-red-500 text-white ${
+                className={`absolute left-[85%] top-[-10%] flex h-[18px] w-[18px] items-center justify-center rounded-[50%] bg-red-500 text-white lg:rounded-3xl lg:p-2 ${
                   numOfReceivedFriendRequests > 0 ? 'opacity-1' : 'opacity-0'
                 }`}
               >
@@ -283,7 +274,7 @@ const People = () => {
               Friend Requests
             </button>
             <button
-              className={`rounded-2xl pb-[6px] pl-[3px] pr-[3px] pt-[6px] text-[12.5px] leading-4 ${
+              className={`rounded-2xl pb-[6px] pl-[3px] pr-[3px] pt-[6px] text-[12.5px] font-semibold leading-4 lg:rounded-3xl lg:p-2 lg:text-medium ${
                 showSentFriendRequests ? 'bg-black text-white' : 'bg-graySoft text-black'
               } `}
               onClick={() => {
@@ -295,16 +286,12 @@ const People = () => {
             </button>
           </div>
           <div className="h-[7px] w-full bg-graySoft"></div>
-          <div className="font-mainFont pb-1 pl-4 pt-2 text-medium font-semibold">
-            {pageTitle()}
-          </div>
+          <div className="font-mainFont pb-1 pl-4 pt-2 text-medium font-semibold">{pageTitle()}</div>
           <div className="h-[2px] w-full bg-grayLineThin"></div>
-          <div className="grid flex-col justify-center justify-items-center bg-white lg:grid lg:grid-cols-[repeat(auto-fit,390px)]">
+          <div className="lg grid justify-evenly justify-items-center lg:grid lg:grid-cols-[repeat(auto-fit,390px)] lg:pl-2 lg:pr-2">
             {populateUsersOnPage()}
           </div>
-          <div className="p-8 pb-16 text-center text-medium font-semibold opacity-30">
-            No more to show
-          </div>
+          <div className="p-8 pb-16 text-center text-medium font-semibold opacity-30">No more to show</div>
         </div>
       </div>
     </div>
