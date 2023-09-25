@@ -40,7 +40,7 @@ const Login = () => {
 
   const projectInformation = () => {
     return (
-      <div className="grid gap-1 pt-2 text-[16px]">
+      <div className="grid gap-0 pt-2 text-[16px] lg:gap-1">
         <div className="italic">A social media project by Patrik Rasch</div>
         <a
           href="https://www.GitHub.com/PatrikRasch"
@@ -48,7 +48,7 @@ const Login = () => {
         >
           GitHub.com/PatrikRasch
         </a>
-        <div className="grid gap-1">
+        <div className="just grid justify-center gap-0 lg:gap-1">
           <div className="w-[60svw] italic lg:w-[clamp(100px,40svw,400px)]">Built from scratch with</div>
           <div className="relative flex h-[24px] justify-center overflow-hidden font-semibold">
             <div className="absolute animate-slide-in-and-out1 opacity-0">React</div>
@@ -77,16 +77,46 @@ const Login = () => {
       {/*// - The rest */}
       <div className="grid content-start justify-items-center gap-6 text-xl">
         <div className="hidden w-full gap-4 lg:grid">
-          <div className="text-center text-[30px] font-bold">Login</div>
+          <div className="relative text-center text-[30px] font-bold">
+            Login
+            <button
+              className={`absolute right-0 h-[30px] w-[120px] rounded-xl bg-black text-small font-semibold leading-[17px] text-white outline-purpleMain transition duration-300 hover:scale-[96%] ${
+                (email === 'test@gmail.com' && password === '123123') || email !== ''
+                  ? 'pointer-events-none opacity-0'
+                  : ''
+              }`}
+              onClick={() => {
+                setEmail('test@gmail.com')
+                setPassword('123123')
+              }}
+            >
+              Use test user
+            </button>
+          </div>
           <div className=" h-[2px] w-full bg-grayLineThin"></div>
         </div>
-        <div className="flex w-[clamp(100px,75svw,400px)] items-center rounded-3xl bg-graySoft">
+        <div className="relative flex w-[clamp(100px,75svw,400px)] items-center rounded-3xl bg-graySoft">
+          <button
+            className={`absolute right-2 h-[30px] w-[100px] rounded-xl bg-black text-smaller font-semibold leading-[10px] text-white outline-purpleMain transition duration-300 hover:scale-[96%] lg:hidden ${
+              (email === 'test@gmail.com' && password === '123123') || email !== ''
+                ? 'pointer-events-none opacity-0'
+                : ''
+            }`}
+            onClick={() => {
+              setEmail('test@gmail.com')
+              setPassword('123123')
+            }}
+          >
+            Use test user
+          </button>
+
           <img src={mailIconPurple} alt="" className="absolute h-[33px] pl-4" />
           <input
             type="email"
             className="h-[45px] w-full rounded-3xl bg-graySoft pl-16 text-[16px] text-black outline-purpleMain"
-            placeholder="test@gmail.com"
+            placeholder="Email"
             onChange={(e) => setEmail(e.target.value)}
+            value={email}
           />
         </div>
         <div className="flex w-[clamp(100px,75svw,400px)] items-center rounded-3xl bg-graySoft">
@@ -94,8 +124,9 @@ const Login = () => {
           <input
             type="password"
             className="h-[45px] w-full rounded-3xl bg-graySoft pl-16 text-[16px] text-black outline-purpleMain"
-            placeholder="123123"
+            placeholder="Password"
             onChange={(e) => setPassword(e.target.value)}
+            value={password}
           />
         </div>
 
