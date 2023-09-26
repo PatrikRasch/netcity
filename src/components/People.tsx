@@ -229,6 +229,89 @@ const People = () => {
     if (showSentFriendRequests) return `Sent Friend Requests (${allSentFriendRequests.length})`
   }
 
+  const categoryMessage = () => {
+    if (showFriends) {
+      return (
+        <>
+          <div
+            className={`p-8 pb-16 text-center text-medium font-semibold opacity-30 ${
+              allFriends.length === 0 ? '' : 'hidden'
+            }`}
+          >
+            No current friends
+          </div>
+          <div
+            className={`p-8 pb-16 text-center text-medium font-semibold opacity-30 ${
+              allFriends.length === 0 ? 'hidden' : ''
+            }`}
+          >
+            No more to show
+          </div>
+        </>
+      )
+    }
+    if (showReceivedFriendRequests) {
+      return (
+        <>
+          <div
+            className={`p-8 pb-16 text-center text-medium font-semibold opacity-30 ${
+              allReceivedFriendRequests.length === 0 ? '' : 'hidden'
+            }`}
+          >
+            No received friend requests
+          </div>
+          <div
+            className={`p-8 pb-16 text-center text-medium font-semibold opacity-30 ${
+              allReceivedFriendRequests.length === 0 ? 'hidden' : ''
+            }`}
+          >
+            No more to show
+          </div>
+        </>
+      )
+    }
+    if (showOtherUsers) {
+      return (
+        <>
+          <div
+            className={`p-8 pb-16 text-center text-medium font-semibold opacity-30 ${
+              allOtherUsers.length === 0 ? '' : 'hidden'
+            }`}
+          >
+            No other people
+          </div>
+          <div
+            className={`p-8 pb-16 text-center text-medium font-semibold opacity-30 ${
+              allOtherUsers.length === 0 ? 'hidden' : ''
+            }`}
+          >
+            No more to show
+          </div>
+        </>
+      )
+    }
+    if (showSentFriendRequests) {
+      return (
+        <>
+          <div
+            className={`p-8 pb-16 text-center text-medium font-semibold opacity-30 ${
+              allSentFriendRequests.length === 0 ? '' : 'hidden'
+            }`}
+          >
+            No sent friend requests
+          </div>
+          <div
+            className={`p-8 pb-16 text-center text-medium font-semibold opacity-30 ${
+              allSentFriendRequests.length === 0 ? 'hidden' : ''
+            }`}
+          >
+            No more to show
+          </div>
+        </>
+      )
+    }
+  }
+
   return (
     <div className="items-start lg:grid lg:justify-center lg:bg-graySoft">
       <div className="min-h-[calc(100svh-80px)] bg-white">
@@ -291,7 +374,7 @@ const People = () => {
           <div className="lg grid justify-evenly justify-items-center lg:grid lg:grid-cols-[repeat(auto-fit,390px)] lg:pl-2 lg:pr-2">
             {populateUsersOnPage()}
           </div>
-          <div className="p-8 pb-16 text-center text-medium font-semibold opacity-30">No more to show</div>
+          {categoryMessage()}
         </div>
       </div>
     </div>
