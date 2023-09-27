@@ -41,7 +41,7 @@ const Login = () => {
   const projectInformation = () => {
     return (
       <div className="grid gap-0 pt-2 text-[16px] lg:gap-1">
-        <div className="italic">A social media project by Patrik Rasch</div>
+        <div className="italic">A social media project by</div>
         <a
           href="https://www.GitHub.com/PatrikRasch"
           className="w-min justify-self-center font-semibold text-purpleMain"
@@ -65,8 +65,8 @@ const Login = () => {
     <div className="grid h-[100vh] grid-rows-[9fr,11fr] justify-items-center gap-4 lg:flex lg:items-center lg:justify-evenly lg:p-10">
       {/*// - Logo & Title */}
       <div className="grid justify-items-center self-end text-center lg:self-center">
-        <img src={logoIcon} alt="" className="w-[150px] lg:w-[clamp(100px,20svw,300px)]" />
-        <div className="font-mainFont text-[40px] font-bold text-purpleMain lg:text-[clamp(40px,5svw,70px)]">
+        <img src={logoIcon} alt="" className="w-[125px] lg:w-[clamp(100px,20svw,300px)]" />
+        <div className="font-mainFont text-[35px] font-bold text-purpleMain lg:text-[clamp(40px,5svw,70px)]">
           NetCity
         </div>
 
@@ -84,7 +84,7 @@ const Login = () => {
                 (email === 'test@gmail.com' && password === '123123') || email !== ''
                   ? 'pointer-events-none opacity-0'
                   : ''
-              }`}
+              } `}
               onClick={() => {
                 setEmail('test@gmail.com')
                 setPassword('123123')
@@ -131,7 +131,7 @@ const Login = () => {
         </div>
 
         {/*// - Login and Sign up with Google section */}
-        <div className="grid justify-items-center gap-4 text-xl">
+        <div className="grid justify-items-center gap-3 text-xl lg:gap-4">
           <button
             className="h-[45px] w-[clamp(100px,75svw,400px)] rounded-3xl bg-black text-white outline-purpleMain"
             onClick={() => {
