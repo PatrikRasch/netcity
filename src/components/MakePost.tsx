@@ -148,7 +148,7 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
 
       <section className="grid grid-cols-[55px,1fr,55px] items-center justify-items-center gap-2 pb-3 pl-2 pr-2 pt-3">
         <img
-          src={loggedInUserProfilePicture}
+          src={loggedInUserProfilePicture === '' ? emptyProfilePicture : loggedInUserProfilePicture}
           alt=""
           className="font-mainFont aspect-square h-[48px] self-start rounded-[50px] object-cover"
         />
@@ -186,10 +186,7 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
           }}
         />
 
-        <label
-          htmlFor="addImageToPostFeedButton"
-          className="mr-2 flex flex-col hover:cursor-pointer"
-        >
+        <label htmlFor="addImageToPostFeedButton" className="mr-2 flex flex-col hover:cursor-pointer">
           <img src={imageIcon} alt="add and upload file to post" className="max-w-[35px]" />
           <div className="text-center text-verySmall">Photo</div>
         </label>
@@ -232,9 +229,7 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
           </button>
           <button className="grid h-[30px] w-[70%] grid-cols-[20px,65px] items-center justify-center rounded-3xl bg-graySoft pl-2 pr-2 text-verySmall text-textMain">
             <img src={imageIcon} alt="" className="max-w-[18px]" />
-            <div className="font-mainFont w-full whitespace-nowrap text-center font-semibold">
-              Profile Post
-            </div>
+            <div className="font-mainFont w-full whitespace-nowrap text-center font-semibold">Profile Post</div>
           </button>
         </div>
       </section>
