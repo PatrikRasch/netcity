@@ -4,6 +4,7 @@ import Login from './Login'
 import DisplayRegister from './DisplayRegister'
 import Profile from './Profile'
 import Header from './Header'
+import LoadingBar from './LoadingBar'
 
 import { useLoggedInUserId } from './context/LoggedInUserProfileDataContextProvider'
 
@@ -31,16 +32,11 @@ function RouteSwitch() {
       }
     }, [])
 
-    if (!loggedInUserId) return <h1>Loading..</h1>
+    if (!loggedInUserId) return <LoadingBar />
     return (
-      <Suspense fallback={<h1>Loading...</h1>}>
+      <Suspense fallback={<LoadingBar />}>
         <div className="fixed z-50">
-          <Header
-            feedOpen={feedOpen}
-            setFeedOpen={setFeedOpen}
-            peopleOpen={peopleOpen}
-            setPeopleOpen={setPeopleOpen}
-          />
+          <Header feedOpen={feedOpen} setFeedOpen={setFeedOpen} peopleOpen={peopleOpen} setPeopleOpen={setPeopleOpen} />
         </div>
         <div className="h-[80px]"></div>
         <Routes>
@@ -61,7 +57,3 @@ function RouteSwitch() {
   )
 }
 export default RouteSwitch
-
-//3 On first load: need something that checks if the user is already signed in.
-//3 If so, send to Public/Profile page.
-//3 If not, send to login page.
