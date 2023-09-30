@@ -2,12 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { auth, googleProvider, db } from './../config/firebase.config'
-import {
-  createUserWithEmailAndPassword,
-  signInWithPopup,
-  getAuth,
-  fetchSignInMethodsForEmail,
-} from 'firebase/auth'
+import { createUserWithEmailAndPassword, signInWithPopup, getAuth, fetchSignInMethodsForEmail } from 'firebase/auth'
 import { collection, doc, setDoc } from 'firebase/firestore'
 
 import mailIconPurple from '../assets/icons/mailIcon.svg'
@@ -32,8 +27,6 @@ const Register = () => {
   const registerAccountWithEmail = async () => {
     //2 Need to fetch the datand check if the entered email already exists.
     //2 If it does, make the user fill in a different email or try to login.
-    console.log(formFilled)
-    console.log(passwordsMatch)
     if (
       checkIfAllFieldsEntered() &&
       checkIfPasswordsMatch() &&
@@ -64,10 +57,18 @@ const Register = () => {
         }
         const docToBeAdded = doc(usersCollection, userId) // Document that is to be added into Firestore
         await setDoc(docToBeAdded, dataToAdd) // Set the document and add it into Firestore
-        setShowLoadingBar(false) // Mission complete, remove the loading bar
-        setAccountCreated(true) // Account created, set state to true to trigger navigation
+
+        setTimeout(() => {
+          setShowLoadingBar(false) // Mission complete, remove the loading bar
+          setAccountCreated(true) // Account created, set state to true to trigger navigation
+          setTimeout(() => {
+            const user = auth.currentUser
+            navigate(`/profile/${user?.uid}`)
+          }, 1000)
+        }, 750)
       } catch (err) {
         console.error(err)
+        setShowLoadingBar(false) // Mission failed, remove the loading bar
       }
     }
   }
@@ -103,12 +104,7 @@ const Register = () => {
 
   //1 Runs every time a user tries to register
   const checkIfAllFieldsEntered = () => {
-    if (
-      firstName.length === 0 ||
-      lastName.length === 0 ||
-      email.length === 0 ||
-      password.length === 0
-    ) {
+    if (firstName.length === 0 || lastName.length === 0 || email.length === 0 || password.length === 0) {
       setFormFilled(false)
       return false
       alert('All fields are required (change this to better form validation later)')
@@ -130,17 +126,8 @@ const Register = () => {
     }
   }
 
-  const redirect = () => {
-    if (accountCreated === true) {
-      setTimeout(() => {
-        navigate('/profile')
-      }, 1000)
-    }
-  }
-
   //2 Gotta make the "Account created" message look sexier
   const accountCreatedJSX = () => {
-    redirect()
     return (
       <div>
         <div className="absolute inset-0 z-20 flex items-center justify-center">
@@ -153,19 +140,17 @@ const Register = () => {
 
   return (
     <div>
-      <div
-        className={`${showLoadingBar ? 'opacity-100' : 'opacity-0'} pointer-events-none transition`}
-      >
+      <div className={`${accountCreated ? 'opacity-100' : 'opacity-0'} pointer-events-none transition`}>
+        {accountCreatedJSX()}
+      </div>
+
+      <div className={`${showLoadingBar ? 'opacity-100' : 'opacity-0'} pointer-events-none transition`}>
         <div className="absolute inset-0 z-20 flex items-center justify-center">
           <LoadingBar />
         </div>
-        <div className="absolute inset-0 z-10 bg-black opacity-25"></div>
+        <div className="absolute inset-0 z-10 h-full w-full bg-black opacity-25"></div>
       </div>
-      <div
-        className={`${accountCreated ? 'opacity-100' : 'opacity-0'} pointer-events-none transition`}
-      >
-        {accountCreatedJSX()}
-      </div>
+
       <div className="grid h-[100svh] justify-center pb-20 pt-14 lg:h-[100%] lg:pb-0 lg:pt-0">
         {/* // - Header */}
         <div className="flex flex-col justify-center text-center">
@@ -178,9 +163,7 @@ const Register = () => {
             <div className="text-center text-[18px] font-semibold">Account Details</div>
             <div className="h-[1.5px] w-full bg-grayLineThin"></div>
           </div>
-          <div className="text-center text-[13px] text-base text-grayMain">
-            You can use your real name or an alias
-          </div>
+          <div className="text-center text-[13px] text-base text-grayMain">You can use your real name or an alias</div>
           <div className="grid gap-4 lg:grid-cols-[1fr,1fr]">
             <input
               type="text"

@@ -20,8 +20,6 @@ function DisplayRegister() {
     }
   }
 
-  const showLogin = () => {}
-
   return (
     <div onKeyDown={handleKeyDown} tabIndex={-1} ref={mainDivRef}>
       <div>

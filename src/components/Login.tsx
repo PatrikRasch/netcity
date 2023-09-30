@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth'
+import { Unsubscribe, getAuth, onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth'
+import { Firestore } from 'firebase/firestore'
+import { auth } from '../config/firebase.config'
 
 //6 Login user alert error must be sexified later on.
 
 import { useLoggedInUserId } from './context/LoggedInUserProfileDataContextProvider'
+
+import LoadingBar from './LoadingBar'
 
 import logoIcon from '../assets/icons/logoIcon.png'
 import mailIconPurple from '../assets/icons/mailIcon.svg'
@@ -17,22 +21,35 @@ const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [languageToDisplay, setLanguageToDisplay] = useState<string>('')
+  const [showLoadingBar, setShowLoadingBar] = useState(false)
+  const [unsubscribeFunction, setUnsubscribeFunction] = useState<Unsubscribe | null>(null)
   const navigate = useNavigate()
 
-  //1 Check if user is signed in
+  // - Check if user is signed in
   useEffect(() => {
-    onAuthStateChanged(getAuth(), async (user) => {
+    const unsubscribe = onAuthStateChanged(getAuth(), async (user) => {
       if (user) navigate(`/profile/${user.uid}`)
     })
+    setUnsubscribeFunction(unsubscribe)
+    return () => {
+      unsubscribe()
+    }
   }, [])
 
+  const stopAuthListener = () => {
+    if (unsubscribeFunction) unsubscribeFunction()
+  }
+
   const handleLogin = async () => {
+    setShowLoadingBar(true)
     const auth = getAuth()
     try {
       await signInWithEmailAndPassword(auth, email, password).then((userCredentials) => {
         navigate(`/profile/${userCredentials.user.uid}`)
       })
+      setShowLoadingBar(false)
     } catch (err) {
+      setShowLoadingBar(false)
       console.error(err)
       alert('Username and/or password does not match')
     }
@@ -63,18 +80,25 @@ const Login = () => {
 
   return (
     <div className="grid h-[100vh] grid-rows-[9fr,11fr] justify-items-center gap-4 lg:flex lg:items-center lg:justify-evenly lg:p-10">
+      <div className={`${showLoadingBar ? 'opacity-100' : 'opacity-0'} pointer-events-none transition`}>
+        <div className="absolute inset-0 z-20 flex items-center justify-center">
+          <LoadingBar />
+        </div>
+        <div className="absolute inset-0 z-10 h-full w-full bg-black opacity-25"></div>
+      </div>
+
       {/*// - Logo & Title */}
       <div className="grid justify-items-center self-end text-center lg:self-center">
         <img src={logoIcon} alt="" className="w-[125px] lg:w-[clamp(100px,20svw,300px)]" />
         <div className="font-mainFont text-[35px] font-bold text-purpleMain lg:text-[clamp(40px,5svw,70px)]">
           NetCity
         </div>
-
         {/* // - Patrik Rasch info */}
         {projectInformation()}
       </div>
 
       {/*// - The rest */}
+
       <div className="grid content-start justify-items-center gap-6 text-xl">
         <div className="hidden w-full gap-4 lg:grid">
           <div className="relative text-center text-[30px] font-bold">
@@ -163,6 +187,7 @@ const Login = () => {
                 className="pl-1 text-medium font-semibold text-purpleMain underline"
                 onClick={() => {
                   navigate('/register')
+                  stopAuthListener()
                 }}
               >
                 Signup
