@@ -32,13 +32,20 @@ function DisplayRegister() {
                 navigate('/login')
               }}
             >
-              <img src={xIcon} alt="" className="w-[50px]" />
+              <img src={xIcon} alt="exit register" className="w-[50px]" />
             </button>
             <div className="">
               <Register />
             </div>
           </div>
-          <div className="absolute z-10 hidden h-[100svh] w-[100svw] bg-black opacity-30 lg:block"></div>
+
+          <div
+            className="absolute z-10 hidden h-[100svh] w-[100svw] bg-black opacity-30 lg:block"
+            onClick={() => {
+              navigate('/login')
+            }}
+            aria-hidden="true"
+          ></div>
           <Login />
         </div>
       </div>
