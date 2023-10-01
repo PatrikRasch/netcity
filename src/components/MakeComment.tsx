@@ -1,22 +1,22 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef } from 'react'
 
-import { collection, doc, addDoc, DocumentReference } from "firebase/firestore";
-import { useDateFunctions } from "./custom-hooks/useDateFunctions";
+import { collection, doc, addDoc, DocumentReference } from 'firebase/firestore'
+import { useDateFunctions } from './custom-hooks/useDateFunctions'
 
-import postIcon from "./../assets/icons/postIcon/post.png";
-import { useEmptyProfilePicture } from "./context/EmptyProfilePictureContextProvider";
+import postIcon from './../assets/icons/postIcon/post.png'
+import { useEmptyProfilePicture } from './context/EmptyProfilePictureContextProvider'
 
 interface Props {
-  loggedInUserFirstName: string;
-  loggedInUserLastName: string;
-  loggedInUserProfilePicture: string;
-  loggedInUserId: string;
-  openProfileId?: string;
-  postId: string;
-  getAllComments: (value: DocumentReference) => Promise<void>;
-  postDocRef: DocumentReference;
-  numOfCommentsShowing: number;
-  setNumOfCommentsShowing: (value: number) => void;
+  loggedInUserFirstName: string
+  loggedInUserLastName: string
+  loggedInUserProfilePicture: string
+  loggedInUserId: string
+  openProfileId?: string
+  postId: string
+  getAllComments: (value: DocumentReference) => Promise<void>
+  postDocRef: DocumentReference
+  numOfCommentsShowing: number
+  setNumOfCommentsShowing: (value: number) => void
 }
 
 function MakeComment({
@@ -31,33 +31,33 @@ function MakeComment({
   numOfCommentsShowing,
   setNumOfCommentsShowing,
 }: Props) {
-  const emptyProfilePicture = useEmptyProfilePicture();
-  const [postCommentInput, setPostCommentInput] = useState("");
-  const [fullTimestamp, setFullTimestamp] = useState({});
-  const { dateDayMonthYear } = useDateFunctions();
-  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const emptyProfilePicture = useEmptyProfilePicture()
+  const [postCommentInput, setPostCommentInput] = useState('')
+  const [fullTimestamp, setFullTimestamp] = useState({})
+  const { dateDayMonthYear } = useDateFunctions()
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null)
 
   const postComment = async (commentData: {
-    timestamp: object;
-    firstName: string;
-    lastName: string;
-    text: string;
-    date: string;
-    likes: object;
-    dislikes: object;
-    userId: string;
-    postId: string;
+    timestamp: object
+    firstName: string
+    lastName: string
+    text: string
+    date: string
+    likes: object
+    dislikes: object
+    userId: string
+    postId: string
   }) => {
     //2 Start by adding document to the backend
     try {
-      const commentCollection = collection(postDocRef, "comments");
-      await addDoc(commentCollection, commentData);
-      setNumOfCommentsShowing(numOfCommentsShowing + 1);
-      getAllComments(postDocRef);
+      const commentCollection = collection(postDocRef, 'comments')
+      await addDoc(commentCollection, commentData)
+      setNumOfCommentsShowing(numOfCommentsShowing + 1)
+      getAllComments(postDocRef)
     } catch (err) {
-      console.error(err);
+      console.error(err)
     }
-  };
+  }
 
   // //1 Gets the reference to the postsProfile collection for the user
   // const getPostsProfileRef = () => {
@@ -68,45 +68,45 @@ function MakeComment({
 
   //1 Changes the height of the comment input field dynamically
   const handleTextareaChange = () => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-    textarea.rows = 1; // Ensures textarea shrinks by trying to set the rows to 1
-    const computedHeight = textarea.scrollHeight; // Sets computedHeight to match scrollheight
-    const rows = Math.ceil(computedHeight / 24); // Find new number of rows to be set. Line height id 24.
-    textarea.rows = rows; // Sets new number of rows
-  };
+    const textarea = textareaRef.current
+    if (!textarea) return
+    textarea.rows = 1 // Ensures textarea shrinks by trying to set the rows to 1
+    const computedHeight = textarea.scrollHeight // Sets computedHeight to match scrollheight
+    const rows = Math.ceil(computedHeight / 24) // Find new number of rows to be set. Line height id 24.
+    textarea.rows = rows // Sets new number of rows
+  }
 
   const resetTextarea = () => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-    textarea.rows = 1;
-  };
+    const textarea = textareaRef.current
+    if (!textarea) return
+    textarea.rows = 1
+  }
 
   return (
-    <div className="grid grid-cols-[1fr,8fr] gap-4 pt-2 pb-2 pl-4 pr-4 items-center">
+    <div className="grid grid-cols-[1fr,8fr] items-center gap-4 pb-2 pl-4 pr-4 pt-2 lg:grid-cols-[50px,1fr]">
       <img
-        src={loggedInUserProfilePicture === "" ? emptyProfilePicture : loggedInUserProfilePicture}
+        src={loggedInUserProfilePicture === '' ? emptyProfilePicture : loggedInUserProfilePicture}
         alt="logged in user"
-        className="rounded-[50%] max-w-[38px] justify-self-center aspect-square object-cover"
+        className="aspect-square max-w-[38px] justify-self-center rounded-[50%] object-cover"
       />
-      <div className="bg-gray-200 rounded-3xl pl-1 grid grid-cols-[4fr,1fr] gap-4 font-mainFont">
+      <div className="font-mainFont grid grid-cols-[4fr,1fr] gap-4 rounded-3xl bg-gray-200 pl-1">
         <textarea
           ref={textareaRef}
           placeholder="Write a comment"
-          className="w-full bg-transparent m-2 flex-grow resize-none overflow-y-auto outline-none"
+          className="m-2 w-full flex-grow resize-none overflow-y-auto bg-transparent outline-none"
           maxLength={1000}
           value={postCommentInput}
           onChange={(e) => {
-            setPostCommentInput(e.target.value);
-            handleTextareaChange();
-            setFullTimestamp(new Date());
+            setPostCommentInput(e.target.value)
+            handleTextareaChange()
+            setFullTimestamp(new Date())
           }}
           rows={1}
         ></textarea>
         <button
-          className="justify-self-center self-center rounded-[50%]"
+          className="self-center justify-self-center rounded-[50%]"
           onClick={(e) => {
-            if (postCommentInput.length === 0) return console.log("add text to input before posting");
+            if (postCommentInput.length === 0) return console.log('add text to input before posting')
             postComment({
               timestamp: fullTimestamp,
               firstName: loggedInUserFirstName,
@@ -117,16 +117,16 @@ function MakeComment({
               dislikes: {},
               userId: loggedInUserId,
               postId: postId,
-            });
-            setPostCommentInput("");
-            resetTextarea();
+            })
+            setPostCommentInput('')
+            resetTextarea()
           }}
         >
           <img src={postIcon} alt="" className="max-w-[25px]" />
         </button>
       </div>
     </div>
-  );
+  )
 }
 
-export default MakeComment;
+export default MakeComment
