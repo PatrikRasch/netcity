@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import globalIconWhite from '../assets/icons/globalIcon/globalIconWhite.svg'
@@ -78,6 +78,8 @@ const Profile = () => {
   const [isDeleteFriendDropdownMenuOpen, setIsDeleteFriendDropdownMenuOpen] = useState(false)
 
   const [featuredPhoto, setFeaturedPhoto] = useState('')
+
+  const profilePictureRef = useRef<HTMLInputElement | null>(null)
 
   //- Navigation declarations:
   const navigate = useNavigate()
@@ -211,10 +213,21 @@ const Profile = () => {
       )
   }
 
+  // - Stops the uploaded image if it's above 2MB
+  const isUploadedProfilePictureTooLarge = (newProfilePicture: File | null) => {
+    if (!newProfilePicture) return
+    if (newProfilePicture.size > 2097152) {
+      alert('Profile picture must be smaller than 2MB')
+      return false
+    }
+  }
+
   // - Allows user to select profile picture. Writes and stores the profile picture in Firebase Storage.
   // - Also updates the user in the Firestore database with URL to the photo.
   const uploadProfilePicture = async (newProfilePicture: File | null) => {
     if (newProfilePicture === null) return // Return if no imagine is uploaded
+    if (isUploadedProfilePictureTooLarge(newProfilePicture) === false) return // Check if image is too large before proceeding
+
     const storageRef = ref(storage, `/profilePictures/${loggedInUserId}`) // Connect to storage
     try {
       const uploadedPicture = await uploadBytes(storageRef, newProfilePicture) // Upload the image
@@ -716,6 +729,7 @@ const Profile = () => {
               {displayProfilePicture()}
             </label>
             <input
+              ref={profilePictureRef}
               type="file"
               id="fileInput"
               className="opacity-0"
