@@ -714,7 +714,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="grid min-h-[calc(100svh-80px)] w-screen items-start justify-center bg-graySoft">
+    <div className="grid h-[calc(100svh-80px)] w-screen items-start justify-center bg-graySoft">
       {/*//1 Profile picture and name */}
       <div className="w-[100svw] bg-white lg:grid lg:w-[clamp(600px,60svw,1500px)]">
         <div className="flex justify-center">
@@ -778,6 +778,14 @@ const Profile = () => {
         {/*//1 Posts or About */}
         <div>{publicOrPrivateProfile()}</div>
         <div>{showPostsOrAbout()}</div>
+        {/* <div className=" bg-white lg:w-[clamp(600px,60svw,1500px)]">No more posts</div> */}
+
+        <div className={`p-16 text-center text-medium font-semibold opacity-30 ${posts.length === 0 ? '' : 'hidden'}`}>
+          This profile has no posts. Be the first!
+        </div>
+        <div className={`p-16 text-center text-medium font-semibold opacity-30 ${posts.length !== 0 ? '' : 'hidden'}`}>
+          No more posts on profile
+        </div>
       </div>
     </div>
   )
