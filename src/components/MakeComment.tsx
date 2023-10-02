@@ -89,7 +89,7 @@ function MakeComment({
         alt="logged in user"
         className="aspect-square max-w-[38px] justify-self-center rounded-[50%] object-cover"
       />
-      <div className="font-mainFont grid grid-cols-[4fr,1fr] gap-4 rounded-3xl bg-gray-200 pl-1">
+      <div className="font-mainFont grid grid-cols-[4fr,1fr] gap-4 rounded-3xl bg-graySoft pl-1">
         <textarea
           ref={textareaRef}
           placeholder="Write a comment"
