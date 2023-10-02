@@ -365,7 +365,7 @@ const Profile = () => {
     if (displayProfileContent) return
     if (!displayProfileContent)
       return (
-        <div className="flex flex-col items-center justify-center gap-2 pt-8 text-center">
+        <div className="flex flex-col items-center justify-center gap-2 p-12 text-center">
           <img src={lockIcon} alt="" className="w-[clamp(50px,30svw,150px)]" />
           <div className="text-large font-bold">This Account is Private</div>
           <div className="max-w-[50svw] opacity-70">
@@ -714,7 +714,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="grid h-[calc(100svh-80px)] w-screen items-start justify-center bg-graySoft">
+    <div className="grid min-h-[calc(100svh-80px)] w-screen items-start justify-center bg-graySoft">
       {/*//1 Profile picture and name */}
       <div className="w-[100svw] bg-white lg:grid lg:w-[clamp(600px,60svw,1500px)]">
         <div className="flex justify-center">
@@ -778,12 +778,18 @@ const Profile = () => {
         {/*//1 Posts or About */}
         <div>{publicOrPrivateProfile()}</div>
         <div>{showPostsOrAbout()}</div>
-        {/* <div className=" bg-white lg:w-[clamp(600px,60svw,1500px)]">No more posts</div> */}
-
-        <div className={`p-16 text-center text-medium font-semibold opacity-30 ${posts.length === 0 ? '' : 'hidden'}`}>
+        <div
+          className={`grid h-[128px] items-center justify-center text-medium font-semibold opacity-30 ${
+            posts.length === 0 && showPosts && displayProfileContent ? '' : 'hidden'
+          }`}
+        >
           This profile has no posts. Be the first!
         </div>
-        <div className={`p-16 text-center text-medium font-semibold opacity-30 ${posts.length !== 0 ? '' : 'hidden'}`}>
+        <div
+          className={`grid h-[128px] items-center justify-center text-medium font-semibold opacity-30 ${
+            posts.length !== 0 && showPosts && displayProfileContent ? '' : 'hidden'
+          }`}
+        >
           No more posts on profile
         </div>
       </div>
