@@ -312,12 +312,7 @@ const Post = ({
     if (loggedInUserId === postUserId) {
       return (
         <div>
-          <img
-            src={deleteIcon}
-            alt=""
-            className="max-h-[18px] cursor-pointer"
-            onClick={() => deletePostClicked()}
-          />
+          <img src={deleteIcon} alt="" className="max-h-[18px] cursor-pointer" onClick={() => deletePostClicked()} />
         </div>
       )
     } else return <div></div>
@@ -339,9 +334,7 @@ const Post = ({
     if (postImage)
       return (
         <div
-          className={`relative overflow-hidden duration-500 ease-in-out ${
-            showFullImage ? '' : `max-h-[70vh]`
-          }`}
+          className={`relative overflow-hidden duration-500 ease-in-out ${showFullImage ? '' : `max-h-[70vh]`}`}
           style={{ maxHeight: showFullImage || hoverImage ? `${imageHeight}px` : '70vh' }}
         >
           <img
@@ -424,18 +417,14 @@ const Post = ({
     if (friendsOnlyPost)
       return (
         <div className="flex items-center gap-2">
-          <div className="font-mainFont text-smaller text-grayMedium lg:text-[clamp(12px,1.5svw,13px)]">
-            {postDate}
-          </div>
-          <div className="text-smaller text-grayMedium">•</div>
+          <div className="font-mainFont text-smaller text-grayMain lg:text-[clamp(12px,1.5svw,13px)]">{postDate}</div>
+          <div className="text-smaller text-grayMain">•</div>
           <img src={starIcon} alt="" className="w-[12px]" />
         </div>
       )
     else
       return (
-        <div className="font-mainFont text-smaller text-grayMedium lg:text-[clamp(12px,1.5svw,13px)]">
-          {postDate}
-        </div>
+        <div className="font-mainFont text-smaller text-grayMain lg:text-[clamp(12px,1.5svw,13px)]">{postDate}</div>
       )
   }
 
@@ -449,16 +438,14 @@ const Post = ({
     if (!visitingUser && openProfileId !== postUserId)
       return (
         <div className="flex gap-1">
-          {postFirstName + ' ' + postLastName}{' '}
-          <img src={trianglePointerIcon} alt="" className="w-[12px] pt-[2px]" />{' '}
+          {postFirstName + ' ' + postLastName} <img src={trianglePointerIcon} alt="" className="w-[12px] pt-[2px]" />{' '}
           {loggedInUserFirstName} {loggedInUserLastName}
         </div>
       )
     else
       return (
         <div className="flex gap-1">
-          {postFirstName + ' ' + postLastName}{' '}
-          <img src={trianglePointerIcon} alt="" className="w-[12px] pt-[2px]" />{' '}
+          {postFirstName + ' ' + postLastName} <img src={trianglePointerIcon} alt="" className="w-[12px] pt-[2px]" />{' '}
           {openProfileFirstName} {openProfileLastName}
         </div>
       )
@@ -484,12 +471,12 @@ const Post = ({
                 }}
               />
             </div>
-            <div className="flex flex-col gap-[1px]">
+            <div className="flex items-center gap-[15px]">
               <div
                 onClick={() => {
                   navigateToUser()
                 }}
-                className="font-mainFont font-semibold tracking-wide lg:text-[clamp(16px,1.5svw,19px)]"
+                className="font-mainFont font-bold tracking-wide lg:text-[clamp(16px,1.5svw,19px)]"
               >
                 {displayPostNames()}
               </div>
@@ -538,8 +525,8 @@ const Post = ({
         />
         {/* //1 Comment */}
         <div
-          className={` grid w-full items-center justify-center rounded-3xl p-1 lg:h-[40px] ${
-            showMakeComment && numOfCommentsShowing !== 0 ? 'bg-grayMain' : 'bg-graySoft'
+          className={` font-mainFont grid w-full items-center justify-center rounded-3xl p-1 font-semibold tracking-wide text-grayMain lg:h-[40px] ${
+            showMakeComment && numOfCommentsShowing !== 0 ? 'bg-black' : 'bg-graySoft'
           }`}
           onClick={(e) => handleCommentButtonClicked()}
         >
