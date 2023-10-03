@@ -150,12 +150,12 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
         <img
           src={loggedInUserProfilePicture === '' ? emptyProfilePicture : loggedInUserProfilePicture}
           alt=""
-          className="font-mainFont aspect-square h-[48px] self-start rounded-[50px] object-cover"
+          className="font-mainFont aspect-square h-[40px] w-[40px] self-start rounded-[50px] object-cover lg:h-[55px] lg:w-[55px]"
         />
         <textarea
           ref={textareaRef}
           placeholder="Make a post"
-          className={`transition-height w-full resize-none self-start overflow-y-auto rounded-3xl bg-graySoft p-3 outline-none duration-500 ${
+          className={`transition-height placeholder-grayMediumPlus w-full resize-none self-start overflow-y-auto rounded-3xl bg-graySoft p-3 outline-none duration-500 ${
             textareaActive ? 'min-h-[144px]' : 'min-h-[48px]'
           }`}
           maxLength={1000}

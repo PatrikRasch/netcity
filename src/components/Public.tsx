@@ -2,16 +2,7 @@ import React, { useEffect, useState, useRef } from 'react'
 import AllPosts from './AllPosts'
 
 import { db, storage } from '../config/firebase.config'
-import {
-  collection,
-  doc,
-  getDoc,
-  addDoc,
-  query,
-  orderBy,
-  onSnapshot,
-  limit,
-} from 'firebase/firestore'
+import { collection, doc, getDoc, addDoc, query, orderBy, onSnapshot, limit } from 'firebase/firestore'
 
 import { v4 as uuidv4 } from 'uuid'
 
@@ -85,8 +76,7 @@ function Public() {
     publicPost: boolean
   }) => {
     try {
-      if (publicPostsCollection === undefined)
-        return console.log('publicPostsCollection is undefined') //6 Must be improved later
+      if (publicPostsCollection === undefined) return console.log('publicPostsCollection is undefined') //6 Must be improved later
       const newPublicPost = await addDoc(publicPostsCollection, data)
       setPostId(newPublicPost.id) // Set the ID of this post to the state newPost
     } catch (err) {
@@ -98,11 +88,7 @@ function Public() {
   //  - Gets all the posts (profilePosts in Firestore) from the current profile subcollection.
   const getGlobalPosts = async () => {
     try {
-      const sortedGlobalPosts = query(
-        publicPostsCollection,
-        orderBy('timestamp', 'desc'),
-        limit(postsLoaded)
-      ) // Sorts posts in descending order
+      const sortedGlobalPosts = query(publicPostsCollection, orderBy('timestamp', 'desc'), limit(postsLoaded)) // Sorts posts in descending order
       const unsubscribe = onSnapshot(sortedGlobalPosts, (snapshot) => {
         const globalPostsDataArray: PublicPostData[] = [] // Empty array that'll be used for updating state
         // Push each doc (post) into the globalPostsDataArray array.
@@ -138,11 +124,7 @@ function Public() {
       const loggedInUserDoc = await getDoc(loggedInUserDocRef)
       const loggedInUserData = loggedInUserDoc.data()
 
-      const sortedFriendsPosts = query(
-        publicPostsCollection,
-        orderBy('timestamp', 'desc'),
-        limit(postsLoaded)
-      ) // Sorts posts in descending order
+      const sortedFriendsPosts = query(publicPostsCollection, orderBy('timestamp', 'desc'), limit(postsLoaded)) // Sorts posts in descending order
 
       const unsubscribe = onSnapshot(sortedFriendsPosts, (snapshot) => {
         const friendsPostsDataArray: PublicPostData[] = [] // Empty array that'll be used for updating state
@@ -151,8 +133,7 @@ function Public() {
 
           // Add the post into the array if the user is friends with the poster and the post is not a public post
           if (
-            (loggedInUserData?.friends.hasOwnProperty(postData.userId) ||
-              postData.userId === loggedInUserId) &&
+            (loggedInUserData?.friends.hasOwnProperty(postData.userId) || postData.userId === loggedInUserId) &&
             !postData.publicPost
           )
             friendsPostsDataArray.push({ ...postData, id: doc.id })
@@ -260,9 +241,7 @@ function Public() {
     <div className="lg:w-100svw bg-graySoft lg:grid lg:justify-center">
       {/* Choose posts to see */}
       <div className="lg:w-[clamp(500px,60svw,1500px)]">
-        <div className="hidden bg-white p-2 pl-4 font-bold lg:block lg:text-[clamp(16px,1.5svw,20px)]">
-          Home Feed
-        </div>
+        <div className="hidden bg-white p-2 pl-4 font-bold lg:block lg:text-[clamp(16px,1.5svw,20px)]">Home Feed</div>
         <div className="hidden h-[1.5px] w-full bg-grayLineThin lg:block"></div>
         <section className="grid max-w-[100svw] grid-cols-2 gap-2 whitespace-nowrap bg-white p-4 text-sm lg:flex lg:justify-center lg:gap-40">
           <button
@@ -275,16 +254,8 @@ function Public() {
               setPublicPost(true)
             }}
           >
-            <img
-              src={showGlobalPosts ? globalIconWhite : globalIconGray}
-              alt=""
-              className="h-[28px]"
-            />
-            <div
-              className={`font-mainFont mr-2 font-semibold ${
-                showGlobalPosts ? 'text-white' : 'text-textMain'
-              } `}
-            >
+            <img src={showGlobalPosts ? globalIconWhite : globalIconGray} alt="" className="h-[28px]" />
+            <div className={`font-mainFont mr-2 font-semibold ${showGlobalPosts ? 'text-white' : 'text-textMain'} `}>
               Public Posts
             </div>
           </button>
@@ -299,11 +270,7 @@ function Public() {
               setPublicPost(false)
             }}
           >
-            <img
-              src={showFriendsPosts ? starIconWhite : starIconGray}
-              alt=""
-              className="h-[28px]"
-            />
+            <img src={showFriendsPosts ? starIconWhite : starIconGray} alt="" className="h-[28px]" />
             <div className="font-mainFont font-semibold">Friends' Posts</div>
           </button>
         </section>
@@ -320,12 +287,12 @@ function Public() {
           <img
             src={loggedInUserProfilePicture}
             alt=""
-            className="ml-2 aspect-square h-[45px] rounded-[50px] object-cover"
+            className="ml-2 aspect-square h-[40px] w-[40px] rounded-[50px] object-cover lg:h-[55px] lg:w-[55px]"
           />
           <textarea
             ref={textareaRef}
             placeholder="Make a post"
-            className={`transition-height w-full resize-none overflow-y-auto rounded-3xl bg-graySoft p-3 outline-none duration-500 ${
+            className={`transition-height placeholder-grayMediumPlus w-full resize-none overflow-y-auto rounded-3xl bg-graySoft p-3 outline-none duration-500 ${
               textareaActive ? 'min-h-[144px]' : 'min-h-[48px]'
             }`}
             maxLength={1000}
@@ -355,17 +322,12 @@ function Public() {
               e.target.value = ''
             }}
           />
-          <label
-            htmlFor="addImageToPostFeedButton"
-            className="mr-2 flex flex-col hover:cursor-pointer"
-          >
+          <label htmlFor="addImageToPostFeedButton" className="mr-2 flex flex-col hover:cursor-pointer">
             <img src={imageIcon} alt="add and upload file to post" className="max-w-[35px]" />
             <div className="text-center text-verySmall">Photo</div>
           </label>
           <div className={`${imageAddedToPostFeed ? '' : 'absolute'}`}></div>
-          <div className={`${imageAddedToPostFeed ? '' : 'absolute'}`}>
-            {displayUploadedImageOrNot()}
-          </div>
+          <div className={`${imageAddedToPostFeed ? '' : 'absolute'}`}>{displayUploadedImageOrNot()}</div>
           <div className={`${imageAddedToPostFeed ? '' : 'absolute'}`}></div>
         </section>
 
@@ -403,11 +365,7 @@ function Public() {
               Post
             </button>
             <button className="grid h-[30px] w-[70%] grid-cols-[20px,65px] items-center justify-center rounded-3xl bg-graySoft pl-2 pr-2 text-verySmall text-textMain lg:flex lg:h-[40px] lg:w-[clamp(30%,10vw,280px)] lg:gap-2 lg:text-[clamp(16px,1.5svw,20px)]">
-              <img
-                src={showGlobalPosts ? globalIconGray : starIconGray}
-                alt=""
-                className="max-w-[18px]"
-              />
+              <img src={showGlobalPosts ? globalIconGray : starIconGray} alt="" className="max-w-[18px]" />
               <div className="font-mainFont w-full whitespace-nowrap text-center font-semibold lg:w-min">
                 {postDestination()}
               </div>
