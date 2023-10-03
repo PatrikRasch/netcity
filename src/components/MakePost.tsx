@@ -146,11 +146,11 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
       <div className="font-mainFont pb-1 pl-4 pt-3 font-semibold">Create a Post</div>
       <div className="h-[1.5px] w-full bg-grayLineThin"></div>
 
-      <section className="grid grid-cols-[55px,1fr,55px] items-center justify-items-center gap-2 pb-3 pl-2 pr-2 pt-3">
+      <section className="grid grid-cols-[80px,1fr,80px] items-center justify-items-center gap-2 pb-2 pt-4 lg:pl-4 lg:pr-4">
         <img
           src={loggedInUserProfilePicture === '' ? emptyProfilePicture : loggedInUserProfilePicture}
           alt=""
-          className="font-mainFont aspect-square h-[40px] w-[40px] self-start rounded-[50px] object-cover lg:h-[55px] lg:w-[55px]"
+          className="ml-2 aspect-square h-[40px] w-[40px] rounded-[50px] object-cover lg:h-[55px] lg:w-[55px]"
         />
         <textarea
           ref={textareaRef}
@@ -196,11 +196,11 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
       </section>
 
       {/* Post section */}
-      <section className="grid grid-cols-[55px,1fr,55px] items-center justify-items-center gap-2 pb-3">
+      <section className="grid grid-cols-[80px,1fr,80px] items-center justify-items-center gap-2 bg-white pb-3">
         <div></div>
-        <div className="flex w-full items-center justify-around gap-6">
+        <div className="flex w-full items-center justify-around gap-6 lg:justify-between lg:pl-4 lg:pr-4">
           <button
-            className="font-mainFont h-[33px] w-[70%] rounded-3xl bg-purpleMain text-medium font-bold text-white"
+            className="font-mainFont h-[30px] w-[70%] rounded-3xl bg-purpleMain text-medium font-bold text-white lg:h-[40px] lg:w-[clamp(30%,20vw,300px)] lg:text-[clamp(16px,1.5svw,20px)]"
             onClick={(e) => {
               if (postInput.length === 0 && imageAddedToPost === '')
                 return console.log('add text or image before posting')
@@ -227,9 +227,11 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
           >
             Post
           </button>
-          <button className="grid h-[30px] w-[70%] grid-cols-[20px,65px] items-center justify-center rounded-3xl bg-graySoft pl-2 pr-2 text-verySmall text-textMain">
+          <button className="grid h-[30px] w-[70%] grid-cols-[20px,65px] items-center justify-center rounded-3xl bg-graySoft pl-2 pr-2 text-verySmall text-textMain lg:flex lg:h-[40px] lg:w-[clamp(30%,10vw,280px)] lg:gap-2 lg:text-[clamp(16px,1.5svw,20px)]">
             <img src={imageIcon} alt="" className="max-w-[18px]" />
-            <div className="font-mainFont w-full whitespace-nowrap text-center font-semibold">Profile Post</div>
+            <div className="font-mainFont w-full whitespace-nowrap text-center font-semibold lg:w-min">
+              Profile Post
+            </div>
           </button>
         </div>
       </section>

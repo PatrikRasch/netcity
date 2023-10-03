@@ -336,7 +336,7 @@ function Public() {
           <div></div>
           <div className="flex w-full items-center justify-around gap-6 lg:justify-between lg:pl-4 lg:pr-4">
             <button
-              className="font-mainFont h-[30px] w-[70%] rounded-3xl bg-purpleMain text-medium font-bold text-white lg:h-[40px] lg:w-[clamp(30%,10vw,280px)] lg:text-[clamp(16px,1.5svw,20px)]"
+              className="font-mainFont h-[30px] w-[70%] rounded-3xl bg-purpleMain text-medium font-bold text-white lg:h-[40px] lg:w-[clamp(30%,20vw,300px)] lg:text-[clamp(16px,1.5svw,20px)]"
               onClick={(e) => {
                 if (postInput.length === 0 && imageAddedToPostFeed === '')
                   return console.log('add text or image before posting')
