@@ -457,91 +457,93 @@ const Post = ({
   //           <button
 
   return (
-    <div className="min-h-[150px] w-full bg-white shadow-xl lg:pl-4 lg:pr-4">
-      <div className="min-h-[120px] gap-2 p-4">
-        <div className="grid grid-cols-[20fr,1fr] items-center">
-          <div className="flex items-center gap-4">
-            <div className="min-w-[40px]">
-              <img
-                src={postProfilePicture === '' ? emptyProfilePicture : postProfilePicture}
-                alt="profile"
-                className="h-[40px] w-[40px] rounded-[50%] object-cover lg:h-[55px] lg:w-[55px]"
-                onClick={() => {
-                  navigateToUser()
-                }}
-              />
-            </div>
-            <div className="flex items-center gap-[15px]">
-              <div
-                onClick={() => {
-                  navigateToUser()
-                }}
-                className="font-mainFont font-bold tracking-wide lg:text-[clamp(16px,1.5svw,19px)]"
-              >
-                {displayPostNames()}
+    <>
+      <div className="min-h-[150px] w-full bg-white shadow-xl">
+        <div className="min-h-[120px] gap-2 p-4 lg:pl-8 lg:pr-8">
+          <div className="grid grid-cols-[20fr,1fr] items-center">
+            <div className="flex items-center gap-4">
+              <div className="min-w-[40px]">
+                <img
+                  src={postProfilePicture === '' ? emptyProfilePicture : postProfilePicture}
+                  alt="profile"
+                  className="h-[40px] w-[40px] rounded-[50%] object-cover lg:h-[55px] lg:w-[55px]"
+                  onClick={() => {
+                    navigateToUser()
+                  }}
+                />
               </div>
-              {renderFriendsPostIconOrNot()}
+              <div className="flex items-center gap-[15px]">
+                <div
+                  onClick={() => {
+                    navigateToUser()
+                  }}
+                  className="font-mainFont font-bold tracking-wide lg:text-[clamp(16px,1.5svw,19px)]"
+                >
+                  {displayPostNames()}
+                </div>
+                {renderFriendsPostIconOrNot()}
+              </div>
             </div>
+            {showDeletePostOrNot()}
           </div>
-          {showDeletePostOrNot()}
+          <div className="grid gap-2">
+            <div className="pt-2">{displayFullPostOrNot()}</div>
+            <div>{displayPostImageOrNot()}</div>
+          </div>
         </div>
-        <div className="grid gap-2">
-          <div className="pt-2">{displayFullPostOrNot()}</div>
-          <div>{displayPostImageOrNot()}</div>
-        </div>
-      </div>
-      <div className="h-[1.5px] w-full bg-grayLineThin"></div>
-      <div className="mb-2 ml-2 mr-2 mt-2 grid h-[33px] grid-cols-[1fr,1fr,1fr] items-center justify-items-center gap-5 lg:h-[50px]">
-        {/*//1 Like/Dislike */}
-        {
-          <Likes
-            totalLikes={postLikes}
+        <div className="h-[1.5px] w-full bg-grayLineThin"></div>
+        <div className="mb-2 ml-2 mr-2 mt-2 grid h-[33px] grid-cols-[1fr,1fr,1fr] items-center justify-items-center gap-5 lg:h-[50px] lg:pl-8 lg:pr-8">
+          {/*//1 Like/Dislike */}
+          {
+            <Likes
+              totalLikes={postLikes}
+              liked={liked}
+              disliked={disliked}
+              setLiked={setLiked}
+              numOfLikes={postNumOfLikes}
+              setNumOfLikes={setPostNumOfLikes}
+              removeLike={removeLike}
+              removeDislike={removeDislike}
+              loggedInUserId={loggedInUserId}
+              docRef={postDocRef}
+              data={postData}
+              isPost={true}
+            />
+          }
+          <Dislikes
+            totalDislikes={postDislikes}
             liked={liked}
             disliked={disliked}
-            setLiked={setLiked}
-            numOfLikes={postNumOfLikes}
-            setNumOfLikes={setPostNumOfLikes}
+            setDisliked={setDisliked}
+            loggedInUserId={loggedInUserId}
+            numOfDislikes={postNumOfDislikes}
+            setNumOfDislikes={setPostNumOfDislikes}
             removeLike={removeLike}
             removeDislike={removeDislike}
-            loggedInUserId={loggedInUserId}
             docRef={postDocRef}
             data={postData}
             isPost={true}
           />
-        }
-        <Dislikes
-          totalDislikes={postDislikes}
-          liked={liked}
-          disliked={disliked}
-          setDisliked={setDisliked}
-          loggedInUserId={loggedInUserId}
-          numOfDislikes={postNumOfDislikes}
-          setNumOfDislikes={setPostNumOfDislikes}
-          removeLike={removeLike}
-          removeDislike={removeDislike}
-          docRef={postDocRef}
-          data={postData}
-          isPost={true}
-        />
-        {/* //1 Comment */}
-        <div
-          className={` font-mainFont grid w-full items-center justify-center rounded-3xl p-1 font-semibold tracking-wide text-grayMain lg:h-[40px] ${
-            showMakeComment && numOfCommentsShowing !== 0 ? 'bg-black' : 'bg-graySoft'
-          }`}
-          onClick={(e) => handleCommentButtonClicked()}
-        >
-          <div className="flex gap-2">
-            <img src={commentIcon} alt="" className="max-h-6" />
-            <div>{postTotalNumOfComments}</div>
+          {/* //1 Comment */}
+          <div
+            className={` font-mainFont grid w-full items-center justify-center rounded-3xl p-1 font-semibold tracking-wide text-grayMain lg:h-[40px] ${
+              showMakeComment && numOfCommentsShowing !== 0 ? 'bg-black' : 'bg-graySoft'
+            }`}
+            onClick={(e) => handleCommentButtonClicked()}
+          >
+            <div className="flex gap-2">
+              <img src={commentIcon} alt="" className="max-h-6" />
+              <div>{postTotalNumOfComments}</div>
+            </div>
           </div>
         </div>
+        <div className="h-[1.5px] w-full bg-grayLineThin"></div>
+        {/* // - Add comment  */}
+        {displayMakeCommentOrNot()}
+        {/* // - Posted comments */}
+        {renderAllCommentsOnPost()}
       </div>
-      <div className="h-[1.5px] w-full bg-grayLineThin"></div>
-      {/* // - Add comment  */}
-      {displayMakeCommentOrNot()}
-      {/* // - Posted comments */}
-      {renderAllCommentsOnPost()}
-    </div>
+    </>
   )
 }
 
