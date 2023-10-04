@@ -1,27 +1,25 @@
-import React, { useState, createContext, useContext, ReactNode } from "react";
-import emptyProfilePictureImage from "./../../assets/icons/emptyProfilePicture.jpg";
+import React, { useState, createContext, useContext, ReactNode } from 'react'
+import emptyProfilePictureGrayFilledPurpleBackground from './../../assets/icons/emptyProfilePicture/emptyProfilePictureGrayFilledPurpleBackground.webp'
 
 //- Create the context
-const EmptyProfilePictureContext = createContext<string>(emptyProfilePictureImage);
+const EmptyProfilePictureContext = createContext<string>(emptyProfilePictureGrayFilledPurpleBackground)
 
 //- Custom hook that hides away the need for "useContext" in our components directly
 export function useEmptyProfilePicture() {
-  return useContext(EmptyProfilePictureContext); // CONSUME CONTEXT AND RETURN CURRENT VALUE
+  return useContext(EmptyProfilePictureContext) // CONSUME CONTEXT AND RETURN CURRENT VALUE
 }
 
 //- Interface for provider. ReactNode is a union which represents any valid React child that can be rendered.
 interface EmptyProfilePictureProviderProps {
-  children: ReactNode;
+  children: ReactNode
 }
 
 //- The provider, the "main" part of our context.
 function EmptyProfilePictureProvider({ children }: EmptyProfilePictureProviderProps) {
-  const [emptyProfilePicture, setEmptyProfilePicture] = useState(emptyProfilePictureImage);
+  const [emptyProfilePicture, setEmptyProfilePicture] = useState(emptyProfilePictureGrayFilledPurpleBackground)
 
   return (
-    <EmptyProfilePictureContext.Provider value={emptyProfilePicture}>
-      {children}
-    </EmptyProfilePictureContext.Provider>
-  );
+    <EmptyProfilePictureContext.Provider value={emptyProfilePicture}>{children}</EmptyProfilePictureContext.Provider>
+  )
 }
-export default EmptyProfilePictureProvider;
+export default EmptyProfilePictureProvider
