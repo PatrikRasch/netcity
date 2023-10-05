@@ -27,4 +27,5 @@ yarn-error.log*
 /src/assets/fonts/ignore
 /src/assets/ignore-icons
 /src/assets/images/ignore-images
+/src/assets/icons/0.deprecated
 /public/ignore-favicons
