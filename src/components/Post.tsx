@@ -334,7 +334,7 @@ const Post = ({
   const showDeletePostOrNot = () => {
     if (loggedInUserId === postUserId) {
       return (
-        <div ref={dropdownMenuRef} className="relative">
+        <div ref={dropdownMenuRef} className="relative max-w-max">
           <img
             src={dotsGrayFilled}
             alt=""
@@ -352,14 +352,23 @@ const Post = ({
   const dropdownMenu = () => {
     if (showDropdownMenu) {
       return (
-        <div className="absolute right-4 top-4 min-w-max rounded-3xl rounded-tr-none bg-graySoft hover:bg-grayMedium">
+        <div className="absolute right-0 top-4 grid min-w-max grid-rows-[1fr,1.5px,1fr] rounded-2xl rounded-tr-none bg-graySoft">
           <button
-            className="pb-1 pl-4 pr-4 pt-1"
+            className="rounded-tl-2xl pb-1 pl-4 pr-4 pt-1 hover:bg-grayMedium"
             onClick={() => {
               deletePostClicked()
             }}
           >
             Delete Post
+          </button>
+          <div className="h-[1.5px] w-full bg-grayMedium"></div>
+          <button
+            className="rounded-2xl rounded-tl-none rounded-tr-none pb-1 pl-4 pr-4 pt-1 hover:bg-grayMedium"
+            onClick={() => {
+              setShowDropdownMenu(false)
+            }}
+          >
+            Close
           </button>
         </div>
       )
