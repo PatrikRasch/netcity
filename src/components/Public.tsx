@@ -366,7 +366,7 @@ function Public() {
             </button>
             <button className="grid h-[30px] w-[70%] grid-cols-[20px,85px] items-center justify-center gap-1 rounded-3xl bg-graySoft pl-2 pr-2 text-textMain lg:flex lg:h-[40px] lg:w-[clamp(30%,15svw,280px)] lg:grid-cols-[20px,65px] lg:gap-2">
               <img src={showGlobalPosts ? globalGrayEmpty : starGrayFilled} alt="" className="w-[25px] lg:w-[28px]" />
-              <div className="font-mainFont w-full whitespace-nowrap text-center font-semibold lg:w-min">
+              <div className="font-mainFont w-full cursor-default whitespace-nowrap text-center font-semibold lg:w-min">
                 {postDestination()}
               </div>
             </button>

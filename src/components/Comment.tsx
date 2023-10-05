@@ -158,7 +158,7 @@ const Comment = ({
         <img
           src={profilePicture === '' ? emptyProfilePicture : profilePicture}
           alt="User who made comment"
-          className="aspect-square max-w-[38px] self-start justify-self-center rounded-[50%] object-cover"
+          className="aspect-square max-w-[38px] cursor-pointer self-start justify-self-center rounded-[50%] object-cover"
           onClick={() => {
             navigateToUser()
           }}
@@ -168,7 +168,7 @@ const Comment = ({
             <div className="grid grid-cols-[20fr,30px]">
               <div className="flex flex-col">
                 <div
-                  className="text-[14px] font-bold"
+                  className="cursor-pointer text-[14px] font-bold"
                   onClick={() => {
                     navigateToUser()
                   }}
