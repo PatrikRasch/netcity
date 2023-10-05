@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { updateDoc, DocumentReference } from 'firebase/firestore'
 
-import likeIconUnselected from './../assets/icons/likeIcon/likeIconUnselected.png'
-import likeIconSelected from './../assets/icons/likeIcon/likeIconSelected.png'
+import likeGrayEmpty from './../assets/icons/like/likeGrayEmpty.svg'
+import likePurpleFilled from './../assets/icons/like/likePurpleFilled.svg'
 
 import { TargetData, TargetCommentData } from '../interfaces'
 
@@ -66,9 +66,9 @@ function Likes({
   //1 The like icon on each post. Shows if the user has liked a post.
   const showLikedOrNot = () => {
     if (!liked) {
-      return <img src={likeIconUnselected} alt="" className="max-h-6" />
+      return <img src={likeGrayEmpty} alt="" className="max-h-6" />
     } else {
-      return <img src={likeIconSelected} alt="" className="max-h-6" />
+      return <img src={likePurpleFilled} alt="" className="max-h-6" />
     }
   }
 
@@ -88,9 +88,7 @@ function Likes({
     } else {
       return (
         <button
-          className={`font-mainFont flex w-full justify-center gap-1 ${
-            liked ? 'text-purpleMain' : 'text-grayMain'
-          }`}
+          className={`font-mainFont flex w-full justify-center gap-1 ${liked ? 'text-purpleMain' : 'text-grayMain'}`}
         >
           <div onClick={() => handleClickLike()} className="cursor-pointer">
             {showLikedOrNot()}

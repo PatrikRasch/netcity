@@ -5,9 +5,9 @@ import { auth, googleProvider, db } from './../config/firebase.config'
 import { createUserWithEmailAndPassword, signInWithPopup, getAuth, fetchSignInMethodsForEmail } from 'firebase/auth'
 import { collection, doc, setDoc } from 'firebase/firestore'
 
-import mailIconPurple from '../assets/icons/mailIcon.svg'
-import lockIconPurple from '../assets/icons/lockIcon/lockIcon-purple.svg'
-import googleIcon from '../assets/icons/googleIcon.svg'
+import mailPurpleFilled from '../assets/icons/mail/mailPurpleFilled.svg'
+import lockPurpleFilled from '../assets/icons/lock/lockPurpleFilled.webp'
+import logoGoogle from '../assets/icons/google/logoGoogle.svg'
 
 import LoadingBar from './LoadingBar'
 
@@ -192,7 +192,7 @@ const Register = () => {
           {/*//1 Email and password section */}
           <div className="grid gap-4 text-xl lg:justify-items-center">
             <div className="flex w-[clamp(100px,75svw,400px)] items-center rounded-3xl bg-graySoft">
-              <img src={mailIconPurple} alt="" className="absolute h-[33px] pl-4" />
+              <img src={mailPurpleFilled} alt="" className="absolute h-[33px] pl-4" />
               <input
                 type="email"
                 className="h-[40px] w-full rounded-3xl bg-graySoft p-2 pl-16 text-[16px] text-black outline-purpleMain"
@@ -202,7 +202,7 @@ const Register = () => {
             </div>
 
             <div className="flex w-[clamp(100px,75svw,400px)] items-center rounded-3xl bg-graySoft">
-              <img src={lockIconPurple} alt="" className="absolute h-[33px] pl-4" />
+              <img src={lockPurpleFilled} alt="" className="absolute h-[33px] pl-4" />
               <input
                 type="password"
                 className="h-[40px] w-full rounded-3xl bg-graySoft p-2 pl-16 text-[16px] text-black outline-purpleMain"
@@ -213,7 +213,7 @@ const Register = () => {
               />
             </div>
             <div className="flex w-[clamp(100px,75svw,400px)] items-center rounded-3xl bg-graySoft">
-              <img src={lockIconPurple} alt="" className="absolute h-[33px] pl-4" />
+              <img src={lockPurpleFilled} alt="" className="absolute h-[33px] pl-4" />
               <input
                 type="password"
                 className="h-[45px] w-full rounded-3xl bg-graySoft p-2 pl-16 text-[16px] text-black outline-purpleMain"
@@ -249,7 +249,7 @@ const Register = () => {
               alert('This feature is coming soon')
             }}
           >
-            <img src={googleIcon} alt="" className="w-[26px]" />
+            <img src={logoGoogle} alt="" className="w-[26px]" />
             <div>Sign-In with Google</div>
           </button>
         </div>

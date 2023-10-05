@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import arrowDropdown from '../assets/icons/dropdownIcon/arrow-dropdown.png'
-import starIconPurple from '../assets/icons/starIcon/starIconPurple.svg'
-import checkIconGray from '../assets/icons/checkIcon/checkIconGray.svg'
-import checkIconWhite from '../assets/icons/checkIcon/checkIconWhite.svg'
+import triangleBlackFilled from '../assets/icons/dropdownIcon/triangleBlackFilled.png'
+import starPurpleFilled from '../assets/icons/star/starPurpleFilled.svg'
+import checkGray from '../assets/icons/check/checkGray.svg'
+import checkWhite from '../assets/icons/check/checkWhite.svg'
+import clockGrayEmpty from '../assets/icons/clock/clockGrayEmpty.webp'
 
 import { db } from '../config/firebase.config'
 import { doc, getDoc, runTransaction, DocumentData } from 'firebase/firestore'
@@ -304,7 +305,7 @@ function PeopleUser({
             }}
           >
             <div className="flex w-[120px] items-center justify-center gap-[5px] rounded-t-2xl bg-purpleSoft p-2 text-medium font-semibold text-purpleMain ">
-              <img src={starIconPurple} alt="" className="h-[18px]" />
+              <img src={starPurpleFilled} alt="" className="h-[18px]" />
               <div>Friends</div>
               {/* <img src={arrowDropdown} alt="" className="max-w-[30px] rotate-180" /> */}
             </div>
@@ -330,7 +331,7 @@ function PeopleUser({
             }}
           >
             <div className="flex w-[120px] items-center justify-center gap-[5px] rounded-3xl bg-purpleSoft p-2 text-medium font-semibold text-purpleMain">
-              <img src={starIconPurple} alt="" className="h-[18px]" />
+              <img src={starPurpleFilled} alt="" className="h-[18px]" />
               <div>Friends</div>
               {/* <img src={arrowDropdown} alt="" className="max-w-[30px]" /> */}
             </div>
@@ -351,7 +352,7 @@ function PeopleUser({
           }}
         >
           <div className="flex w-[120px] gap-[1px] rounded-3xl bg-graySoft p-2 text-[14px] font-semibold text-grayMain">
-            <img src={checkIconGray} alt="" className="w-[20px]" />
+            <img src={clockGrayEmpty} alt="" className="w-[20px]" />
             <div>Requested</div>
           </div>
         </button>
@@ -396,7 +397,7 @@ function PeopleUser({
             }}
           >
             <div className="mr-3 flex justify-center gap-1">
-              <img src={checkIconWhite} alt="" className="w-[20px]" />
+              <img src={checkWhite} alt="" className="w-[20px]" />
               Accept
             </div>
           </button>

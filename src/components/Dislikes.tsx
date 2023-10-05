@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { updateDoc, DocumentReference } from 'firebase/firestore'
 
-import dislikeIconUnselected from './../assets/icons/dislikeIcon/dislikeIconUnselected.svg'
-import dislikeIconSelected from './../assets/icons/dislikeIcon/dislikeIconSelected.svg'
+import dislikeGrayEmpty from './../assets/icons/dislike/dislikeGrayEmpty.svg'
+import dislikeRedFilled from './../assets/icons/dislike/dislikeRedFilled.svg'
 
 import { TargetData, TargetCommentData } from '../interfaces'
 
@@ -62,9 +62,9 @@ function Dislikes({
   //1 The dislike icon on each post. Shows if the user has disliked a post.
   const showDislikedOrNot = () => {
     if (!disliked) {
-      return <img src={dislikeIconUnselected} alt="" className="max-h-6" />
+      return <img src={dislikeGrayEmpty} alt="" className="max-h-6" />
     } else {
-      return <img src={dislikeIconSelected} alt="" className="max-h-6" />
+      return <img src={dislikeRedFilled} alt="" className="max-h-6" />
     }
   }
 
@@ -84,9 +84,7 @@ function Dislikes({
     } else {
       return (
         <button
-          className={`font-mainFont flex w-full justify-center gap-1 ${
-            disliked ? 'text-redMain' : 'text-grayMain'
-          }`}
+          className={`font-mainFont flex w-full justify-center gap-1 ${disliked ? 'text-redMain' : 'text-grayMain'}`}
         >
           <div onClick={() => handleClickDislike()} className="cursor-pointer">
             {showDislikedOrNot()}

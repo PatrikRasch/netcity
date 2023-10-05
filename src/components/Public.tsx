@@ -6,11 +6,11 @@ import { collection, doc, getDoc, addDoc, query, orderBy, onSnapshot, limit } fr
 
 import { v4 as uuidv4 } from 'uuid'
 
-import imageIcon from './../assets/icons/imageIcon/imageIcon.png'
-import globalIconGray from './../assets/icons/globalIcon/globalIconGray.svg'
-import globalIconWhite from './../assets/icons/globalIcon/globalIconWhite.svg'
-import starIconGray from './../assets/icons/starIcon/starIconGray.svg'
-import starIconWhite from './../assets/icons/starIcon/starIconWhite.svg'
+import imageGrayEmpty from './../assets/icons/image/imageGrayEmpty.webp'
+import globalGrayEmpty from './../assets/icons/global/globalGrayEmpty.svg'
+import globalWhiteEmpty from './../assets/icons/global/globalWhiteEmpty.svg'
+import starGrayFilled from './../assets/icons/star/starGrayFilled.svg'
+import starWhiteEmpty from './../assets/icons/star/starWhiteEmpty.svg'
 
 import { useLoggedInUserId } from './context/LoggedInUserProfileDataContextProvider'
 import { useLoggedInUserFirstName } from './context/LoggedInUserProfileDataContextProvider'
@@ -243,7 +243,7 @@ function Public() {
       <div className="lg:w-[clamp(500px,60svw,1500px)]">
         <div className="hidden bg-white p-2 pl-4 font-bold lg:block lg:text-[clamp(16px,1.5svw,20px)]">Home Feed</div>
         <div className="hidden h-[1.5px] w-full bg-grayLineThin lg:block"></div>
-        <section className="grid max-w-[100svw] grid-cols-2 gap-2 whitespace-nowrap bg-white p-4 text-sm lg:flex lg:justify-center lg:gap-40">
+        <section className="grid max-w-[100svw] grid-cols-2 gap-2 whitespace-nowrap bg-white p-4 lg:flex lg:justify-center lg:gap-40">
           <button
             className={`flex h-[45px] items-center justify-center gap-2 rounded-3xl pb-[8px] pt-[8px] text-white lg:pl-8 lg:pr-8
           ${showGlobalPosts ? 'bg-black' : 'bg-graySoft'} `}
@@ -254,7 +254,7 @@ function Public() {
               setPublicPost(true)
             }}
           >
-            <img src={showGlobalPosts ? globalIconWhite : globalIconGray} alt="" className="h-[28px]" />
+            <img src={showGlobalPosts ? globalWhiteEmpty : globalGrayEmpty} alt="" className="h-[28px]" />
             <div className={`font-mainFont mr-2 font-semibold ${showGlobalPosts ? 'text-white' : 'text-textMain'} `}>
               Public Posts
             </div>
@@ -270,11 +270,11 @@ function Public() {
               setPublicPost(false)
             }}
           >
-            <img src={showFriendsPosts ? starIconWhite : starIconGray} alt="" className="h-[28px]" />
+            <img src={showFriendsPosts ? starWhiteEmpty : starGrayFilled} alt="" className="h-[28px]" />
             <div className="font-mainFont font-semibold">Friends' Posts</div>
           </button>
         </section>
-        <div className="h-[7px] w-full bg-grayLineThick lg:bg-graySoft"></div>
+        <div className="h-[7px] w-full bg-graySoft lg:bg-graySoft"></div>
 
         {/* Make a post row */}
         {/* <MakePost /> */}
@@ -292,7 +292,7 @@ function Public() {
           <textarea
             ref={textareaRef}
             placeholder="Make a post"
-            className={`transition-height placeholder-grayMediumPlus w-full resize-none overflow-y-auto rounded-3xl bg-graySoft p-3 outline-none duration-500 ${
+            className={`transition-height w-full resize-none overflow-y-auto rounded-3xl bg-graySoft p-3 placeholder-grayMediumPlus outline-none duration-500 ${
               textareaActive ? 'min-h-[144px]' : 'min-h-[48px]'
             }`}
             maxLength={1000}
@@ -323,7 +323,7 @@ function Public() {
             }}
           />
           <label htmlFor="addImageToPostFeedButton" className="mr-2 flex flex-col hover:cursor-pointer">
-            <img src={imageIcon} alt="add and upload file to post" className="max-w-[35px]" />
+            <img src={imageGrayEmpty} alt="add and upload file to post" className="max-w-[35px]" />
             <div className="text-center text-verySmall">Photo</div>
           </label>
           <div className={`${imageAddedToPostFeed ? '' : 'absolute'}`}></div>
@@ -334,9 +334,9 @@ function Public() {
         {/* Post section */}
         <section className="grid grid-cols-[80px,1fr,80px] items-center justify-items-center gap-2 bg-white pb-3">
           <div></div>
-          <div className="flex w-full items-center justify-around gap-6 lg:justify-between lg:pl-4 lg:pr-4">
+          <div className="flex w-full items-center justify-around gap-6 text-[clamp(16px,1.5svw,20px)] lg:justify-between lg:pl-4 lg:pr-4">
             <button
-              className="font-mainFont h-[30px] w-[70%] rounded-3xl bg-purpleMain text-medium font-bold text-white lg:h-[40px] lg:w-[clamp(30%,20vw,300px)] lg:text-[clamp(16px,1.5svw,20px)]"
+              className="font-mainFont h-[30px] w-[70%] rounded-3xl bg-purpleMain font-bold text-white lg:h-[40px] lg:w-[clamp(30%,20vw,300px)]"
               onClick={(e) => {
                 if (postInput.length === 0 && imageAddedToPostFeed === '')
                   return console.log('add text or image before posting')
@@ -364,8 +364,8 @@ function Public() {
             >
               Post
             </button>
-            <button className="grid h-[30px] w-[70%] grid-cols-[20px,65px] items-center justify-center rounded-3xl bg-graySoft pl-2 pr-2 text-verySmall text-textMain lg:flex lg:h-[40px] lg:w-[clamp(30%,10vw,280px)] lg:gap-2 lg:text-[clamp(16px,1.5svw,20px)]">
-              <img src={showGlobalPosts ? globalIconGray : starIconGray} alt="" className="max-w-[18px]" />
+            <button className="grid h-[30px] w-[70%] grid-cols-[20px,85px] items-center justify-center gap-1 rounded-3xl bg-graySoft pl-2 pr-2 text-textMain lg:flex lg:h-[40px] lg:w-[clamp(30%,15svw,280px)] lg:grid-cols-[20px,65px] lg:gap-2">
+              <img src={showGlobalPosts ? globalGrayEmpty : starGrayFilled} alt="" className="w-[25px] lg:w-[28px]" />
               <div className="font-mainFont w-full whitespace-nowrap text-center font-semibold lg:w-min">
                 {postDestination()}
               </div>
@@ -373,7 +373,7 @@ function Public() {
           </div>
           <div></div>
         </section>
-        <div className="h-[7px] w-full bg-grayLineThick lg:bg-graySoft"></div>
+        <div className="h-[7px] w-full bg-graySoft"></div>
 
         <AllPosts
           globalPosts={globalPosts}

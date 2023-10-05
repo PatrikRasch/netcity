@@ -4,8 +4,7 @@ import Likes from './Likes'
 import Dislikes from './Dislikes'
 import { useParams } from 'react-router-dom'
 
-import deleteIcon from './../assets/icons/delete.png'
-import deleteRedIcon from './../assets/icons/delete-red.png'
+import dotsGrayFilled from './../assets/icons/dots/dotsGrayFilled.webp'
 
 import { db } from './../config/firebase.config'
 import { collection, doc, getDoc, deleteDoc, updateDoc } from 'firebase/firestore'
@@ -134,7 +133,12 @@ const Comment = ({
     if (loggedInUserId === commentById) {
       return (
         <div>
-          <img src={deleteIcon} alt="" className="max-h-[15px] cursor-pointer" onClick={() => deletePostClicked()} />
+          <img
+            src={dotsGrayFilled}
+            alt=""
+            className="max-h-[18px] cursor-pointer"
+            onClick={() => deletePostClicked()}
+          />
         </div>
       )
     } else return <div></div>
@@ -149,8 +153,8 @@ const Comment = ({
   }
 
   return (
-    <div className="grid pl-4 pr-4 pt-2">
-      <div className="grid grid-cols-[1fr,8fr] items-center gap-4 lg:grid-cols-[50px,1fr]">
+    <div className="grid pt-2">
+      <div className="grid grid-cols-[50px,1fr] items-center gap-4 pl-4 pr-4 lg:grid-cols-[50px,1fr] lg:pl-8 lg:pr-8">
         <img
           src={profilePicture === '' ? emptyProfilePicture : profilePicture}
           alt="User who made comment"
@@ -160,8 +164,8 @@ const Comment = ({
           }}
         />
         <div className="flex flex-col">
-          <div className="rounded-xl bg-gray-200 p-2.5">
-            <div className="grid grid-cols-[20fr,2fr]">
+          <div className="rounded-xl bg-graySoft p-2.5">
+            <div className="grid grid-cols-[20fr,30px]">
               <div className="flex flex-col">
                 <div
                   className="text-[14px] font-bold"
@@ -171,7 +175,7 @@ const Comment = ({
                 >
                   {commentFirstName + ' ' + commentLastName}
                 </div>
-                <div className="text-[11px] opacity-50">{commentDate}</div>
+                <div className="text-[11px] text-grayMain">{commentDate}</div>
                 <div className="gap-4 hyphens-auto">{commentText}</div>
               </div>
               <div>{showDeleteCommentOrNot()}</div>

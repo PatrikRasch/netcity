@@ -102,7 +102,7 @@ const AllPosts = ({
               friendsOnlyPost={false}
             />
           </div>
-          <div className="h-[7px] w-full bg-grayLineThick"></div>
+          <div className="h-[7px] w-full bg-graySoft"></div>
         </div>
       ))
     }
@@ -129,7 +129,7 @@ const AllPosts = ({
               friendsOnlyPost={true}
             />
           </div>
-          <div className="h-[7px] w-full bg-grayLineThick"></div>
+          <div className="h-[7px] w-full bg-graySoft"></div>
         </div>
       ))
     }

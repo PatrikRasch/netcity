@@ -1,15 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
-import globalIconWhite from '../assets/icons/globalIcon/globalIconWhite.svg'
-import lockIcon from '../assets/icons/lockIcon/lockIcon.png'
-import postsIconWhite from '../assets/icons/postsIcon/postsIconWhite.svg'
-import postsIconBlack from '../assets/icons/postsIcon/postsIconBlack.svg'
-import userIconBlack from '../assets/icons/userIcon/userIconBlack.svg'
-import userIconWhite from '../assets/icons/userIcon/userIconWhite.svg'
-import starIconPurple from '../assets/icons/starIcon/starIconPurple.svg'
-import checkIconGray from '../assets/icons/checkIcon/checkIconGray.svg'
-import checkIconWhite from '../assets/icons/checkIcon/checkIconWhite.svg'
+import globalWhiteEmpty from '../assets/icons/global/globalWhiteEmpty.svg'
+import lockWithCirclePurple from '../assets/icons/lockCircle/lockWithCirclePurple.webp'
+import postsWhiteEmpty from '../assets/icons/posts/postsWhiteEmpty.svg'
+import postsBlackEmpty from '../assets/icons/posts/postsBlackEmpty.svg'
+import aboutWhiteEmpty from '../assets/icons/about/aboutWhiteEmpty.webp'
+import aboutBlackEmpty from '../assets/icons/about/aboutBlackEmpty.webp'
+import starPurpleFilled from '../assets/icons/star/starPurpleFilled.svg'
+import checkGray from '../assets/icons/check/checkGray.svg'
+import checkWhite from '../assets/icons/check/checkWhite.svg'
+import clockGrayEmpty from '../assets/icons/clock/clockGrayEmpty.webp'
+import lockWhiteFilled from '../assets/icons/lock/lockWhiteFilled.webp'
 
 import { db, storage } from './../config/firebase.config'
 import {
@@ -296,7 +298,7 @@ const Profile = () => {
           openOrPrivateProfileSwitcher()
         }}
       >
-        <img src={globalIconWhite} alt="" className="w-[25px]" />
+        <img src={`${openProfile ? globalWhiteEmpty : lockWhiteFilled}`} alt="" className="w-[25px]" />
         <div>{openProfile ? 'Open Profile' : 'Private Profile'}</div>
       </button>
     )
@@ -366,7 +368,7 @@ const Profile = () => {
     if (!displayProfileContent)
       return (
         <div className="flex flex-col items-center justify-center gap-2 p-12 text-center">
-          <img src={lockIcon} alt="" className="w-[clamp(50px,30svw,150px)]" />
+          <img src={lockWithCirclePurple} alt="" className="w-[clamp(50px,30svw,150px)]" />
           <div className="text-large font-bold">This Account is Private</div>
           <div className="max-w-[50svw] opacity-70">
             You need to be friends to see their posts & make posts on their page
@@ -636,7 +638,7 @@ const Profile = () => {
               )
             }}
           >
-            <img src={starIconPurple} alt="" className="w-[20px] pb-[3px]" />
+            <img src={starPurpleFilled} alt="" className="w-[20px] pb-[3px]" />
             Friends
           </button>
         </div>
@@ -658,7 +660,7 @@ const Profile = () => {
             }
           }}
         >
-          <img src={checkIconGray} alt="" className="w-[25px] pb-[2px]" />
+          <img src={clockGrayEmpty} alt="" className="w-[25px] pb-[2px]" />
           Requested
         </button>
       )
@@ -673,7 +675,7 @@ const Profile = () => {
               }
             }}
           >
-            <img src={checkIconWhite} alt="" className="w-[22px]" />
+            <img src={checkWhite} alt="" className="w-[22px]" />
             Accept Friend Request
           </button>
           <button
@@ -753,14 +755,14 @@ const Profile = () => {
         <div className="h-[1.5px] w-full bg-grayLineThin"></div>
 
         {/*// - Posts/About selection */}
-        <div className="grid h-[65px] grid-cols-2 gap-4 rounded-lg p-3 pl-4 pr-4 lg:flex lg:justify-center lg:gap-[clamp(10px,5svw,150px)]">
+        <div className="grid h-[65px] grid-cols-2 gap-4 rounded-lg p-3 pl-4 pr-4 text-[clamp(16px,1.5svw,20px)] lg:flex lg:justify-center lg:gap-[clamp(10px,5svw,150px)]">
           <button
             className={`${
               showPosts ? 'bg-black text-white' : 'bg-graySoft text-black'
             }  font-mainFont flex h-full w-full items-center justify-center gap-2 rounded-3xl font-bold lg:w-48 `}
             onClick={() => setShowPosts(true)}
           >
-            <img src={showPosts ? postsIconWhite : postsIconBlack} alt="" className="w-[24px]" />
+            <img src={showPosts ? postsWhiteEmpty : postsBlackEmpty} alt="" className="w-[24px]" />
             <div>Posts</div>
           </button>
           <button
@@ -769,12 +771,12 @@ const Profile = () => {
             } font-mainFont flex w-full items-center justify-center gap-1 rounded-3xl font-bold lg:w-48`}
             onClick={() => setShowPosts(false)}
           >
-            <img src={showPosts ? userIconBlack : userIconWhite} alt="" className="w-[27px]" />
+            <img src={showPosts ? aboutBlackEmpty : aboutWhiteEmpty} alt="" className="w-[27px]" />
             <div>About Me</div>
           </button>
         </div>
 
-        <div className="h-[7px] w-full bg-grayLineThick"></div>
+        <div className="h-[7px] w-full bg-graySoft"></div>
         {/*//1 Posts or About */}
         <div>{publicOrPrivateProfile()}</div>
         <div>{showPostsOrAbout()}</div>

@@ -5,11 +5,12 @@ import { useEmptyProfilePicture } from './context/EmptyProfilePictureContextProv
 import { useLoggedInUserId } from './context/LoggedInUserProfileDataContextProvider'
 import { useLoggedInUserProfilePicture } from './context/LoggedInUserProfileDataContextProvider'
 
-import feedIconUnselected from './../assets/icons/feedIcon/feedIconUnselected.svg'
-import feedIconSelected from './../assets/icons/feedIcon/feedIconSelected.svg'
-import peopleIconUnselected from './../assets/icons/peopleIcon/peopleIconUnselected.svg'
-import peopleIconSelected from './../assets/icons/peopleIcon/peopleIconSelected.svg'
-import logoIcon from './../assets/icons/logoIcon.png'
+import homeGrayEmpty from './../assets/icons/home/homeGrayEmpty.svg'
+import homePurpleFilled from './../assets/icons/home/homePurpleFilled.svg'
+import peopleGrayEmpty from './../assets/icons/people/peopleGrayEmpty.webp'
+import peoplePurpleFilled from './../assets/icons/people/peoplePurpleFilled.webp'
+import logoBlackFilled from './../assets/icons/logo/logoBlackFilled.webp'
+import logoPurpleFilled from './../assets/icons/logo/logoPurpleFilled.webp'
 
 interface Props {
   feedOpen: boolean
@@ -41,13 +42,9 @@ const Header = ({ feedOpen, setFeedOpen, peopleOpen, setPeopleOpen }: Props) => 
             navigate('/public')
           }}
         >
-          <img src={logoIcon} alt="" className="absolute left-10 hidden w-[50px] lg:block" />
-          <img src={feedOpen ? feedIconSelected : feedIconUnselected} alt="" className="w-[50px]" />
-          <div
-            className={`absolute bottom-0 h-1 w-[50px] rounded-3xl bg-purpleMain ${
-              feedOpen ? '' : 'hidden'
-            }`}
-          ></div>
+          <img src={logoPurpleFilled} alt="" className="absolute left-10 hidden w-[50px] lg:block" />
+          <img src={feedOpen ? homePurpleFilled : homeGrayEmpty} alt="" className="w-[50px]" />
+          <div className={`absolute bottom-0 h-1 w-[50px] rounded-3xl bg-purpleMain ${feedOpen ? '' : 'hidden'}`}></div>
         </div>
         <div
           className="cursor-pointer justify-self-center"
@@ -55,22 +52,14 @@ const Header = ({ feedOpen, setFeedOpen, peopleOpen, setPeopleOpen }: Props) => 
             navigate('/people')
           }}
         >
-          <img
-            src={peopleOpen ? peopleIconSelected : peopleIconUnselected}
-            alt=""
-            className="w-[50px]"
-          />
+          <img src={peopleOpen ? peoplePurpleFilled : peopleGrayEmpty} alt="" className="w-[50px]" />
           <div
-            className={`absolute bottom-0 h-1 w-[50px] rounded-3xl bg-purpleMain ${
-              peopleOpen ? '' : 'hidden'
-            }`}
+            className={`absolute bottom-0 h-1 w-[50px] rounded-3xl bg-purpleMain ${peopleOpen ? '' : 'hidden'}`}
           ></div>
         </div>
         <div className="justify-self-center">
           <img
-            src={
-              loggedInUserProfilePicture === '' ? emptyProfilePicture : loggedInUserProfilePicture
-            }
+            src={loggedInUserProfilePicture === '' ? emptyProfilePicture : loggedInUserProfilePicture}
             alt=""
             className="aspect-square max-h-[55px] cursor-pointer justify-self-center rounded-[50px] object-cover"
             onClick={() => {

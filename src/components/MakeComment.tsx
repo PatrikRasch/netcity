@@ -3,7 +3,7 @@ import React, { useState, useRef } from 'react'
 import { collection, doc, addDoc, DocumentReference } from 'firebase/firestore'
 import { useDateFunctions } from './custom-hooks/useDateFunctions'
 
-import postIcon from './../assets/icons/postIcon/post.png'
+import postBlackFilled from './../assets/icons/post/postBlackFilled.svg'
 import { useEmptyProfilePicture } from './context/EmptyProfilePictureContextProvider'
 
 interface Props {
@@ -83,17 +83,17 @@ function MakeComment({
   }
 
   return (
-    <div className="grid grid-cols-[1fr,8fr] items-center gap-4 pb-2 pl-4 pr-4 pt-2 lg:grid-cols-[50px,1fr]">
+    <div className="grid grid-cols-[50px,1fr] items-center p-4 lg:grid-cols-[50px,1fr] lg:gap-4 lg:pl-8 lg:pr-8">
       <img
         src={loggedInUserProfilePicture === '' ? emptyProfilePicture : loggedInUserProfilePicture}
         alt="logged in user"
         className="aspect-square max-w-[38px] justify-self-center rounded-[50%] object-cover"
       />
-      <div className="font-mainFont grid grid-cols-[4fr,1fr] gap-4 rounded-3xl bg-graySoft pl-1">
+      <div className="font-mainFont grid grid-cols-[20fr,60px] gap-4 rounded-3xl bg-graySoft pl-1">
         <textarea
           ref={textareaRef}
           placeholder="Write a comment"
-          className="m-2 w-full flex-grow resize-none overflow-y-auto bg-transparent outline-none"
+          className="m-2 w-full flex-grow resize-none overflow-y-auto bg-transparent placeholder-grayMediumPlus outline-none"
           maxLength={1000}
           value={postCommentInput}
           onChange={(e) => {
@@ -122,7 +122,7 @@ function MakeComment({
             resetTextarea()
           }}
         >
-          <img src={postIcon} alt="" className="max-w-[25px]" />
+          <img src={postBlackFilled} alt="" className="max-w-[25px]" />
         </button>
       </div>
     </div>

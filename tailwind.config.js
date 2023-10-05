@@ -25,7 +25,6 @@ module.exports = {
         textMedium: '#858485',
         textSoft: '#949495',
 
-        grayLineThick: '#dcdddc',
         grayLineThin: '#f5f5f5',
       },
       fontSize: {

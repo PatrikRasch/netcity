@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import Login from './Login'
 import Register from './Register'
 
-import xIcon from './../assets/icons/xIcon.svg'
+import closeGrayFilled from './../assets/icons/close/closeGrayFilled.svg'
 
 function DisplayRegister() {
   const navigate = useNavigate()
@@ -32,7 +32,7 @@ function DisplayRegister() {
                 navigate('/login')
               }}
             >
-              <img src={xIcon} alt="exit register" className="w-[50px]" />
+              <img src={closeGrayFilled} alt="exit register" className="w-[50px]" />
             </button>
             <div className="">
               <Register />

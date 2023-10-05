@@ -3,9 +3,10 @@ import { useNavigate, useParams } from 'react-router-dom'
 
 import { loadingSkeletonTheme } from './SkeletonTheme'
 
-import signoutIconWhite from '../assets/icons/signoutIcon/signoutIconWhite.png'
-import imageIcon from '../assets/icons/imageIcon/imageIcon.png'
-import editIcon from '../assets/icons/editIcon/editIcon.svg'
+import signoutWhiteEmpty from '../assets/icons/signout/signoutWhiteEmpty.webp'
+import imageBlackEmpty from '../assets/icons/image/imageBlackEmpty.webp'
+import imageGrayEmpty from '../assets/icons/image/imageGrayEmpty.webp'
+import editPurpleFilled from '../assets/icons/edit/editPurpleFilled.svg'
 
 import { db, storage } from './../config/firebase.config'
 import { updateDoc, doc, getDoc, collection } from 'firebase/firestore'
@@ -75,7 +76,7 @@ const About = ({
           saveAboutInput()
         }}
       >
-        <img src={editIcon} alt="" className="w-[15px]" />
+        <img src={editPurpleFilled} alt="" className="w-[20px]" />
         <div>{editButtonText}</div>
       </button>
     )
@@ -137,7 +138,7 @@ const About = ({
     return (
       <div>
         <div className="flex items-center gap-3 p-3 pl-6 pr-6 font-semibold">
-          <img src={imageIcon} alt="" className="w-[25px]" />
+          <img src={imageGrayEmpty} alt="" className="w-[25px]" />
           <div className="text-medium">Featured Photo</div>
           {visitingUser ? (
             ''
@@ -147,7 +148,7 @@ const About = ({
                 htmlFor="featuredPhotoInput"
                 className="flex justify-center gap-1 rounded-3xl bg-purpleSoft pl-5 pr-5 text-medium text-purpleMain hover:cursor-pointer"
               >
-                <img src={editIcon} alt="" className="w-[12px]" />
+                <img src={editPurpleFilled} alt="" className="h-[17px] w-[17px] self-center" />
                 <div>Edit</div>
               </label>
               <input
@@ -234,7 +235,7 @@ const About = ({
           } flex items-center gap-2 rounded-3xl bg-black pb-2 pl-9 pr-9 pt-2 font-semibold text-white`}
           onClick={() => userSignOut()}
         >
-          <img src={signoutIconWhite} alt="" className="w-[20px] fill-white" />
+          <img src={signoutWhiteEmpty} alt="" className="w-[20px] fill-white" />
           <div>Sign out</div>
         </button>
       </div>
@@ -244,9 +245,9 @@ const About = ({
   return (
     <div className="lg:w-[clamp(600px,60svw,1500px)] lg:bg-white">
       {aboutInformation()}
-      <div className="h-[7px] w-full bg-grayLineThick"></div>
+      <div className="h-[7px] w-full bg-graySoft"></div>
       {featuredPhotoSection()}
-      <div className="h-[7px] w-full bg-grayLineThick"></div>
+      <div className="h-[7px] w-full bg-graySoft"></div>
       {signOutButton()}
     </div>
   )

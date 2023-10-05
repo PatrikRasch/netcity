@@ -10,10 +10,10 @@ import { useLoggedInUserId } from './context/LoggedInUserProfileDataContextProvi
 
 import LoadingBar from './LoadingBar'
 
-import logoIcon from '../assets/icons/logoIcon.png'
-import mailIconPurple from '../assets/icons/mailIcon.svg'
-import lockIconPurple from '../assets/icons/lockIcon/lockIcon-purple.svg'
-import googleIcon from '../assets/icons/googleIcon.svg'
+import logoPurpleFilled from '../assets/icons/logo/logoPurpleFilled.webp'
+import mailPurpleFilled from '../assets/icons/mail/mailPurpleFilled.svg'
+import lockPurpleFilled from '../assets/icons/lock/lockPurpleFilled.webp'
+import logoGoogle from '../assets/icons/google/logoGoogle.svg'
 
 const Login = () => {
   const { loggedInUserId, setLoggedInUserId } = useLoggedInUserId()
@@ -89,7 +89,7 @@ const Login = () => {
 
       {/*// - Logo & Title */}
       <div className="grid justify-items-center self-end text-center lg:self-center">
-        <img src={logoIcon} alt="" className="w-[125px] lg:w-[clamp(100px,20svw,300px)]" />
+        <img src={logoPurpleFilled} alt="" className="w-[125px] lg:w-[clamp(100px,20svw,300px)]" />
         <div className="font-mainFont text-[35px] font-bold text-purpleMain lg:text-[clamp(40px,5svw,70px)]">
           NetCity
         </div>
@@ -113,6 +113,7 @@ const Login = () => {
                 setEmail('test@gmail.com')
                 setPassword('123123')
               }}
+              aria-label="add test user information into input fields"
             >
               Use test user
             </button>
@@ -134,7 +135,7 @@ const Login = () => {
             Use test user
           </button>
 
-          <img src={mailIconPurple} alt="" className="absolute h-[33px] pl-4" />
+          <img src={mailPurpleFilled} alt="" className="absolute h-[33px] pl-4" />
           <input
             type="email"
             className="h-[45px] w-full rounded-3xl bg-graySoft pl-16 text-[16px] text-black outline-purpleMain"
@@ -144,7 +145,7 @@ const Login = () => {
           />
         </div>
         <div className="flex w-[clamp(100px,75svw,400px)] items-center rounded-3xl bg-graySoft">
-          <img src={lockIconPurple} alt="" className="absolute h-[33px] pl-4" />
+          <img src={lockPurpleFilled} alt="" className="absolute h-[33px] pl-4" />
           <input
             type="password"
             className="h-[45px] w-full rounded-3xl bg-graySoft pl-16 text-[16px] text-black outline-purpleMain"
@@ -176,7 +177,7 @@ const Login = () => {
                 alert('This feature is coming soon')
               }}
             >
-              <img src={googleIcon} alt="" className="w-[26px]" />
+              <img src={logoGoogle} alt="" className="w-[26px]" />
               <div>Sign-In with Google</div>
             </button>
 
