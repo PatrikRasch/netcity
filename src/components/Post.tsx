@@ -5,10 +5,11 @@ import MakeComment from './MakeComment'
 import Likes from './Likes'
 import Dislikes from './Dislikes'
 
-import commentIcon from './../assets/icons/commentIcon/commentIconUnselected.svg'
-import deleteIcon from './../assets/icons/delete.png'
-import starIcon from './../assets/icons/starIcon/starIconGray.svg'
-import trianglePointerIcon from './../assets/icons/trianglePointerIcon.svg'
+import commentGrayEmpty from './../assets/icons/comment/commentGrayEmpty.svg'
+import commentWhiteFilled from './../assets/icons/comment/commentWhiteFilled.svg'
+import dotsGrayFilled from './../assets/icons/dots/dotsGrayFilled.webp'
+import starGrayFilled from './../assets/icons/star/starGrayFilled.svg'
+import triangleBlackFilled from './../assets/icons/triangle/triangleBlackFilled.svg'
 
 import { db, storage } from './../config/firebase.config'
 import {
@@ -105,6 +106,9 @@ const Post = ({
   const [viewportWidth, setViewportWidth] = useState<Number>(Number)
   const [viewportHeight, setViewportheight] = useState<Number>(Number)
 
+  const [showDropdownMenu, setShowDropdownMenu] = useState(false)
+  const dropdownMenuRef = useRef<HTMLDivElement>(null)
+
   const navigate = useNavigate()
 
   let profilePostDocRef: any // I know this is frowned upon
@@ -136,6 +140,18 @@ const Post = ({
     setPostNumOfLikes(Object.keys(postLikes).length) // Number of likes on post
     setPostNumOfDislikes(-Object.keys(postDislikes).length) // Number of dislikes on post
   }, [])
+
+  useEffect(() => {
+    const handleClickOutsideOfDropdownMenu = (e: Event) => {
+      if (dropdownMenuRef.current && !dropdownMenuRef.current.contains(e.target as Node)) {
+        setShowDropdownMenu(false)
+      }
+    }
+    if (showDropdownMenu) window.addEventListener('click', handleClickOutsideOfDropdownMenu)
+    if (!showDropdownMenu) window.removeEventListener('click', handleClickOutsideOfDropdownMenu)
+
+    return () => window.removeEventListener('click', handleClickOutsideOfDropdownMenu)
+  }, [showDropdownMenu])
 
   // - Get reference for posts from feed
   const feedPostsCollection = collection(db, 'publicPosts')
@@ -293,9 +309,16 @@ const Post = ({
   }
 
   const handleCommentButtonClicked = () => {
-    if (showMakeComment && numOfCommentsShowing === 0) {
+    if (showMakeComment && numOfCommentsShowing === 0 && postTotalNumOfComments !== 0) {
       setNumOfCommentsShowing(numOfCommentsShowing + 3)
       setShowLoadMoreCommentsButton(true)
+      return
+    }
+
+    if (showMakeComment && numOfCommentsShowing === 0) {
+      setShowMakeComment(false)
+      setNumOfCommentsShowing(0)
+
       return
     }
     if (!showMakeComment) {
@@ -311,11 +334,36 @@ const Post = ({
   const showDeletePostOrNot = () => {
     if (loggedInUserId === postUserId) {
       return (
-        <div>
-          <img src={deleteIcon} alt="" className="max-h-[18px] cursor-pointer" onClick={() => deletePostClicked()} />
+        <div ref={dropdownMenuRef} className="relative">
+          <img
+            src={dotsGrayFilled}
+            alt=""
+            className="max-h-[18px] cursor-pointer"
+            onClick={() => {
+              setShowDropdownMenu((prevShowDropdownMenu) => !prevShowDropdownMenu)
+            }}
+          />
+          <div>{dropdownMenu()}</div>
         </div>
       )
     } else return <div></div>
+  }
+
+  const dropdownMenu = () => {
+    if (showDropdownMenu) {
+      return (
+        <div className="absolute right-4 top-4 min-w-max rounded-3xl rounded-tr-none bg-graySoft hover:bg-grayMedium">
+          <button
+            className="pb-1 pl-4 pr-4 pt-1"
+            onClick={() => {
+              deletePostClicked()
+            }}
+          >
+            Delete Post
+          </button>
+        </div>
+      )
+    }
   }
 
   const deletePostClicked = async () => {
@@ -419,7 +467,7 @@ const Post = ({
         <div className="flex items-center gap-2">
           <div className="font-mainFont text-smaller text-grayMain lg:text-[clamp(12px,1.5svw,13px)]">{postDate}</div>
           <div className="text-smaller text-grayMain">•</div>
-          <img src={starIcon} alt="" className="w-[12px]" />
+          <img src={starGrayFilled} alt="" className="w-[12px]" />
         </div>
       )
     else
@@ -437,16 +485,36 @@ const Post = ({
       )
     if (!visitingUser && openProfileId !== postUserId)
       return (
-        <div className="flex gap-1">
-          {postFirstName + ' ' + postLastName} <img src={trianglePointerIcon} alt="" className="w-[12px] pt-[2px]" />{' '}
-          {loggedInUserFirstName} {loggedInUserLastName}
+        <div className="flex gap-1 ">
+          <button
+            onClick={() => {
+              navigateToUser()
+            }}
+            className="cursor-pointer"
+          >
+            {postFirstName + ' ' + postLastName}
+          </button>
+          <img src={triangleBlackFilled} alt="" className="w-[12px] pt-[2px]" />
+          <div>
+            {loggedInUserFirstName} {loggedInUserLastName}
+          </div>
         </div>
       )
     else
       return (
         <div className="flex gap-1">
-          {postFirstName + ' ' + postLastName} <img src={trianglePointerIcon} alt="" className="w-[12px] pt-[2px]" />{' '}
-          {openProfileFirstName} {openProfileLastName}
+          <button
+            onClick={() => {
+              navigateToUser()
+            }}
+            className="cursor-pointer"
+          >
+            {postFirstName + ' ' + postLastName}
+          </button>
+          <img src={triangleBlackFilled} alt="" className="w-[12px] pt-[2px]" />
+          <div>
+            {openProfileFirstName} {openProfileLastName}
+          </div>
         </div>
       )
   }
@@ -466,19 +534,14 @@ const Post = ({
                 <img
                   src={postProfilePicture === '' ? emptyProfilePicture : postProfilePicture}
                   alt="profile"
-                  className="h-[40px] w-[40px] rounded-[50%] object-cover lg:h-[55px] lg:w-[55px]"
+                  className="h-[40px] w-[40px] rounded-[50%] object-cover hover:cursor-pointer lg:h-[55px] lg:w-[55px]"
                   onClick={() => {
                     navigateToUser()
                   }}
                 />
               </div>
               <div className="flex items-center gap-[15px]">
-                <div
-                  onClick={() => {
-                    navigateToUser()
-                  }}
-                  className="font-mainFont font-bold tracking-wide lg:text-[clamp(16px,1.5svw,19px)]"
-                >
+                <div className="font-mainFont font-bold tracking-wide lg:text-[clamp(16px,1.5svw,19px)]">
                   {displayPostNames()}
                 </div>
                 {renderFriendsPostIconOrNot()}
@@ -527,12 +590,12 @@ const Post = ({
           {/* //1 Comment */}
           <div
             className={` font-mainFont grid w-full items-center justify-center rounded-3xl p-1 font-semibold tracking-wide text-grayMain lg:h-[40px] ${
-              showMakeComment && numOfCommentsShowing !== 0 ? 'bg-black' : 'bg-graySoft'
+              showMakeComment ? 'bg-black text-white' : 'bg-graySoft'
             }`}
             onClick={(e) => handleCommentButtonClicked()}
           >
             <div className="flex gap-2">
-              <img src={commentIcon} alt="" className="max-h-6" />
+              <img src={`${showMakeComment ? commentWhiteFilled : commentGrayEmpty}`} alt="" className="max-h-6" />
               <div>{postTotalNumOfComments}</div>
             </div>
           </div>
