@@ -1,32 +1,32 @@
-import React, { useState } from "react";
-import Comment from "./Comment";
+import React, { useState } from 'react'
+import Comment from './Comment'
 
-import { useLoggedInUserId } from "./context/LoggedInUserProfileDataContextProvider";
+import { useLoggedInUserId } from './context/LoggedInUserProfileDataContextProvider'
 
 interface Props {
-  comments: CommentsData[];
-  postId: string;
-  postTotalNumOfComments: number;
-  numOfCommentsShowing: number;
-  setNumOfCommentsShowing: (value: number) => void;
-  showMakeComment: boolean;
-  showLoadMoreCommentsButton: boolean;
-  setShowLoadMoreCommentsButton(value: boolean): void;
-  setShowMakeComment(value: boolean): void;
+  comments: CommentsData[]
+  postId: string
+  postTotalNumOfComments: number
+  numOfCommentsShowing: number
+  setNumOfCommentsShowing: (value: number) => void
+  showMakeComment: boolean
+  showLoadMoreCommentsButton: boolean
+  setShowLoadMoreCommentsButton(value: boolean): void
+  setShowMakeComment(value: boolean): void
 }
 
 interface CommentsData {
-  posterId: string;
-  firstName: string;
-  lastName: string;
-  text: string;
-  date: string;
-  likes: object;
-  dislikes: object;
-  userId: string;
-  comments: object;
-  id: string;
-  postId: string;
+  posterId: string
+  firstName: string
+  lastName: string
+  text: string
+  date: string
+  likes: object
+  dislikes: object
+  userId: string
+  comments: object
+  id: string
+  postId: string
 }
 
 const AllCommentsOnPost = ({
@@ -40,44 +40,44 @@ const AllCommentsOnPost = ({
   setShowLoadMoreCommentsButton,
   setShowMakeComment,
 }: Props) => {
-  const { loggedInUserId } = useLoggedInUserId();
+  const { loggedInUserId } = useLoggedInUserId()
   // if (postTotalNumOfComments > numOfCommentsShowing && numOfCommentsShowing !== 0) {
   //   setShowLoadMoreCommentsButton(true);
   // }
 
   const showMoreCommentsButton = () => {
-    if (postTotalNumOfComments === 0 || !showMakeComment || !showLoadMoreCommentsButton) return;
+    if (postTotalNumOfComments === 0 || !showMakeComment || !showLoadMoreCommentsButton) return
 
-    const commentsLeft = postTotalNumOfComments - numOfCommentsShowing;
+    const commentsLeft = postTotalNumOfComments - numOfCommentsShowing
     if (postTotalNumOfComments > numOfCommentsShowing) {
       return (
         <button
-          className="text-grayMedium font-mainFont font-semibold"
+          className="font-mainFont font-semibold text-grayMedium"
           onClick={() => {
-            setNumOfCommentsShowing(numOfCommentsShowing + 5);
+            setNumOfCommentsShowing(numOfCommentsShowing + 5)
           }}
         >
           Load more comments ({commentsLeft})
         </button>
-      );
+      )
     }
     if (postTotalNumOfComments <= numOfCommentsShowing) {
       return (
         <button
-          className="text-grayMedium font-mainFont font-semibold"
+          className="font-mainFont font-semibold text-grayMedium"
           onClick={() => {
-            setNumOfCommentsShowing(0);
-            setShowMakeComment(false);
+            setNumOfCommentsShowing(0)
+            setShowMakeComment(false)
           }}
         >
           Hide all comments
         </button>
-      );
+      )
     }
-  };
+  }
 
   const populateCommentsOnPage = () => {
-    const commentsToRender = comments.filter((_, index) => index < numOfCommentsShowing);
+    const commentsToRender = comments.filter((_, index) => index < numOfCommentsShowing)
     return (
       <div>
         {commentsToRender.map((comment, index) => {
@@ -97,19 +97,19 @@ const AllCommentsOnPost = ({
                 commentIndex={index}
               />
             </div>
-          );
+          )
         })}
-        <div className="grid pt-2 pl-4 pr-4">
-          <div className="grid grid-cols-[1fr,8fr] gap-4 items-center">
+        <div className={`grid ${postTotalNumOfComments === 0 ? '' : 'pb-1'}`}>
+          <div className="grid grid-cols-[50px,1fr] items-center gap-4">
             <div></div>
             <div>{showMoreCommentsButton()}</div>
           </div>
         </div>
       </div>
-    );
-  };
+    )
+  }
 
-  return <div>{populateCommentsOnPage()}</div>;
-};
+  return <div>{populateCommentsOnPage()}</div>
+}
 
-export default AllCommentsOnPost;
+export default AllCommentsOnPost

@@ -315,7 +315,7 @@ const People = () => {
   return (
     <div className="items-start lg:grid lg:justify-center lg:bg-graySoft">
       <div className="min-h-[calc(100svh-80px)] bg-white">
-        <div className="items-start bg-white lg:grid lg:w-[clamp(600px,60svw,1500px)]">
+        <div className="items-start bg-white lg:grid lg:w-[clamp(600px,55svw,1500px)]">
           <div className="grid grid-cols-4 gap-2 bg-white p-4 lg:gap-5">
             <button
               className={`rounded-2xl pb-[4px] pl-[3px] pr-[3px] pt-[4px] text-[12.5px] font-semibold lg:rounded-3xl lg:p-2 lg:text-medium 
@@ -371,7 +371,7 @@ const People = () => {
           <div className="h-[7px] w-full bg-graySoft"></div>
           <div className="font-mainFont pb-1 pl-4 pt-2 text-medium font-semibold">{pageTitle()}</div>
           <div className="h-[2px] w-full bg-grayLineThin"></div>
-          <div className="lg grid justify-evenly justify-items-center lg:grid lg:grid-cols-[repeat(auto-fit,390px)] lg:pl-2 lg:pr-2">
+          <div className="lg grid justify-evenly justify-items-center lg:grid lg:grid-cols-[repeat(auto-fit,370px)] lg:pl-4 lg:pr-4">
             {populateUsersOnPage()}
           </div>
           {categoryMessage()}

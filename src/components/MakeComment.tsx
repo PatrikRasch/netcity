@@ -83,7 +83,7 @@ function MakeComment({
   }
 
   return (
-    <div className="grid grid-cols-[50px,1fr] items-center p-4 lg:grid-cols-[50px,1fr] lg:gap-4 lg:pl-8 lg:pr-8">
+    <div className="grid grid-cols-[50px,1fr] items-center pb-3 pt-3 lg:grid-cols-[50px,1fr] lg:gap-4">
       <img
         src={loggedInUserProfilePicture === '' ? emptyProfilePicture : loggedInUserProfilePicture}
         alt="logged in user"

@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Likes from './Likes'
 import Dislikes from './Dislikes'
+import DeletePost from './DeletePost'
 import { useParams } from 'react-router-dom'
-
-import dotsGrayFilled from './../assets/icons/dots/dotsGrayFilled.webp'
 
 import { db } from './../config/firebase.config'
 import { collection, doc, getDoc, deleteDoc, updateDoc } from 'firebase/firestore'
@@ -51,6 +50,7 @@ const Comment = ({
   const [commentNumOfDislikes, setCommentNumOfDislikes] = useState(0)
   const [profilePicture, setProfilePicture] = useState('')
   const { commentData, setCommentData } = useCommentData()
+  const [showDropdownMenu, setShowDropdownMenu] = useState(false)
 
   const navigate = useNavigate()
 
@@ -129,20 +129,20 @@ const Comment = ({
     getCommentProfilePicture(commentById)
   }, [])
 
-  const showDeleteCommentOrNot = () => {
-    if (loggedInUserId === commentById) {
-      return (
-        <div>
-          <img
-            src={dotsGrayFilled}
-            alt=""
-            className="max-h-[18px] cursor-pointer"
-            onClick={() => deletePostClicked()}
-          />
-        </div>
-      )
-    } else return <div></div>
-  }
+  // const showDeleteCommentOrNot = () => {
+  //   if (loggedInUserId === commentById) {
+  //     return (
+  //       <div>
+  //         <img
+  //           src={dotsGrayFilled}
+  //           alt=""
+  //           className="max-h-[18px] cursor-pointer"
+  //           onClick={() => deletePostClicked()}
+  //         />
+  //       </div>
+  //     )
+  //   } else return <div></div>
+  // }
 
   const deletePostClicked = async () => {
     try {
@@ -154,7 +154,7 @@ const Comment = ({
 
   return (
     <div className="grid pt-2">
-      <div className="grid grid-cols-[50px,1fr] items-center gap-4 pl-4 pr-4 lg:grid-cols-[50px,1fr] lg:pl-8 lg:pr-8">
+      <div className="grid grid-cols-[50px,1fr] items-center gap-4 lg:grid-cols-[50px,1fr]">
         <img
           src={profilePicture === '' ? emptyProfilePicture : profilePicture}
           alt="User who made comment"
@@ -168,7 +168,7 @@ const Comment = ({
             <div className="grid grid-cols-[20fr,30px]">
               <div className="flex flex-col">
                 <div
-                  className="cursor-pointer text-[14px] font-bold"
+                  className="max-w-min cursor-pointer whitespace-nowrap text-[14px] font-bold"
                   onClick={() => {
                     navigateToUser()
                   }}
@@ -178,7 +178,13 @@ const Comment = ({
                 <div className="text-[11px] text-grayMain">{commentDate}</div>
                 <div className="gap-4 hyphens-auto">{commentText}</div>
               </div>
-              <div>{showDeleteCommentOrNot()}</div>
+              <DeletePost
+                postUserId={commentById}
+                showDropdownMenu={showDropdownMenu}
+                setShowDropdownMenu={setShowDropdownMenu}
+                deletePostClicked={deletePostClicked}
+                isPost={false}
+              />
             </div>
           </div>
           <div className="mb-1 mt-1 grid h-max grid-cols-[50px,50px] items-start justify-items-start">

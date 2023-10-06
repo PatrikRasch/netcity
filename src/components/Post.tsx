@@ -4,10 +4,10 @@ import AllCommentsOnPost from './AllCommentsOnPost'
 import MakeComment from './MakeComment'
 import Likes from './Likes'
 import Dislikes from './Dislikes'
+import DeletePost from './DeletePost'
 
 import commentGrayEmpty from './../assets/icons/comment/commentGrayEmpty.svg'
 import commentWhiteFilled from './../assets/icons/comment/commentWhiteFilled.svg'
-import dotsGrayFilled from './../assets/icons/dots/dotsGrayFilled.webp'
 import starGrayFilled from './../assets/icons/star/starGrayFilled.svg'
 import triangleBlackFilled from './../assets/icons/triangle/triangleBlackFilled.svg'
 
@@ -107,7 +107,6 @@ const Post = ({
   const [viewportHeight, setViewportheight] = useState<Number>(Number)
 
   const [showDropdownMenu, setShowDropdownMenu] = useState(false)
-  const dropdownMenuRef = useRef<HTMLDivElement>(null)
 
   const navigate = useNavigate()
 
@@ -140,18 +139,6 @@ const Post = ({
     setPostNumOfLikes(Object.keys(postLikes).length) // Number of likes on post
     setPostNumOfDislikes(-Object.keys(postDislikes).length) // Number of dislikes on post
   }, [])
-
-  useEffect(() => {
-    const handleClickOutsideOfDropdownMenu = (e: Event) => {
-      if (dropdownMenuRef.current && !dropdownMenuRef.current.contains(e.target as Node)) {
-        setShowDropdownMenu(false)
-      }
-    }
-    if (showDropdownMenu) window.addEventListener('click', handleClickOutsideOfDropdownMenu)
-    if (!showDropdownMenu) window.removeEventListener('click', handleClickOutsideOfDropdownMenu)
-
-    return () => window.removeEventListener('click', handleClickOutsideOfDropdownMenu)
-  }, [showDropdownMenu])
 
   // - Get reference for posts from feed
   const feedPostsCollection = collection(db, 'publicPosts')
@@ -331,50 +318,6 @@ const Post = ({
     }
   }
 
-  const showDeletePostOrNot = () => {
-    if (loggedInUserId === postUserId) {
-      return (
-        <div ref={dropdownMenuRef} className="relative max-w-max">
-          <img
-            src={dotsGrayFilled}
-            alt=""
-            className="max-h-[18px] cursor-pointer"
-            onClick={() => {
-              setShowDropdownMenu((prevShowDropdownMenu) => !prevShowDropdownMenu)
-            }}
-          />
-          <div>{dropdownMenu()}</div>
-        </div>
-      )
-    } else return <div></div>
-  }
-
-  const dropdownMenu = () => {
-    if (showDropdownMenu) {
-      return (
-        <div className="absolute right-0 top-4 grid min-w-max grid-rows-[1fr,1.5px,1fr] rounded-2xl rounded-tr-none bg-graySoft">
-          <button
-            className="rounded-tl-2xl pb-1 pl-4 pr-4 pt-1 hover:bg-grayMedium"
-            onClick={() => {
-              deletePostClicked()
-            }}
-          >
-            Delete Post
-          </button>
-          <div className="h-[1.5px] w-full bg-grayMedium"></div>
-          <button
-            className="rounded-2xl rounded-tl-none rounded-tr-none pb-1 pl-4 pr-4 pt-1 hover:bg-grayMedium"
-            onClick={() => {
-              setShowDropdownMenu(false)
-            }}
-          >
-            Close
-          </button>
-        </div>
-      )
-    }
-  }
-
   const deletePostClicked = async () => {
     try {
       await deleteDoc(postDocRef)
@@ -528,17 +471,12 @@ const Post = ({
       )
   }
 
-  // <section className="grid grid-cols-[80px,1fr,80px] items-center justify-items-center gap-2 bg-white pb-3">
-  //         <div></div>
-  //         <div className="flex w-full items-center justify-around gap-6 lg:justify-between lg:pl-4 lg:pr-4">
-  //           <button
-
   return (
     <>
-      <div className="min-h-[150px] w-full bg-white shadow-xl">
-        <div className="min-h-[120px] gap-2 p-4 lg:pl-8 lg:pr-8">
+      <div className="min-h-[100px] w-full bg-white pl-4 pr-4 lg:pl-8 lg:pr-8">
+        <div className="gap-2 pt-3">
           <div className="grid grid-cols-[20fr,1fr] items-center">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <div className="min-w-[40px]">
                 <img
                   src={postProfilePicture === '' ? emptyProfilePicture : postProfilePicture}
@@ -556,15 +494,23 @@ const Post = ({
                 {renderFriendsPostIconOrNot()}
               </div>
             </div>
-            {showDeletePostOrNot()}
+            <DeletePost
+              postUserId={postUserId}
+              showDropdownMenu={showDropdownMenu}
+              setShowDropdownMenu={setShowDropdownMenu}
+              deletePostClicked={deletePostClicked}
+              isPost={true}
+            />
           </div>
-          <div className="grid gap-2">
-            <div className="pt-2">{displayFullPostOrNot()}</div>
-            <div>{displayPostImageOrNot()}</div>
+          <div className="grid gap-2 pb-3 pt-3">
+            <div className="">{displayFullPostOrNot()}</div>
+            <div className={`${postImage ? '' : 'hidden'}`}>{displayPostImageOrNot()}</div>
           </div>
         </div>
-        <div className="h-[1.5px] w-full bg-grayLineThin"></div>
-        <div className="mb-2 ml-2 mr-2 mt-2 grid h-[33px] grid-cols-[1fr,1fr,1fr] items-center justify-items-center gap-5 lg:h-[50px] lg:pl-8 lg:pr-8">
+      </div>
+      <div className="h-[1.5px] w-full bg-graySoft"></div>
+      <div className="grid min-h-[50px] w-full items-center bg-white pb-2 pl-4 pr-4 pt-2 lg:pl-8 lg:pr-8">
+        <div className="grid h-[33px] grid-cols-[1fr,1fr,1fr] items-center justify-items-center gap-5 lg:min-h-[40px]">
           {/*//1 Like/Dislike */}
           {
             <Likes
@@ -598,10 +544,10 @@ const Post = ({
           />
           {/* //1 Comment */}
           <div
-            className={` font-mainFont grid w-full cursor-pointer items-center justify-center rounded-3xl p-1 font-semibold tracking-wide text-grayMain lg:h-[40px] ${
+            className={`font-mainFont grid w-full cursor-pointer items-center justify-center rounded-3xl p-1 font-semibold tracking-wide text-grayMain lg:h-[35px] ${
               showMakeComment ? 'bg-black text-white' : 'bg-graySoft'
             }`}
-            onClick={(e) => handleCommentButtonClicked()}
+            onClick={() => handleCommentButtonClicked()}
           >
             <div className="flex gap-2">
               <img src={`${showMakeComment ? commentWhiteFilled : commentGrayEmpty}`} alt="" className="max-h-6" />
@@ -609,11 +555,14 @@ const Post = ({
             </div>
           </div>
         </div>
-        <div className="h-[1.5px] w-full bg-grayLineThin"></div>
+      </div>
+      <div className="h-[1.5px] w-full bg-graySoft"></div>
+
+      <div className="w-full bg-white pl-4 pr-4 lg:pl-8 lg:pr-8">
         {/* // - Add comment  */}
         {displayMakeCommentOrNot()}
         {/* // - Posted comments */}
-        {renderAllCommentsOnPost()}
+        {numOfCommentsShowing === 0 ? '' : renderAllCommentsOnPost()}
       </div>
     </>
   )

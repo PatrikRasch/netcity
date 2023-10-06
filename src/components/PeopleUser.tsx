@@ -421,7 +421,7 @@ function PeopleUser({
         onLoad={() => {
           setComponentLoading(false)
         }}
-        className={`aspect-square min-h-[100px] w-[100px] cursor-pointer rounded-[50%] object-cover ${
+        className={`aspect-square min-h-[90px] w-[90px] cursor-pointer rounded-[50%] object-cover ${
           componentLoading ? 'hidden' : ''
         }`}
         onClick={() => {

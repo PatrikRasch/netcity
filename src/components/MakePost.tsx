@@ -200,9 +200,9 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
       {/* Post section */}
       <section className="grid grid-cols-[80px,1fr,80px] items-center justify-items-center gap-2 bg-white pb-3">
         <div></div>
-        <div className="flex w-full items-center justify-around gap-6 text-[clamp(16px,1.5svw,20px)] lg:justify-between lg:pl-4 lg:pr-4">
+        <div className="flex w-full items-center justify-around gap-6 text-[clamp(16px,1svw,20px)] lg:justify-between lg:pl-4 lg:pr-4">
           <button
-            className="font-mainFont h-[30px] w-[70%] rounded-3xl bg-purpleMain font-bold text-white lg:h-[40px] lg:w-[clamp(30%,20vw,300px)]"
+            className="font-mainFont h-[30px] w-[70%] rounded-3xl bg-purpleMain font-bold text-white lg:h-[38px] lg:w-[clamp(30%,20vw,300px)]"
             onClick={(e) => {
               if (postInput.length === 0 && imageAddedToPost === '')
                 return console.log('add text or image before posting')
@@ -229,7 +229,7 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
           >
             Post
           </button>
-          <button className="grid h-[30px] w-[70%] cursor-default grid-cols-[20px,85px] items-center justify-center gap-1 rounded-3xl bg-graySoft pl-2 pr-2 text-textMain lg:flex lg:h-[40px] lg:w-[clamp(30%,15vw,280px)] lg:grid-cols-[20px,65px] lg:gap-2">
+          <button className="grid h-[30px] w-[70%] cursor-default grid-cols-[20px,85px] items-center justify-center gap-1 rounded-3xl bg-graySoft pl-2 pr-2 text-textMain lg:flex lg:h-[38px] lg:w-[clamp(30%,15vw,280px)] lg:grid-cols-[20px,65px] lg:gap-2">
             <img src={userGrayFilled} alt="" className="w-[20px] lg:w-[30px]" />
             <div className="font-mainFont w-full whitespace-nowrap text-center font-semibold lg:w-min">
               Profile Post

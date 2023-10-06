@@ -70,7 +70,7 @@ const About = ({
     if (visitingUser) return
     return (
       <button
-        className="font-mainFont flex w-[90svw] items-center justify-center gap-1 rounded-3xl bg-purpleSoft p-1 text-center text-medium font-semibold text-purpleMain lg:w-[clamp(400px,55svw,1400px)]"
+        className="font-mainFont flex w-[90svw] items-center justify-center gap-1 rounded-3xl bg-purpleSoft p-1 text-center text-medium font-semibold text-purpleMain lg:w-[clamp(400px,50svw,1400px)]"
         onClick={() => {
           setEditMode(!editMode)
           saveAboutInput()
@@ -96,14 +96,14 @@ const About = ({
   const aboutInformation = () => {
     if (!editMode) {
       return (
-        <div className="grid justify-center justify-items-center gap-3 p-3 lg:w-[clamp(600px,60svw,1500px)]">
+        <div className="grid justify-center justify-items-center gap-3 p-3 lg:w-[clamp(600px,55svw,1500px)]">
           <div
             className="font-mainFont w-[90svw] rounded-3xl bg-purpleMain p-1 text-center text-large font-semibold text-white 
-          lg:w-[clamp(400px,55svw,1400px)]"
+          lg:w-[clamp(400px,50svw,1400px)]"
           >
             Bio
           </div>
-          <div className="min-h-min w-[90svw] resize-none break-words rounded-3xl bg-graySoft p-4 text-center text-grayMain lg:w-[clamp(400px,55svw,1400px)]">
+          <div className="min-h-min w-[90svw] resize-none break-words rounded-3xl bg-graySoft p-4 text-center text-grayMain lg:w-[clamp(400px,50svw,1400px)]">
             {bioText}
           </div>
           {showEditButton()}
@@ -112,7 +112,7 @@ const About = ({
     }
     if (editMode)
       return (
-        <div className="grid justify-center justify-items-center gap-3 p-3 lg:w-[clamp(600px,60svw,1500px)]">
+        <div className="grid justify-center justify-items-center gap-3 p-3 lg:w-[clamp(600px,55svw,1500px)]">
           <div className="font-mainFont w-[90svw] rounded-3xl bg-purpleMain p-1 text-center text-large font-semibold text-white lg:w-[clamp(400px,55svw,1400px)]">
             Bio
           </div>
@@ -243,7 +243,7 @@ const About = ({
   }
 
   return (
-    <div className="lg:w-[clamp(600px,60svw,1500px)] lg:bg-white">
+    <div className="lg:w-[clamp(600px,55svw,1500px)] lg:bg-white">
       {aboutInformation()}
       <div className="h-[7px] w-full bg-graySoft"></div>
       {featuredPhotoSection()}

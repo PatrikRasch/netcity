@@ -76,7 +76,7 @@ const AllPosts = ({
               visitingUser={visitingUser}
             />
           </div>
-          <div className="h-[15px] w-full bg-gray-100"></div>
+          <div className="h-[15px] w-full bg-graySoft"></div>
         </div>
       ))
     if (context === 'feed' && showGlobalPosts && globalPosts) {

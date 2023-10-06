@@ -35,7 +35,7 @@ const Header = ({ feedOpen, setFeedOpen, peopleOpen, setPeopleOpen }: Props) => 
 
   return (
     <div className="lg:w-100svw bg-white lg:grid lg:justify-items-center">
-      <div className="grid h-[80px] grid-cols-3 items-center bg-white text-center text-3xl lg:w-[clamp(500px,70svw,1700px)]">
+      <div className="grid h-[80px] grid-cols-3 items-center bg-white text-center text-3xl lg:w-[clamp(500px,60svw,1700px)]">
         <div
           className="cursor-pointer justify-self-center"
           onClick={() => {

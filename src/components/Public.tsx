@@ -240,7 +240,7 @@ function Public() {
   return (
     <div className="lg:w-100svw bg-graySoft lg:grid lg:justify-center">
       {/* Choose posts to see */}
-      <div className="lg:w-[clamp(500px,60svw,1500px)]">
+      <div className="lg:w-[clamp(500px,55svw,1500px)]">
         <div className="hidden bg-white p-2 pl-4 font-bold lg:block lg:text-[clamp(16px,1.5svw,20px)]">Home Feed</div>
         <div className="hidden h-[1.5px] w-full bg-grayLineThin lg:block"></div>
         <section className="grid max-w-[100svw] grid-cols-2 gap-2 whitespace-nowrap bg-white p-4 lg:flex lg:justify-center lg:gap-40">

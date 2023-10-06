@@ -252,7 +252,7 @@ const Profile = () => {
         <img
           src={loggedInUserProfilePicture === '' ? emptyProfilePicture : loggedInUserProfilePicture}
           alt="profile"
-          className="aspect-square h-[150px] w-[150px] rounded-[50%] border-4 border-white object-cover"
+          className="aspect-square h-[160px] w-[160px] rounded-[50%] border-4 border-white object-cover"
         />
       )
     }
@@ -261,7 +261,7 @@ const Profile = () => {
         <img
           src={otherProfilePicture === '' ? emptyProfilePicture : otherProfilePicture}
           alt="profile"
-          className="z-10 aspect-square h-[150px] w-[150px] rounded-[50%] border-4 border-white object-cover"
+          className="z-10 aspect-square h-[160px] w-[160px] rounded-[50%] border-4 border-white object-cover"
         />
       )
     }
@@ -291,7 +291,7 @@ const Profile = () => {
     if (openProfileId !== loggedInUserId) return
     return (
       <button
-        className={`absolute bottom-[60px] left-[16px] z-10 grid h-[40px] w-[90px] grid-cols-[2fr,4fr] items-center gap-1 rounded-3xl pl-2 pr-2 text-start text-verySmall text-white ${
+        className={`absolute bottom-[60px] left-[20px] z-10 grid h-[35px] w-[125px] grid-cols-[1fr,3fr] items-center gap-1 rounded-3xl pl-2 pr-2 text-start text-verySmall text-white ${
           openProfile ? 'bg-purpleMain' : 'bg-redMain'
         } `}
         onClick={() => {
@@ -299,7 +299,7 @@ const Profile = () => {
         }}
       >
         <img src={`${openProfile ? globalWhiteEmpty : lockWhiteFilled}`} alt="" className="w-[25px]" />
-        <div>{openProfile ? 'Open Profile' : 'Private Profile'}</div>
+        <div>{openProfile ? 'Public Profile' : 'Private Profile'}</div>
       </button>
     )
   }
@@ -718,9 +718,9 @@ const Profile = () => {
   return (
     <div className="grid min-h-[calc(100svh-80px)] w-screen items-start justify-center bg-graySoft">
       {/*//1 Profile picture and name */}
-      <div className="w-[100svw] bg-white lg:grid lg:w-[clamp(600px,60svw,1500px)]">
+      <div className="w-[100svw] bg-white lg:grid lg:w-[clamp(600px,55svw,1500px)]">
         <div className="flex justify-center">
-          <div className="absolute top-[0%] z-0 h-[200px] w-[93svw] rounded-3xl bg-purpleSoft lg:w-[clamp(200px,53svw,1300px)]">
+          <div className="absolute top-[0%] z-0 h-[200px] w-[93svw] rounded-3xl bg-purpleSoft lg:w-[clamp(200px,46svw,1300px)]">
             {/* // - Open/Private profile button */}
             {openProfileButton()}
           </div>
@@ -751,15 +751,14 @@ const Profile = () => {
 
         {/* // - Friend status */}
         {showFriendStatusWithUser()}
-
         <div className="h-[1.5px] w-full bg-grayLineThin"></div>
 
         {/*// - Posts/About selection */}
-        <div className="grid h-[65px] grid-cols-2 gap-4 rounded-lg p-3 pl-4 pr-4 text-[clamp(16px,1.5svw,20px)] lg:flex lg:justify-center lg:gap-[clamp(10px,5svw,150px)]">
+        <div className="grid h-[65px] grid-cols-2 gap-4 rounded-lg p-3 pl-4 pr-4 text-[clamp(16px,1svw,20px)] lg:flex lg:justify-center lg:gap-[clamp(10px,5svw,150px)]">
           <button
             className={`${
               showPosts ? 'bg-black text-white' : 'bg-graySoft text-black'
-            }  font-mainFont flex h-full w-full items-center justify-center gap-2 rounded-3xl font-bold lg:w-48 `}
+            }  font-mainFont flex h-[38px] w-full items-center justify-center gap-2 rounded-3xl font-bold lg:w-48 `}
             onClick={() => setShowPosts(true)}
           >
             <img src={showPosts ? postsWhiteEmpty : postsBlackEmpty} alt="" className="w-[24px]" />
@@ -768,7 +767,7 @@ const Profile = () => {
           <button
             className={`${
               !showPosts ? 'bg-black text-white' : 'bg-graySoft text-black'
-            } font-mainFont flex w-full items-center justify-center gap-1 rounded-3xl font-bold lg:w-48`}
+            } font-mainFont flex h-[38px] w-full items-center justify-center gap-1 rounded-3xl font-bold lg:w-48`}
             onClick={() => setShowPosts(false)}
           >
             <img src={showPosts ? aboutBlackEmpty : aboutWhiteEmpty} alt="" className="w-[27px]" />
