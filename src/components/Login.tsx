@@ -11,6 +11,7 @@ import { useLoggedInUserId } from './context/LoggedInUserProfileDataContextProvi
 import LoadingBar from './LoadingBar'
 
 import logoPurpleFilled from '../assets/icons/logo/logoPurpleFilled.webp'
+import logoBlackFilled from '../assets/icons/logo/logoBlackFilled.webp'
 import mailPurpleFilled from '../assets/icons/mail/mailPurpleFilled.svg'
 import lockPurpleFilled from '../assets/icons/lock/lockPurpleFilled.webp'
 import logoGoogle from '../assets/icons/google/logoGoogle.svg'
@@ -79,7 +80,7 @@ const Login = () => {
   }
 
   return (
-    <div className="grid h-[100vh] grid-rows-[9fr,11fr] justify-items-center gap-4 lg:flex lg:items-center lg:justify-evenly lg:p-10">
+    <div className="grid h-[100vh] grid-rows-[9fr,11fr] justify-items-center gap-4 bg-purpleSoft lg:flex lg:items-center lg:justify-evenly lg:p-10">
       <div className={`${showLoadingBar ? 'opacity-100' : 'opacity-0'} pointer-events-none transition`}>
         <div className="absolute inset-0 z-20 flex items-center justify-center">
           <LoadingBar />
@@ -89,10 +90,8 @@ const Login = () => {
 
       {/*// - Logo & Title */}
       <div className="grid justify-items-center self-end text-center lg:self-center">
-        <img src={logoPurpleFilled} alt="" className="w-[125px] lg:w-[clamp(100px,20svw,300px)]" />
-        <div className="font-mainFont text-[35px] font-bold text-purpleMain lg:text-[clamp(40px,5svw,70px)]">
-          NetCity
-        </div>
+        <img src={logoBlackFilled} alt="" className="w-[125px] lg:w-[clamp(100px,20svw,300px)]" />
+        <div className="font-mainFont text-[35px] font-bold text-black lg:text-[clamp(40px,5svw,70px)]">NetCity</div>
         {/* // - Patrik Rasch info */}
         {projectInformation()}
       </div>
@@ -118,7 +117,7 @@ const Login = () => {
               Use test user
             </button>
           </div>
-          <div className=" h-[2px] w-full bg-grayLineThin"></div>
+          <div className=" h-[1px] w-full bg-black"></div>
         </div>
         <div className="relative flex w-[clamp(100px,75svw,400px)] items-center rounded-3xl bg-graySoft">
           <button
@@ -138,7 +137,7 @@ const Login = () => {
           <img src={mailPurpleFilled} alt="" className="absolute h-[33px] pl-4" />
           <input
             type="email"
-            className="h-[45px] w-full rounded-3xl bg-graySoft pl-16 text-[16px] text-black outline-purpleMain"
+            className="h-[45px] w-full rounded-3xl bg-white pl-16 text-[16px] text-black outline-purpleMain"
             placeholder="Email"
             onChange={(e) => setEmail(e.target.value)}
             value={email}
@@ -148,7 +147,7 @@ const Login = () => {
           <img src={lockPurpleFilled} alt="" className="absolute h-[33px] pl-4" />
           <input
             type="password"
-            className="h-[45px] w-full rounded-3xl bg-graySoft pl-16 text-[16px] text-black outline-purpleMain"
+            className="h-[45px] w-full rounded-3xl bg-white pl-16 text-[16px] text-black outline-purpleMain"
             placeholder="Password"
             onChange={(e) => setPassword(e.target.value)}
             value={password}
@@ -172,7 +171,7 @@ const Login = () => {
 
           <div className="grid justify-center gap-2 lg:gap-6">
             <button
-              className="flex h-[45px] w-[clamp(100px,65svw,350px)] items-center justify-center gap-2 rounded-3xl bg-graySoft p-3 text-[14px] text-black outline-purpleMain"
+              className="flex h-[45px] w-[clamp(100px,65svw,350px)] items-center justify-center gap-2 rounded-3xl bg-white p-3 text-[14px] text-black outline-purpleMain"
               onClick={() => {
                 alert('This feature is coming soon')
               }}

@@ -139,7 +139,7 @@ const Register = () => {
   }
 
   return (
-    <div>
+    <div className="bg-purpleSoft">
       <div className={`${accountCreated ? 'opacity-100' : 'opacity-0'} pointer-events-none transition`}>
         {accountCreatedJSX()}
       </div>
@@ -154,8 +154,8 @@ const Register = () => {
       <div className="grid h-[100svh] justify-center pb-20 pt-14 lg:h-[100%] lg:pb-0 lg:pt-0">
         {/* // - Header */}
         <div className="flex flex-col justify-center text-center">
-          <div className="text-2xl text-purpleMain opacity-60">Become a citizen of</div>
-          <div className="text-6xl font-bold  text-purpleMain">NetCity</div>
+          {/* <div className="text-2xl text-purpleMain opacity-60">Become a citizen of</div> */}
+          <div className="text-6xl font-bold  text-black">Register</div>
         </div>
         {/*// - Account Details */}
         <section className="grid justify-center gap-3 pt-6">
@@ -167,7 +167,7 @@ const Register = () => {
           <div className="grid gap-4 lg:grid-cols-[1fr,1fr]">
             <input
               type="text"
-              className="h-[40px] w-[clamp(100px,75svw,400px)] rounded-3xl bg-graySoft p-2 pl-6 text-[16px] text-black outline-purpleMain lg:w-[100%]"
+              className="h-[40px] w-[clamp(100px,75svw,400px)] rounded-3xl bg-white p-2 pl-6 text-[16px] text-black outline-purpleMain lg:w-[100%]"
               placeholder="First name"
               onChange={(e) => {
                 setFirstName(e.target.value)
@@ -175,7 +175,7 @@ const Register = () => {
             />
             <input
               type="text"
-              className="h-[40px] w-[clamp(100px,75svw,400px)] rounded-3xl bg-graySoft p-2 pl-6 text-[16px] text-black outline-purpleMain lg:w-[100%]"
+              className="h-[40px] w-[clamp(100px,75svw,400px)] rounded-3xl bg-white p-2 pl-6 text-[16px] text-black outline-purpleMain lg:w-[100%]"
               placeholder="Surname"
               onChange={(e) => {
                 setLastName(e.target.value)
@@ -191,32 +191,32 @@ const Register = () => {
           </div>
           {/*//1 Email and password section */}
           <div className="grid gap-4 text-xl lg:justify-items-center">
-            <div className="flex w-[clamp(100px,75svw,400px)] items-center rounded-3xl bg-graySoft">
+            <div className="flex w-[clamp(100px,75svw,400px)] items-center rounded-3xl bg-white">
               <img src={mailPurpleFilled} alt="" className="absolute h-[33px] pl-4" />
               <input
                 type="email"
-                className="h-[40px] w-full rounded-3xl bg-graySoft p-2 pl-16 text-[16px] text-black outline-purpleMain"
+                className="h-[40px] w-full rounded-3xl bg-white p-2 pl-16 text-[16px] text-black outline-purpleMain"
                 placeholder="Email"
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
-            <div className="flex w-[clamp(100px,75svw,400px)] items-center rounded-3xl bg-graySoft">
+            <div className="flex w-[clamp(100px,75svw,400px)] items-center rounded-3xl bg-white">
               <img src={lockPurpleFilled} alt="" className="absolute h-[33px] pl-4" />
               <input
                 type="password"
-                className="h-[40px] w-full rounded-3xl bg-graySoft p-2 pl-16 text-[16px] text-black outline-purpleMain"
+                className="h-[40px] w-full rounded-3xl bg-white p-2 pl-16 text-[16px] text-black outline-purpleMain"
                 placeholder="Password"
                 onChange={(e) => {
                   setPassword(e.target.value)
                 }}
               />
             </div>
-            <div className="flex w-[clamp(100px,75svw,400px)] items-center rounded-3xl bg-graySoft">
+            <div className="flex w-[clamp(100px,75svw,400px)] items-center rounded-3xl bg-white">
               <img src={lockPurpleFilled} alt="" className="absolute h-[33px] pl-4" />
               <input
                 type="password"
-                className="h-[45px] w-full rounded-3xl bg-graySoft p-2 pl-16 text-[16px] text-black outline-purpleMain"
+                className="h-[45px] w-full rounded-3xl bg-white p-2 pl-16 text-[16px] text-black outline-purpleMain"
                 placeholder="Confirm Password"
                 onChange={(e) => {
                   setConfirmPassword(e.target.value)
@@ -243,7 +243,7 @@ const Register = () => {
         {/*// - Sign up with Google button */}
         <div className="flex flex-col items-center pt-4 text-xl">
           <button
-            className="flex h-[45px] w-[clamp(100px,65svw,300px)] items-center justify-center gap-2 rounded-3xl bg-graySoft p-3 text-[14px] text-black outline-purpleMain"
+            className="flex h-[45px] w-[clamp(100px,65svw,300px)] items-center justify-center gap-2 rounded-3xl bg-white p-3 text-[14px] text-black outline-purpleMain"
             onClick={() => {
               // onClick={registerAccountWithGoogle}
               alert('This feature is coming soon')

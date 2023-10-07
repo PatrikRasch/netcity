@@ -22,10 +22,10 @@ function DisplayRegister() {
 
   return (
     <div onKeyDown={handleKeyDown} tabIndex={-1} ref={mainDivRef}>
-      <div>
+      <div className="bg-purpleSoft">
         <div className="hidden lg:flex lg:items-center lg:justify-center">
           {/* //6 animate in "register" if clicked on desktop */}
-          <div className="absolute z-20 h-[clamp(300px,90svh,750px)] w-[600px] items-center overflow-scroll rounded-3xl bg-white lg:grid">
+          <div className="absolute z-20 h-[clamp(300px,90svh,750px)] w-[600px] items-center overflow-scroll rounded-3xl bg-purpleSoft lg:grid">
             <button
               className="absolute right-0 top-0 cursor-pointer p-6"
               onClick={() => {
