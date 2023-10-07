@@ -292,14 +292,14 @@ const Profile = () => {
     if (openProfileId !== loggedInUserId) return
     return (
       <button
-        className={`absolute bottom-[60px] left-[20px] z-10 grid h-[35px] w-[125px] grid-cols-[1fr,3fr] items-center gap-1 rounded-3xl pl-2 pr-2 text-start text-verySmall text-white ${
+        className={`absolute bottom-[60px] left-[20px] z-10 grid h-[35px] w-[80px] grid-cols-[1fr,3fr] items-center gap-1 rounded-3xl pl-1 pr-1 text-start text-verySmall text-white lg:w-[125px] lg:pl-2 lg:pr-2 ${
           openProfile ? 'bg-purpleMain' : 'bg-redMain'
         } `}
         onClick={() => {
           openOrPrivateProfileSwitcher()
         }}
       >
-        <img src={`${openProfile ? globalWhiteEmpty : lockWhiteFilled}`} alt="" className="w-[25px]" />
+        <img src={`${openProfile ? globalWhiteEmpty : lockWhiteFilled}`} alt="" className="w-[20px] lg:w-[25px]" />
         <div>{openProfile ? 'Public Profile' : 'Private Profile'}</div>
       </button>
     )

@@ -279,98 +279,102 @@ function Public() {
 
         {/* Make a post row */}
         {/* <MakePost /> */}
-        <div className="font-mainFont bg-white pb-1 pl-4 pt-3 text-medium font-semibold lg:text-[clamp(16px,1.5svw,18px)]">
-          Create a Post
-        </div>
+        <div className="font-mainFont bg-white pb-1 pl-4 pt-3 font-semibold lg:pl-8">Create a Post</div>
         <ThinSeparatorLine />
 
-        <section className="grid grid-cols-[80px,1fr,80px] items-start justify-items-center gap-2 bg-white pb-2 pt-4 lg:pl-4 lg:pr-4">
-          <img
-            src={loggedInUserProfilePicture}
-            alt=""
-            className="ml-2 aspect-square h-[40px] w-[40px] rounded-[50px] object-cover lg:h-[55px] lg:w-[55px]"
-          />
-          <textarea
-            ref={textareaRef}
-            placeholder="Make a post"
-            className={`transition-height w-full resize-none overflow-y-auto rounded-3xl bg-graySoft p-3 placeholder-grayMediumPlus outline-none duration-500 ${
-              textareaActive ? 'min-h-[144px]' : 'min-h-[48px]'
-            }`}
-            maxLength={1000}
-            value={postInput}
-            onChange={(e) => {
-              setPostInput(e.target.value)
-              handleTextareaChange()
-              setFullTimestamp(new Date())
-            }}
-            onFocus={() => {
-              setTextareaActive(true)
-            }}
-            onBlur={() => {
-              if (postInput.length === 0) {
-                setTextareaActive(false)
-                resetTextarea()
-              }
-            }}
-            rows={1}
-          />
-          <input
-            type="file"
-            id="addImageToPostFeedButton"
-            hidden
-            onChange={(e) => {
-              addImageToPost(e.target.files?.[0] || null)
-              e.target.value = ''
-            }}
-          />
-          <label htmlFor="addImageToPostFeedButton" className="mr-2 flex flex-col hover:cursor-pointer">
-            <img src={imageGrayEmpty} alt="add and upload file to post" className="max-w-[35px]" />
-            <div className="text-center text-verySmall">Photo</div>
-          </label>
-          <div className={`${imageAddedToPostFeed ? '' : 'absolute'}`}></div>
-          <div className={`${imageAddedToPostFeed ? '' : 'absolute'}`}>{displayUploadedImageOrNot()}</div>
-          <div className={`${imageAddedToPostFeed ? '' : 'absolute'}`}></div>
-        </section>
-
-        {/* Post section */}
-        <section className="grid grid-cols-[80px,1fr,80px] items-center justify-items-center gap-2 bg-white pb-3">
-          <div></div>
-          <div className="flex w-full items-center justify-around gap-6 text-[clamp(16px,1.5svw,18px)] lg:justify-between lg:pl-4 lg:pr-4">
-            <button
-              className="font-mainFont h-[30px] w-[70%] rounded-3xl bg-purpleMain font-bold text-white lg:h-[40px] lg:w-[clamp(30%,20vw,300px)]"
-              onClick={(e) => {
-                if (postInput.length === 0 && imageAddedToPostFeed === '')
-                  return console.log('add text or image before posting')
+        <section className="bg-white pl-3 pr-3 lg:pl-8 lg:pr-4">
+          <div className="grid grid-cols-[50px,1fr,50px] items-center justify-items-center gap-3 pb-2 pt-3">
+            <img
+              src={loggedInUserProfilePicture}
+              alt=""
+              className="ml-2 aspect-square h-[40px] w-[40px] rounded-[50px] object-cover lg:h-[55px] lg:w-[55px]"
+            />
+            <textarea
+              ref={textareaRef}
+              placeholder="Make a post"
+              className={`transition-height w-full resize-none overflow-y-auto rounded-3xl bg-graySoft p-3 placeholder-grayMediumPlus outline-none duration-500 ${
+                textareaActive ? 'min-h-[144px]' : 'min-h-[48px]'
+              }`}
+              maxLength={1000}
+              value={postInput}
+              onChange={(e) => {
+                setPostInput(e.target.value)
+                handleTextareaChange()
                 setFullTimestamp(new Date())
-                writePost({
-                  timestamp: fullTimestamp,
-                  firstName: loggedInUserFirstName,
-                  lastName: loggedInUserLastName,
-                  text: postInput,
-                  image: imageAddedToPostFeed,
-                  imageId: imageAddedToPostFeedId,
-                  date: dateDayMonthYear,
-                  likes: {},
-                  dislikes: {},
-                  comments: {},
-                  userId: loggedInUserId,
-                  publicPost: publicPost,
-                })
-                getGlobalPosts()
-                setPostInput('')
-                setImageAddedToPostFeed('')
-                resetTextarea()
-                setTextareaActive(false)
               }}
-            >
-              Post
-            </button>
-            <button className="grid h-[30px] w-[70%] cursor-default grid-cols-[20px,85px] items-center justify-center gap-1 rounded-3xl bg-graySoft pl-2 pr-2 text-textMain lg:flex lg:h-[40px] lg:w-[clamp(30%,15svw,280px)] lg:grid-cols-[20px,65px] lg:gap-2">
-              <img src={showGlobalPosts ? globalBlackEmpty : starBlackFilled} alt="" className="w-[25px] lg:w-[28px]" />
-              <div className="font-mainFont w-full cursor-default whitespace-nowrap text-center font-semibold lg:w-min">
-                {postDestination()}
-              </div>
-            </button>
+              onFocus={() => {
+                setTextareaActive(true)
+              }}
+              onBlur={() => {
+                if (postInput.length === 0) {
+                  setTextareaActive(false)
+                  resetTextarea()
+                }
+              }}
+              rows={1}
+            />
+            <input
+              type="file"
+              id="addImageToPostFeedButton"
+              hidden
+              onChange={(e) => {
+                addImageToPost(e.target.files?.[0] || null)
+                e.target.value = ''
+              }}
+            />
+            <label htmlFor="addImageToPostFeedButton" className="mr-2 flex flex-col hover:cursor-pointer">
+              <img src={imageGrayEmpty} alt="add and upload file to post" className="max-w-[35px]" />
+              <div className="text-center text-verySmall">Photo</div>
+            </label>
+            <div className={`${imageAddedToPostFeed ? '' : 'absolute'}`}></div>
+            <div className={`${imageAddedToPostFeed ? '' : 'absolute'}`}>{displayUploadedImageOrNot()}</div>
+            <div className={`${imageAddedToPostFeed ? '' : 'absolute'}`}></div>
+          </div>
+
+          {/* Post section */}
+          <div className="grid grid-cols-[50px,1fr,50px] items-center justify-items-center gap-3 pb-3">
+            <div></div>
+            <div className="flex w-full items-center justify-around gap-4 lg:justify-between lg:gap-6 lg:pl-4 lg:pr-4">
+              <button
+                className="font-mainFont h-[30px] w-full rounded-3xl bg-purpleMain text-[clamp(16px,1svw,20px)] font-bold text-white lg:h-[38px] lg:w-[clamp(30%,20vw,300px)]"
+                onClick={(e) => {
+                  if (postInput.length === 0 && imageAddedToPostFeed === '')
+                    return console.log('add text or image before posting')
+                  setFullTimestamp(new Date())
+                  writePost({
+                    timestamp: fullTimestamp,
+                    firstName: loggedInUserFirstName,
+                    lastName: loggedInUserLastName,
+                    text: postInput,
+                    image: imageAddedToPostFeed,
+                    imageId: imageAddedToPostFeedId,
+                    date: dateDayMonthYear,
+                    likes: {},
+                    dislikes: {},
+                    comments: {},
+                    userId: loggedInUserId,
+                    publicPost: publicPost,
+                  })
+                  getGlobalPosts()
+                  setPostInput('')
+                  setImageAddedToPostFeed('')
+                  resetTextarea()
+                  setTextareaActive(false)
+                }}
+              >
+                Post
+              </button>
+              <button className="grid h-[30px] w-[50%] cursor-default grid-cols-[20px,77px] items-center justify-center rounded-3xl bg-graySoft pl-2 pr-2 text-[clamp(12px,1svw,20px)] text-textMain lg:flex lg:h-[38px] lg:w-[clamp(30%,15vw,280px)] lg:grid-cols-[20px,65px] lg:gap-2">
+                <img
+                  src={showGlobalPosts ? globalBlackEmpty : starBlackFilled}
+                  alt=""
+                  className="w-[20px] lg:w-[30px]"
+                />
+                <div className="font-mainFont mt-[1px] w-full whitespace-nowrap text-center font-semibold lg:mt-0 lg:w-min">
+                  {postDestination()}
+                </div>
+              </button>
+            </div>
           </div>
           <div></div>
         </section>
