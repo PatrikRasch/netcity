@@ -8,7 +8,6 @@ import postsBlackEmpty from '../assets/icons/posts/postsBlackEmpty.svg'
 import aboutWhiteEmpty from '../assets/icons/about/aboutWhiteEmpty.webp'
 import aboutBlackEmpty from '../assets/icons/about/aboutBlackEmpty.webp'
 import starPurpleFilled from '../assets/icons/star/starPurpleFilled.svg'
-import checkGray from '../assets/icons/check/checkGray.svg'
 import checkWhite from '../assets/icons/check/checkWhite.svg'
 import clockGrayEmpty from '../assets/icons/clock/clockGrayEmpty.webp'
 import lockWhiteFilled from '../assets/icons/lock/lockWhiteFilled.webp'
@@ -43,6 +42,7 @@ import { useLoggedInUserProfilePicture } from './context/LoggedInUserProfileData
 // import { useLoadingScreen } from "./context/LoadingContextProvider";
 
 import { PostData } from '../interfaces'
+import ThickSeparatorLine from './ThickSeparatorLine'
 
 //6 Bug occurs when a private profile is visited (not friends with) and then the loggedInUser is instantly navigated to by clicking the profile picture.
 //6 Problem is likely an async state update problem (regarding updating openProfileId)
@@ -776,7 +776,7 @@ const Profile = () => {
           </button>
         </div>
 
-        <div className="h-[7px] w-full bg-graySoft"></div>
+        <ThickSeparatorLine />
         {/*//1 Posts or About */}
         <div>{publicOrPrivateProfile()}</div>
         <div>{showPostsOrAbout()}</div>

@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import Post from './Post'
 
 import { useEmptyProfilePicture } from './context/EmptyProfilePictureContextProvider'
+import ThickSeparatorLine from './ThickSeparatorLine'
 
 interface posts {
   posts: PostData[]
@@ -76,7 +77,7 @@ const AllPosts = ({
               visitingUser={visitingUser}
             />
           </div>
-          <div className="h-[15px] w-full bg-graySoft"></div>
+          <ThickSeparatorLine />
         </div>
       ))
     if (context === 'feed' && showGlobalPosts && globalPosts) {
@@ -102,7 +103,7 @@ const AllPosts = ({
               friendsOnlyPost={false}
             />
           </div>
-          <div className="h-[7px] w-full bg-graySoft"></div>
+          <ThickSeparatorLine />
         </div>
       ))
     }
@@ -129,7 +130,7 @@ const AllPosts = ({
               friendsOnlyPost={true}
             />
           </div>
-          <div className="h-[7px] w-full bg-graySoft"></div>
+          <ThickSeparatorLine />
         </div>
       ))
     }

@@ -9,6 +9,7 @@ import { DocumentData, collection, doc, getDoc, getDocs, updateDoc } from 'fireb
 import { useLoggedInUserId } from './context/LoggedInUserProfileDataContextProvider'
 
 import { UserData } from '../interfaces'
+import ThickSeparatorLine from './ThickSeparatorLine'
 
 //1 Feature Work Plan:
 //3 1. Fetch all registered users from Firebase
@@ -369,7 +370,7 @@ const People = () => {
               Sent Requests
             </button>
           </div>
-          <div className="h-[7px] w-full bg-graySoft"></div>
+          <ThickSeparatorLine />
           <div className="font-mainFont pb-1 pl-4 pt-2 text-medium font-semibold">{pageTitle()}</div>
           <ThinSeparatorLine />
           <div className="lg grid justify-evenly justify-items-center lg:grid lg:grid-cols-[repeat(auto-fit,370px)] lg:pl-4 lg:pr-4">
