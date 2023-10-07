@@ -488,9 +488,14 @@ const Post = ({
                 />
               </div>
               <div className="flex items-center gap-[15px]">
-                <div className="font-mainFont font-bold tracking-wide lg:text-[clamp(16px,1.5svw,19px)]">
+                <button
+                  className="font-mainFont cursor-pointer font-bold tracking-wide lg:text-[clamp(16px,1.5svw,19px)]"
+                  onClick={() => {
+                    navigateToUser()
+                  }}
+                >
                   {displayPostNames()}
-                </div>
+                </button>
                 {renderFriendsPostIconOrNot()}
               </div>
             </div>
