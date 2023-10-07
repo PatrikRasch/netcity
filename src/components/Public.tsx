@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react'
 import AllPosts from './AllPosts'
+import ThinSeparatorLine from './ThinSeparatorLine'
 
 import { db, storage } from '../config/firebase.config'
 import { collection, doc, getDoc, addDoc, query, orderBy, onSnapshot, limit } from 'firebase/firestore'
@@ -7,9 +8,9 @@ import { collection, doc, getDoc, addDoc, query, orderBy, onSnapshot, limit } fr
 import { v4 as uuidv4 } from 'uuid'
 
 import imageGrayEmpty from './../assets/icons/image/imageGrayEmpty.webp'
-import globalGrayEmpty from './../assets/icons/global/globalGrayEmpty.svg'
+import globalBlackEmpty from './../assets/icons/global/globalBlackEmpty.svg'
 import globalWhiteEmpty from './../assets/icons/global/globalWhiteEmpty.svg'
-import starGrayFilled from './../assets/icons/star/starGrayFilled.svg'
+import starBlackFilled from './../assets/icons/star/starBlackFilled.svg'
 import starWhiteEmpty from './../assets/icons/star/starWhiteEmpty.svg'
 
 import { useLoggedInUserId } from './context/LoggedInUserProfileDataContextProvider'
@@ -241,8 +242,8 @@ function Public() {
     <div className="lg:w-100svw bg-graySoft lg:grid lg:justify-center">
       {/* Choose posts to see */}
       <div className="lg:w-[clamp(500px,55svw,1500px)]">
-        <div className="hidden bg-white p-2 pl-4 font-bold lg:block lg:text-[clamp(16px,1.5svw,20px)]">Home Feed</div>
-        <div className="hidden h-[1.5px] w-full bg-grayLineThin lg:block"></div>
+        <div className="hidden bg-white p-2 pl-4 font-bold lg:block lg:text-[clamp(16px,1.5svw,18px)]">Home Feed</div>
+        <ThinSeparatorLine />
         <section className="grid max-w-[100svw] grid-cols-2 gap-2 whitespace-nowrap bg-white p-4 lg:flex lg:justify-center lg:gap-40">
           <button
             className={`flex h-[45px] items-center justify-center gap-2 rounded-3xl pb-[8px] pt-[8px] text-white lg:pl-8 lg:pr-8
@@ -254,7 +255,7 @@ function Public() {
               setPublicPost(true)
             }}
           >
-            <img src={showGlobalPosts ? globalWhiteEmpty : globalGrayEmpty} alt="" className="h-[28px]" />
+            <img src={showGlobalPosts ? globalWhiteEmpty : globalBlackEmpty} alt="" className="h-[28px]" />
             <div className={`font-mainFont mr-2 font-semibold ${showGlobalPosts ? 'text-white' : 'text-textMain'} `}>
               Public Posts
             </div>
@@ -270,7 +271,7 @@ function Public() {
               setPublicPost(false)
             }}
           >
-            <img src={showFriendsPosts ? starWhiteEmpty : starGrayFilled} alt="" className="h-[28px]" />
+            <img src={showFriendsPosts ? starWhiteEmpty : starBlackFilled} alt="" className="h-[28px]" />
             <div className="font-mainFont font-semibold">Friends' Posts</div>
           </button>
         </section>
@@ -278,10 +279,10 @@ function Public() {
 
         {/* Make a post row */}
         {/* <MakePost /> */}
-        <div className="font-mainFont bg-white pb-1 pl-4 pt-3 text-medium font-semibold lg:text-[clamp(16px,1.5svw,20px)]">
+        <div className="font-mainFont bg-white pb-1 pl-4 pt-3 text-medium font-semibold lg:text-[clamp(16px,1.5svw,18px)]">
           Create a Post
         </div>
-        <div className="h-[1.5px] w-full bg-grayLineThin"></div>
+        <ThinSeparatorLine />
 
         <section className="grid grid-cols-[80px,1fr,80px] items-start justify-items-center gap-2 bg-white pb-2 pt-4 lg:pl-4 lg:pr-4">
           <img
@@ -334,7 +335,7 @@ function Public() {
         {/* Post section */}
         <section className="grid grid-cols-[80px,1fr,80px] items-center justify-items-center gap-2 bg-white pb-3">
           <div></div>
-          <div className="flex w-full items-center justify-around gap-6 text-[clamp(16px,1.5svw,20px)] lg:justify-between lg:pl-4 lg:pr-4">
+          <div className="flex w-full items-center justify-around gap-6 text-[clamp(16px,1.5svw,18px)] lg:justify-between lg:pl-4 lg:pr-4">
             <button
               className="font-mainFont h-[30px] w-[70%] rounded-3xl bg-purpleMain font-bold text-white lg:h-[40px] lg:w-[clamp(30%,20vw,300px)]"
               onClick={(e) => {
@@ -365,7 +366,7 @@ function Public() {
               Post
             </button>
             <button className="grid h-[30px] w-[70%] cursor-default grid-cols-[20px,85px] items-center justify-center gap-1 rounded-3xl bg-graySoft pl-2 pr-2 text-textMain lg:flex lg:h-[40px] lg:w-[clamp(30%,15svw,280px)] lg:grid-cols-[20px,65px] lg:gap-2">
-              <img src={showGlobalPosts ? globalGrayEmpty : starGrayFilled} alt="" className="w-[25px] lg:w-[28px]" />
+              <img src={showGlobalPosts ? globalBlackEmpty : starBlackFilled} alt="" className="w-[25px] lg:w-[28px]" />
               <div className="font-mainFont w-full cursor-default whitespace-nowrap text-center font-semibold lg:w-min">
                 {postDestination()}
               </div>

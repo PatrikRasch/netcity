@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 
 import PeopleUser from './PeopleUser'
+import ThinSeparatorLine from './ThinSeparatorLine'
 
 import { db } from './../config/firebase.config'
 import { DocumentData, collection, doc, getDoc, getDocs, updateDoc } from 'firebase/firestore'
@@ -370,7 +371,7 @@ const People = () => {
           </div>
           <div className="h-[7px] w-full bg-graySoft"></div>
           <div className="font-mainFont pb-1 pl-4 pt-2 text-medium font-semibold">{pageTitle()}</div>
-          <div className="h-[2px] w-full bg-grayLineThin"></div>
+          <ThinSeparatorLine />
           <div className="lg grid justify-evenly justify-items-center lg:grid lg:grid-cols-[repeat(auto-fit,370px)] lg:pl-4 lg:pr-4">
             {populateUsersOnPage()}
           </div>

@@ -5,6 +5,7 @@ import MakeComment from './MakeComment'
 import Likes from './Likes'
 import Dislikes from './Dislikes'
 import DeletePost from './DeletePost'
+import ThinSeparatorLine from './ThinSeparatorLine'
 
 import commentGrayEmpty from './../assets/icons/comment/commentGrayEmpty.svg'
 import commentWhiteFilled from './../assets/icons/comment/commentWhiteFilled.svg'
@@ -472,8 +473,8 @@ const Post = ({
   }
 
   return (
-    <>
-      <div className="min-h-[100px] w-full bg-white pl-4 pr-4 lg:pl-8 lg:pr-8">
+    <div>
+      <div className="w-full bg-white pl-4 pr-4 lg:pl-8 lg:pr-8">
         <div className="gap-2 pt-3">
           <div className="grid grid-cols-[20fr,1fr] items-center">
             <div className="flex items-center gap-3">
@@ -513,9 +514,9 @@ const Post = ({
           </div>
         </div>
       </div>
-      <div className="h-[1.5px] w-full bg-graySoft"></div>
-      <div className="grid min-h-[50px] w-full items-center bg-white pb-2 pl-4 pr-4 pt-2 lg:pl-8 lg:pr-8">
-        <div className="grid h-[33px] grid-cols-[1fr,1fr,1fr] items-center justify-items-center gap-5 lg:min-h-[40px]">
+      <ThinSeparatorLine />
+      <div className="grid w-full items-center bg-white pb-3 pl-4 pr-4 pt-3 lg:pl-8 lg:pr-8">
+        <div className="grid grid-cols-[1fr,1fr,1fr] items-center justify-items-center gap-5">
           {/*//1 Like/Dislike */}
           {
             <Likes
@@ -561,15 +562,14 @@ const Post = ({
           </div>
         </div>
       </div>
-      <div className="h-[1.5px] w-full bg-graySoft"></div>
-
+      <ThinSeparatorLine />
       <div className="w-full bg-white pl-4 pr-4 lg:pl-8 lg:pr-8">
         {/* // - Add comment  */}
         {displayMakeCommentOrNot()}
         {/* // - Posted comments */}
         {numOfCommentsShowing === 0 ? '' : renderAllCommentsOnPost()}
       </div>
-    </>
+    </div>
   )
 }
 

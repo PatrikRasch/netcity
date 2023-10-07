@@ -4,6 +4,8 @@ import { useDateFunctions } from './custom-hooks/useDateFunctions'
 
 import { v4 as uuidv4 } from 'uuid'
 
+import ThinSeparatorLine from './ThinSeparatorLine'
+
 import { GetAllPosts, VisitingUser } from '../interfaces'
 import { useEmptyProfilePicture } from './context/EmptyProfilePictureContextProvider'
 import { useLoggedInUserId } from './context/LoggedInUserProfileDataContextProvider'
@@ -146,7 +148,7 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
   return (
     <div>
       <div className="font-mainFont pb-1 pl-4 pt-3 font-semibold">Create a Post</div>
-      <div className="h-[1.5px] w-full bg-grayLineThin"></div>
+      <ThinSeparatorLine />
 
       <section className="grid grid-cols-[80px,1fr,80px] items-center justify-items-center gap-2 pb-2 pt-4 lg:pl-4 lg:pr-4">
         <img

@@ -73,7 +73,7 @@ const Header = ({ feedOpen, setFeedOpen, peopleOpen, setPeopleOpen }: Props) => 
           ></div>
         </div>
       </div>
-      <div className="h-[2px] w-[100vw] bg-grayLineThin"></div>
+      <div className="h-[1px] w-[100vw] bg-grayLineThin"></div>
     </div>
   )
 }

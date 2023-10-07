@@ -31,6 +31,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import MakePost from './MakePost'
 import AllPosts from './AllPosts'
 import About from './About'
+import ThinSeparatorLine from './ThinSeparatorLine'
 
 import { useEmptyProfilePicture } from './context/EmptyProfilePictureContextProvider'
 import { useLoggedInUserId } from './context/LoggedInUserProfileDataContextProvider'
@@ -751,7 +752,7 @@ const Profile = () => {
 
         {/* // - Friend status */}
         {showFriendStatusWithUser()}
-        <div className="h-[1.5px] w-full bg-grayLineThin"></div>
+        <ThinSeparatorLine />
 
         {/*// - Posts/About selection */}
         <div className="grid h-[65px] grid-cols-2 gap-4 rounded-lg p-3 pl-4 pr-4 text-[clamp(16px,1svw,20px)] lg:flex lg:justify-center lg:gap-[clamp(10px,5svw,150px)]">
