@@ -80,7 +80,7 @@ const Login = () => {
   }
 
   return (
-    <div className="grid h-[100vh] grid-rows-[9fr,11fr] justify-items-center gap-4 bg-purpleSoft lg:flex lg:items-center lg:justify-evenly lg:p-10">
+    <div className="grid h-[100vh] grid-rows-[9fr,11fr] justify-items-center gap-4 bg-purpleSoft lg:flex lg:items-center lg:justify-center lg:p-10">
       <div className={`${showLoadingBar ? 'opacity-100' : 'opacity-0'} pointer-events-none transition`}>
         <div className="absolute inset-0 z-20 flex items-center justify-center">
           <LoadingBar />
@@ -89,7 +89,7 @@ const Login = () => {
       </div>
 
       {/*// - Logo & Title */}
-      <div className="grid justify-items-center self-end text-center lg:self-center">
+      <div className="grid justify-items-center text-center lg:mr-[10svw]">
         <img src={logoBlackFilled} alt="" className="w-[125px] lg:w-[clamp(100px,20svw,300px)]" />
         <div className="font-mainFont text-[35px] font-bold text-black lg:text-[clamp(40px,5svw,70px)]">NetCity</div>
         {/* // - Patrik Rasch info */}
@@ -98,7 +98,7 @@ const Login = () => {
 
       {/*// - The rest */}
 
-      <div className="grid content-start justify-items-center gap-6 text-xl">
+      <div className="grid justify-items-center gap-6 text-xl">
         <div className="hidden w-full gap-4 lg:grid">
           <div className="relative text-center text-[30px] font-bold">
             Login
