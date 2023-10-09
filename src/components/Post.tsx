@@ -9,7 +9,8 @@ import ThinSeparatorLine from './ThinSeparatorLine'
 
 import commentGrayEmpty from './../assets/icons/comment/commentGrayEmpty.svg'
 import commentWhiteFilled from './../assets/icons/comment/commentWhiteFilled.svg'
-import starGrayFilled from './../assets/icons/star/starGrayFilled.svg'
+import starBlackFilled from './../assets/icons/star/starBlackFilled.svg'
+import globalBlackEmpty from './../assets/icons/global/globalBlackEmpty.svg'
 import triangleBlackFilled from './../assets/icons/triangle/triangleBlackFilled.svg'
 
 import { db, storage } from './../config/firebase.config'
@@ -415,18 +416,21 @@ const Post = ({
   }
 
   const renderFriendsPostIconOrNot = () => {
-    if (friendsOnlyPost)
+    if (openProfileId === undefined)
       return (
-        <div className="flex items-center gap-2">
+        <div className="mt-[2px] flex items-center gap-2">
           <div className="font-mainFont text-smaller text-grayMain lg:text-[clamp(12px,1.5svw,13px)]">{postDate}</div>
           <div className="text-smaller text-grayMain">•</div>
-          <img src={starGrayFilled} alt="" className="w-[12px]" />
+          <img src={friendsOnlyPost ? starBlackFilled : globalBlackEmpty} alt="" className="w-[15px]" />
         </div>
       )
-    else
+    else {
       return (
-        <div className="font-mainFont text-smaller text-grayMain lg:text-[clamp(12px,1.5svw,13px)]">{postDate}</div>
+        <div className="mt-[2px] flex items-center gap-2">
+          <div className="font-mainFont text-smaller text-grayMain lg:text-[clamp(12px,1.5svw,13px)]">{postDate}</div>
+        </div>
       )
+    }
   }
 
   const displayPostNames = () => {
@@ -438,7 +442,7 @@ const Post = ({
       )
     if (!visitingUser && openProfileId !== postUserId)
       return (
-        <div className="flex gap-1 ">
+        <div className="flex gap-1">
           <button
             onClick={() => {
               navigateToUser()
@@ -488,7 +492,7 @@ const Post = ({
                   }}
                 />
               </div>
-              <div className="flex items-center gap-[15px]">
+              <div className="items-center gap-[15px] lg:flex">
                 <button
                   className="font-mainFont cursor-pointer font-bold tracking-wide lg:text-[clamp(16px,1.5svw,19px)]"
                   onClick={() => {
