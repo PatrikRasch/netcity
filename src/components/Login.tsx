@@ -6,9 +6,9 @@ import { auth } from '../config/firebase.config'
 
 //6 Login user alert error must be sexified later on.
 
-import { useLoggedInUserId } from './context/LoggedInUserProfileDataContextProvider'
-
 import LoadingBar from './LoadingBar'
+
+import { useLoggedInUserId } from './context/LoggedInUserProfileDataContextProvider'
 
 import logoPurpleFilled from '../assets/icons/logo/logoPurpleFilled.webp'
 import logoBlackFilled from '../assets/icons/logo/logoBlackFilled.webp'
@@ -59,16 +59,18 @@ const Login = () => {
   const projectInformation = () => {
     return (
       <div className="grid gap-0 pt-2 text-[16px] lg:gap-1">
-        <div className="italic">A social media project by</div>
+        <div className="animate-project-information1 italic opacity-0">A social media project by</div>
         <a
           href="https://www.GitHub.com/PatrikRasch"
-          className="w-min justify-self-center font-semibold text-purpleMain"
+          className="animate-project-information2 w-min justify-self-center font-semibold text-purpleMain opacity-0"
         >
           GitHub.com/PatrikRasch
         </a>
         <div className="just grid justify-center gap-0 lg:gap-1">
-          <div className="w-[60svw] italic lg:w-[clamp(100px,40svw,400px)]">Built from scratch with</div>
-          <div className="relative flex h-[24px] justify-center overflow-hidden font-semibold">
+          <div className="animate-project-information3 w-[60svw] italic opacity-0 lg:w-[clamp(100px,40svw,400px)]">
+            Built from scratch with
+          </div>
+          <div className="animate-project-information4 relative flex h-[24px] justify-center overflow-hidden font-semibold opacity-0">
             <div className="absolute animate-slide-in-and-out1 opacity-0">React</div>
             <div className="absolute animate-slide-in-and-out2 opacity-0">TypeScript</div>
             <div className="absolute animate-slide-in-and-out3 opacity-0">Tailwind</div>
@@ -90,8 +92,14 @@ const Login = () => {
 
       {/*// - Logo & Title */}
       <div className="grid justify-items-center text-center lg:mr-[10svw]">
-        <img src={logoBlackFilled} alt="" className="w-[125px] lg:w-[clamp(100px,20svw,300px)]" />
-        <div className="font-mainFont text-[35px] font-bold text-black lg:text-[clamp(40px,5svw,70px)]">NetCity</div>
+        <img src={logoBlackFilled} alt="" className="animate-logo w-[125px] lg:w-[clamp(100px,20svw,300px)]" />
+        <div className="text-[35px] lg:text-[clamp(40px,5svw,70px)]">
+          <div className="ml-[4px]">
+            <div className="font-mainFont nowrap animate-title-reveal h-full w-full text-[35px] font-bold text-black opacity-0 lg:text-[clamp(40px,5svw,70px)]">
+              NetCity
+            </div>
+          </div>
+        </div>
         {/* // - Patrik Rasch info */}
         {projectInformation()}
       </div>
