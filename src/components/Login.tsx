@@ -111,10 +111,10 @@ const Login = () => {
           <div className="relative text-center text-[30px] font-bold">
             Login
             <button
-              className={`absolute right-0 h-[30px] w-[120px] rounded-xl bg-black text-small font-semibold leading-[17px] text-white outline-purpleMain transition duration-300 hover:scale-[96%] ${
-                (email === 'test@gmail.com' && password === '123123') || email !== ''
+              className={`animate-button-pop-in absolute right-0 h-[30px] w-[120px] scale-0 rounded-xl bg-black text-small font-semibold leading-[17px] text-white outline-purpleMain transition duration-300 hover:scale-[96%] ${
+                (email === 'test@gmail.com' && password === '123123') || email !== '' || password !== ''
                   ? 'pointer-events-none opacity-0'
-                  : ''
+                  : 'opacity-100'
               } `}
               onClick={() => {
                 setEmail('test@gmail.com')
