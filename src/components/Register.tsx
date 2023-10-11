@@ -139,7 +139,7 @@ const Register = () => {
   }
 
   return (
-    <div className="bg-purpleSoft">
+    <div className="h-full bg-purpleSoft">
       <div className={`${accountCreated ? 'opacity-100' : 'opacity-0'} pointer-events-none transition`}>
         {accountCreatedJSX()}
       </div>
