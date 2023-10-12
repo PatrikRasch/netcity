@@ -62,6 +62,14 @@ module.exports = {
           '60%': { transform: 'scale(1.02)' },
           '100%': { transform: 'scale(1)' },
         },
+        'reveal-register': {
+          '0%': { transform: 'translateX(-50%) translateY(-60%)', opacity: 0 },
+          '100%': { transform: 'translateX(-50%) translateY(-50%)', opacity: 1 },
+        },
+        'fade-register-background': {
+          '0%': { opacity: 0 },
+          '100%': { opacity: 0.3 },
+        },
       },
       animation: {
         'slide-in-and-out1': 'slide-in-and-out 8s ease-in-out 1.5s infinite',
@@ -76,6 +84,8 @@ module.exports = {
         logo: 'logo 1s ease-in-out 0.4s both',
         'button-pop-in-desktop': 'button-pop-in-desktop 1.5s cubic-bezier(.79,-0.01,.08,1) 4s forwards',
         'button-pop-in-mobile': 'button-pop-in-mobile 1.5s cubic-bezier(.79,-0.01,.08,1) 4s forwards',
+        'reveal-register': 'reveal-register ease .7s',
+        'fade-register-background': 'fade-register-background ease .7s',
       },
     },
   },
