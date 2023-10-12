@@ -11,7 +11,12 @@ import logoGoogle from '../assets/icons/google/logoGoogle.svg'
 
 import LoadingBar from './LoadingBar'
 
-const Register = () => {
+interface Props {
+  showRegister: boolean
+  setShowRegister: (value: boolean) => void
+}
+
+const Register = ({ showRegister, setShowRegister }: Props) => {
   const navigate = useNavigate()
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
@@ -139,7 +144,7 @@ const Register = () => {
   }
 
   return (
-    <div className="h-full bg-purpleSoft">
+    <div className="min-h-[100svh] bg-purpleSoft lg:min-h-full">
       <div className={`${accountCreated ? 'opacity-100' : 'opacity-0'} pointer-events-none transition`}>
         {accountCreatedJSX()}
       </div>
@@ -151,7 +156,7 @@ const Register = () => {
         <div className="absolute inset-0 z-10 h-full w-full bg-black opacity-25"></div>
       </div>
 
-      <div className="grid h-[100svh] justify-center pb-20 pt-14 lg:h-[100%] lg:pb-0 lg:pt-0">
+      <div className="grid justify-center pb-20 pt-14 lg:pb-0 lg:pt-0">
         {/* // - Header */}
         <div className="flex flex-col justify-center text-center">
           {/* <div className="text-2xl text-purpleMain opacity-60">Become a citizen of</div> */}
@@ -258,7 +263,7 @@ const Register = () => {
           <button
             className="pl-1 text-medium font-semibold text-purpleMain underline"
             onClick={() => {
-              navigate('/login')
+              setShowRegister(false)
             }}
           >
             Login
