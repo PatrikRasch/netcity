@@ -88,8 +88,12 @@ const Login = () => {
     return (
       <>
         {/* Register for large screens */}
-        <div className={` ${showRegister ? 'hidden lg:block' : 'pointer-events-none hidden'}`}>
-          <div className=" animate-reveal-register absolute left-1/2 top-1/2 z-20 grid h-[clamp(300px,90svh,750px)] w-[600px] translate-x-[-50%] translate-y-[-50%] items-center overflow-scroll rounded-3xl bg-purpleSoft lg:grid">
+        <div>
+          <div
+            className={`${
+              showRegister ? 'opacity-1 translate-y-[-50%]' : 'pointer-events-none translate-y-[-60%] opacity-0'
+            } transition-transform-opacity absolute left-1/2 top-1/2 z-20 grid h-[clamp(300px,90svh,750px)] w-[600px] translate-x-[-50%] items-center overflow-scroll rounded-3xl bg-purpleSoft duration-700 ease-in-out lg:grid`}
+          >
             <button
               className="absolute right-0 top-0 cursor-pointer p-6"
               onClick={() => {
@@ -104,7 +108,9 @@ const Login = () => {
           </div>
 
           <div
-            className="animate-fade-register-background absolute z-10 h-[100svh] w-[100svw] bg-black opacity-30"
+            className={`${
+              showRegister ? 'pointer-events-auto opacity-30' : 'pointer-events-none opacity-0'
+            } absolute z-10 h-[100svh] w-[100svw] bg-black transition-opacity duration-700`}
             onClick={() => {
               setShowRegister(false)
             }}
