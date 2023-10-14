@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import dotsGrayFilled from './../assets/icons/dots/dotsGrayFilled.webp'
 
 import { useLoggedInUserId } from './context/LoggedInUserProfileDataContextProvider'
+import { DocumentReference } from 'firebase/firestore'
 
 interface Props {
   postUserId: string
@@ -11,9 +12,27 @@ interface Props {
   setShowDropdownMenu: (value: boolean) => void
   deletePostClicked: () => Promise<void>
   isPost: boolean
+  context?: string
+  feedPostDocRef?: DocumentReference
+  profilePostDocRef?: DocumentReference
+  getNumOfComments?: (value: DocumentReference) => Promise<void>
+  postTotalNumOfComments?: number
+  setPostTotalNumOfComments?: (value: number) => void
 }
 
-const DeletePost = ({ postUserId, showDropdownMenu, setShowDropdownMenu, deletePostClicked, isPost }: Props) => {
+const DeletePost = ({
+  postUserId,
+  showDropdownMenu,
+  setShowDropdownMenu,
+  deletePostClicked,
+  isPost,
+  context,
+  feedPostDocRef,
+  profilePostDocRef,
+  getNumOfComments,
+  postTotalNumOfComments,
+  setPostTotalNumOfComments,
+}: Props) => {
   const { loggedInUserId } = useLoggedInUserId()
   const dropdownMenuRef = useRef<HTMLDivElement>(null)
 
@@ -55,6 +74,11 @@ const DeletePost = ({ postUserId, showDropdownMenu, setShowDropdownMenu, deleteP
             className="rounded-tl-2xl pb-1 pl-4 pr-4 pt-1 hover:bg-grayMedium"
             onClick={() => {
               deletePostClicked()
+              if (setPostTotalNumOfComments && postTotalNumOfComments) {
+                setPostTotalNumOfComments(postTotalNumOfComments - 1)
+              }
+              if (context === 'feed' && getNumOfComments && feedPostDocRef) getNumOfComments(feedPostDocRef)
+              if (context === 'profile' && getNumOfComments && profilePostDocRef) getNumOfComments(profilePostDocRef)
             }}
           >
             {isPost ? 'Delete Post' : 'Delete Comment'}

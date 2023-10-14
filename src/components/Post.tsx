@@ -137,7 +137,10 @@ const Post = ({
 
     if (postText.length < 300) setDisplayFullPostText(true)
 
-    if (postIndex === 0) setShowMakeComment(true)
+    if (postIndex === 0) {
+      setShowMakeComment(true)
+      setNumOfCommentsShowing(1)
+    }
     setPostNumOfLikes(Object.keys(postLikes).length) // Number of likes on post
     setPostNumOfDislikes(-Object.keys(postDislikes).length) // Number of dislikes on post
   }, [])
@@ -293,6 +296,12 @@ const Post = ({
           postDocRef={postDocRef}
           numOfCommentsShowing={numOfCommentsShowing}
           setNumOfCommentsShowing={setNumOfCommentsShowing}
+          getNumOfComments={getNumOfComments}
+          context={context}
+          feedPostDocRef={feedPostDocRef}
+          profilePostDocRef={profilePostDocRef}
+          setPostTotalNumOfComments={setPostTotalNumOfComments}
+          postTotalNumOfComments={postTotalNumOfComments}
         />
       )
   }
@@ -411,6 +420,11 @@ const Post = ({
         showLoadMoreCommentsButton={showLoadMoreCommentsButton}
         setShowLoadMoreCommentsButton={setShowLoadMoreCommentsButton}
         setShowMakeComment={setShowMakeComment}
+        context={context}
+        feedPostDocRef={feedPostDocRef}
+        profilePostDocRef={profilePostDocRef}
+        getNumOfComments={getNumOfComments}
+        setPostTotalNumOfComments={setPostTotalNumOfComments}
       />
     )
   }

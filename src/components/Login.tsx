@@ -94,7 +94,7 @@ const Login = () => {
               showRegister
                 ? 'opacity-1 hidden translate-y-[-50%] lg:block'
                 : 'pointer-events-none translate-y-[-60%] opacity-0'
-            } transition-transform-opacity absolute left-1/2 top-1/2 z-20 grid h-[clamp(300px,90svh,750px)] w-[600px] translate-x-[-50%] items-center overflow-scroll rounded-3xl bg-purpleSoft duration-700 ease-in-out lg:grid`}
+            } transition-transform-opacity absolute left-1/2 top-1/2 z-20 grid h-[clamp(300px,90svh,750px)] w-[600px] translate-x-[-50%] items-center rounded-3xl bg-purpleSoft duration-700 ease-in-out lg:grid`}
           >
             <button
               className="absolute right-0 top-0 cursor-pointer p-6"

@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import Comment from './Comment'
 
 import { useLoggedInUserId } from './context/LoggedInUserProfileDataContextProvider'
+import { DocumentReference } from 'firebase/firestore'
 
 interface Props {
   comments: CommentsData[]
@@ -13,6 +14,11 @@ interface Props {
   showLoadMoreCommentsButton: boolean
   setShowLoadMoreCommentsButton(value: boolean): void
   setShowMakeComment(value: boolean): void
+  context: string
+  feedPostDocRef: DocumentReference
+  profilePostDocRef: DocumentReference
+  getNumOfComments: (value: DocumentReference) => Promise<void>
+  setPostTotalNumOfComments: (value: number) => void
 }
 
 interface CommentsData {
@@ -39,6 +45,11 @@ const AllCommentsOnPost = ({
   showLoadMoreCommentsButton,
   setShowLoadMoreCommentsButton,
   setShowMakeComment,
+  context,
+  feedPostDocRef,
+  profilePostDocRef,
+  getNumOfComments,
+  setPostTotalNumOfComments,
 }: Props) => {
   const { loggedInUserId } = useLoggedInUserId()
   // if (postTotalNumOfComments > numOfCommentsShowing && numOfCommentsShowing !== 0) {
@@ -95,11 +106,17 @@ const AllCommentsOnPost = ({
                 commentId={comment.id}
                 postId={postId}
                 commentIndex={index}
+                context={context}
+                feedPostDocRef={feedPostDocRef}
+                profilePostDocRef={profilePostDocRef}
+                getNumOfComments={getNumOfComments}
+                setPostTotalNumOfComments={setPostTotalNumOfComments}
+                postTotalNumOfComments={postTotalNumOfComments}
               />
             </div>
           )
         })}
-        <div className={`grid ${postTotalNumOfComments === 0 ? '' : 'pb-1'}`}>
+        <div className={`grid ${postTotalNumOfComments === 0 ? '' : 'pb-1 pt-1'}`}>
           <div className="grid grid-cols-[50px,1fr] items-center gap-4">
             <div></div>
             <div>{showMoreCommentsButton()}</div>

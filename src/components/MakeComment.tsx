@@ -17,6 +17,12 @@ interface Props {
   postDocRef: DocumentReference
   numOfCommentsShowing: number
   setNumOfCommentsShowing: (value: number) => void
+  getNumOfComments: (value: DocumentReference) => Promise<void>
+  context: string
+  feedPostDocRef: DocumentReference
+  profilePostDocRef: DocumentReference
+  postTotalNumOfComments: number
+  setPostTotalNumOfComments: (value: number) => void
 }
 
 function MakeComment({
@@ -30,6 +36,12 @@ function MakeComment({
   postDocRef,
   numOfCommentsShowing,
   setNumOfCommentsShowing,
+  getNumOfComments,
+  context,
+  feedPostDocRef,
+  profilePostDocRef,
+  postTotalNumOfComments,
+  setPostTotalNumOfComments,
 }: Props) {
   const emptyProfilePicture = useEmptyProfilePicture()
   const [postCommentInput, setPostCommentInput] = useState('')
@@ -118,6 +130,9 @@ function MakeComment({
               userId: loggedInUserId,
               postId: postId,
             })
+            setPostTotalNumOfComments(postTotalNumOfComments + 1)
+            if (context === 'feed') getNumOfComments(feedPostDocRef)
+            if (context === 'profile') getNumOfComments(profilePostDocRef)
             setPostCommentInput('')
             resetTextarea()
           }}

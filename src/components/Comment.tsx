@@ -6,7 +6,7 @@ import DeletePost from './DeletePost'
 import { useParams } from 'react-router-dom'
 
 import { db } from './../config/firebase.config'
-import { collection, doc, getDoc, deleteDoc, updateDoc } from 'firebase/firestore'
+import { collection, doc, getDoc, deleteDoc, updateDoc, DocumentReference } from 'firebase/firestore'
 import { useEmptyProfilePicture } from './context/EmptyProfilePictureContextProvider'
 
 // import { useCommentLikingFunctions } from "./custom-hooks/useCommentLikingFunctions";
@@ -27,6 +27,12 @@ interface Props {
   commentId: string
   postId: string
   commentIndex: number
+  context: string
+  feedPostDocRef: DocumentReference
+  profilePostDocRef: DocumentReference
+  getNumOfComments: (value: DocumentReference) => Promise<void>
+  postTotalNumOfComments: number
+  setPostTotalNumOfComments: (value: number) => void
 }
 
 const Comment = ({
@@ -41,6 +47,12 @@ const Comment = ({
   commentId,
   postId,
   commentIndex,
+  context,
+  feedPostDocRef,
+  profilePostDocRef,
+  getNumOfComments,
+  postTotalNumOfComments,
+  setPostTotalNumOfComments,
 }: Props) => {
   const { openProfileId } = useParams()
 
@@ -184,6 +196,12 @@ const Comment = ({
                 setShowDropdownMenu={setShowDropdownMenu}
                 deletePostClicked={deletePostClicked}
                 isPost={false}
+                context={context}
+                feedPostDocRef={feedPostDocRef}
+                profilePostDocRef={profilePostDocRef}
+                getNumOfComments={getNumOfComments}
+                setPostTotalNumOfComments={setPostTotalNumOfComments}
+                postTotalNumOfComments={postTotalNumOfComments}
               />
             </div>
           </div>
