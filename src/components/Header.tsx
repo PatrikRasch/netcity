@@ -26,6 +26,7 @@ const Header = ({ feedOpen, setFeedOpen, peopleOpen, setPeopleOpen }: Props) => 
   const navigate = useNavigate()
   const location = useLocation()
   const [profileOpen, setProfileOpen] = useState(false)
+  const [iconHovered, setIconHovered] = useState(false)
 
   useEffect(() => {
     setProfileOpen(location.pathname.includes('profile'))
@@ -43,7 +44,16 @@ const Header = ({ feedOpen, setFeedOpen, peopleOpen, setPeopleOpen }: Props) => 
           }}
         >
           <img src={logoPurpleFilled} alt="" className="absolute left-10 hidden w-[50px] lg:block" />
-          <img src={feedOpen ? homePurpleFilled : homeGrayEmpty} alt="" className="w-[50px]" />
+          <div>
+            <img
+              src={homePurpleFilled}
+              alt=""
+              className={`absolute w-[50px] opacity-0 ${
+                feedOpen ? 'opacity-100' : ''
+              } transition-opacity duration-200 hover:opacity-100`}
+            />
+            <img src={homeGrayEmpty} alt="" className="w-[50px]" />
+          </div>
           <div className={`absolute bottom-0 h-1 w-[50px] rounded-3xl bg-purpleMain ${feedOpen ? '' : 'hidden'}`}></div>
         </div>
         <div
@@ -52,7 +62,22 @@ const Header = ({ feedOpen, setFeedOpen, peopleOpen, setPeopleOpen }: Props) => 
             navigate('/people')
           }}
         >
-          <img src={peopleOpen ? peoplePurpleFilled : peopleGrayEmpty} alt="" className="w-[50px]" />
+          <div onMouseOver={() => setIconHovered(true)} onMouseOut={() => setIconHovered(false)}>
+            <img
+              src={peoplePurpleFilled}
+              alt=""
+              className={`absolute w-[50px] ${peopleOpen ? 'opacity-100' : ''} transition-opacity duration-200 ${
+                iconHovered ? 'opacity-100' : 'opacity-0'
+              } hover:opacity-100`}
+            />
+            <img
+              src={peopleGrayEmpty}
+              alt=""
+              className={`w-[50px] ${iconHovered ? 'opacity-0' : ''} ${
+                peopleOpen ? 'opacity-0' : ''
+              } transition-opacity duration-200`}
+            />
+          </div>
           <div
             className={`absolute bottom-0 h-1 w-[50px] rounded-3xl bg-purpleMain ${peopleOpen ? '' : 'hidden'}`}
           ></div>
