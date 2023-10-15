@@ -95,13 +95,13 @@ function MakeComment({
   }
 
   return (
-    <div className="grid grid-cols-[50px,1fr] items-center pb-3 pt-3 lg:gap-4">
+    <div className="grid grid-cols-[50px,1fr,50px] items-center pb-3 pt-3 lg:grid-cols-[50px,1fr,40px] lg:gap-4">
       <img
         src={loggedInUserProfilePicture === '' ? emptyProfilePicture : loggedInUserProfilePicture}
         alt="logged in user"
         className="aspect-square max-w-[38px] justify-self-center rounded-[50%] object-cover"
       />
-      <div className="font-mainFont grid grid-cols-[20fr,60px] gap-4 rounded-3xl bg-graySoft pl-1">
+      <div className="font-mainFont grid gap-4 rounded-3xl bg-graySoft pl-2">
         <textarea
           ref={textareaRef}
           placeholder="Write a comment"
@@ -115,31 +115,31 @@ function MakeComment({
           }}
           rows={1}
         ></textarea>
-        <button
-          className="self-center justify-self-center rounded-[50%]"
-          onClick={(e) => {
-            if (postCommentInput.length === 0) return console.log('add text to input before posting')
-            postComment({
-              timestamp: fullTimestamp,
-              firstName: loggedInUserFirstName,
-              lastName: loggedInUserLastName,
-              text: postCommentInput,
-              date: dateDayMonthYear,
-              likes: {},
-              dislikes: {},
-              userId: loggedInUserId,
-              postId: postId,
-            })
-            setPostTotalNumOfComments(postTotalNumOfComments + 1)
-            if (context === 'feed') getNumOfComments(feedPostDocRef)
-            if (context === 'profile') getNumOfComments(profilePostDocRef)
-            setPostCommentInput('')
-            resetTextarea()
-          }}
-        >
-          <img src={postBlackFilled} alt="" className="max-w-[25px]" />
-        </button>
       </div>
+      <button
+        className="self-center justify-self-center rounded-[50%]"
+        onClick={(e) => {
+          if (postCommentInput.length === 0) return console.log('add text to input before posting')
+          postComment({
+            timestamp: fullTimestamp,
+            firstName: loggedInUserFirstName,
+            lastName: loggedInUserLastName,
+            text: postCommentInput,
+            date: dateDayMonthYear,
+            likes: {},
+            dislikes: {},
+            userId: loggedInUserId,
+            postId: postId,
+          })
+          setPostTotalNumOfComments(postTotalNumOfComments + 1)
+          if (context === 'feed') getNumOfComments(feedPostDocRef)
+          if (context === 'profile') getNumOfComments(profilePostDocRef)
+          setPostCommentInput('')
+          resetTextarea()
+        }}
+      >
+        <img src={postBlackFilled} alt="" className="max-w-[33px]" />
+      </button>
     </div>
   )
 }
