@@ -292,8 +292,8 @@ const Profile = () => {
     if (openProfileId !== loggedInUserId) return
     return (
       <button
-        className={`absolute bottom-[60px] left-[20px] z-10 grid h-[35px] w-[80px] grid-cols-[1fr,3fr] items-center gap-1 rounded-3xl pl-1 pr-1 text-start text-[10px] text-white lg:w-[125px] lg:pl-2 lg:pr-2 lg:text-verySmall ${
-          openProfile ? 'bg-purpleMain' : 'bg-redMain'
+        className={`transition-transform-colors absolute bottom-[60px] left-[20px] z-10 grid h-[35px] w-[80px] grid-cols-[1fr,3fr] items-center gap-1 rounded-3xl pl-1 pr-1 text-start text-[10px] text-white outline-none duration-100 active:scale-[98%] lg:w-[125px] lg:pl-2 lg:pr-2 lg:text-verySmall ${
+          openProfile ? 'lg:hover:bg-purpleHover bg-purpleMain' : 'lg:hover:bg-redHover bg-redMain'
         } `}
         onClick={() => {
           openOrPrivateProfileSwitcher()
@@ -763,7 +763,9 @@ const Profile = () => {
           <button
             className={`${
               showPosts ? 'bg-black text-white' : 'bg-graySoft text-black'
-            }  font-mainFont flex h-[38px] w-full items-center justify-center gap-2 rounded-3xl font-bold lg:w-48 `}
+            }  font-mainFont flex h-[38px] w-full items-center justify-center gap-2 rounded-3xl font-bold transition-colors duration-100
+            lg:w-48 ${showPosts ? '' : 'lg:hover:bg-grayMedium'}
+            `}
             onClick={() => setShowPosts(true)}
           >
             <img src={showPosts ? postsWhiteEmpty : postsBlackEmpty} alt="" className="w-[24px]" />
@@ -772,7 +774,9 @@ const Profile = () => {
           <button
             className={`${
               !showPosts ? 'bg-black text-white' : 'bg-graySoft text-black'
-            } font-mainFont flex h-[38px] w-full items-center justify-center gap-1 rounded-3xl font-bold lg:w-48`}
+            } font-mainFont flex h-[38px] w-full items-center justify-center gap-1 rounded-3xl font-bold transition-colors duration-100 ${
+              showPosts ? 'lg:hover:bg-grayMedium' : ''
+            } lg:w-48`}
             onClick={() => setShowPosts(false)}
           >
             <img src={showPosts ? aboutBlackEmpty : aboutWhiteEmpty} alt="" className="w-[27px]" />

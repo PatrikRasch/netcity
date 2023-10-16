@@ -203,7 +203,7 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
           <div></div>
           <div className="flex w-full items-center justify-around gap-4 lg:justify-between lg:gap-6 lg:pl-4 lg:pr-4">
             <button
-              className="font-mainFont h-[30px] w-full rounded-3xl bg-purpleMain text-[clamp(16px,1svw,20px)] font-bold text-white lg:h-[38px] lg:w-[clamp(30%,20vw,300px)]"
+              className="font-mainFont hover:bg-purpleHover h-[30px] w-full rounded-3xl bg-purpleMain text-[clamp(16px,1svw,20px)] font-bold text-white transition-colors duration-100 lg:h-[38px] lg:w-[clamp(30%,20vw,300px)]"
               onClick={(e) => {
                 if (postInput.length === 0 && imageAddedToPost === '')
                   return console.log('add text or image before posting')
