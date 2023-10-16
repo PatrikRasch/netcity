@@ -13,8 +13,10 @@ module.exports = {
       colors: {
         purpleMain: '#6E77D1',
         purpleSoft: '#e2e5f8',
+        purpleHover: '#7d85d1',
         redMain: '#e83640',
         redSoft: '#f9e5e4',
+        redHover: '#e6535a',
         grayMain: '#4b4b4b',
         grayMediumPlus: '#7d7d7d',
         grayMedium: '#bbbbba',
