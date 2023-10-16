@@ -50,7 +50,7 @@ const Header = ({ feedOpen, setFeedOpen, peopleOpen, setPeopleOpen }: Props) => 
               alt=""
               className={`absolute w-[50px] opacity-0 ${
                 feedOpen ? 'opacity-100' : ''
-              } transition-opacity duration-200 hover:opacity-100`}
+              } transition-opacity duration-200 lg:hover:opacity-100`}
             />
             <img src={homeGrayEmpty} alt="" className="w-[50px]" />
           </div>
@@ -66,14 +66,15 @@ const Header = ({ feedOpen, setFeedOpen, peopleOpen, setPeopleOpen }: Props) => 
             <img
               src={peoplePurpleFilled}
               alt=""
-              className={`absolute w-[50px] ${peopleOpen ? 'opacity-100' : ''} transition-opacity duration-200 ${
-                iconHovered ? 'opacity-100' : 'opacity-0'
-              } hover:opacity-100`}
+              className={`absolute w-[50px] ${
+                peopleOpen ? 'opacity-100' : 'opacity-0'
+              } transition-opacity duration-200 ${iconHovered ? 'lg:opacity-100' : ''}
+              lg:hover:opacity-100`}
             />
             <img
               src={peopleGrayEmpty}
               alt=""
-              className={`w-[50px] ${iconHovered ? 'opacity-0' : ''} ${
+              className={`w-[50px] ${iconHovered ? 'lg:opacity-0' : ''} ${
                 peopleOpen ? 'opacity-0' : ''
               } transition-opacity duration-200`}
             />
