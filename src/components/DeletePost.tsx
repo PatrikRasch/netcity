@@ -69,7 +69,7 @@ const DeletePost = ({
   const dropdownMenu = () => {
     if (showDropdownMenu) {
       return (
-        <div className="absolute right-0 top-4 grid min-w-max grid-rows-[1fr,1.5px,1fr] rounded-2xl rounded-tr-none bg-graySoft">
+        <div className="absolute right-0 top-4 z-20 grid min-w-max grid-rows-[1fr,1.5px,1fr] rounded-2xl rounded-tr-none bg-graySoft">
           <button
             className="rounded-tl-2xl pb-1 pl-4 pr-4 pt-1 hover:bg-grayMedium"
             onClick={() => {
