@@ -70,7 +70,7 @@ const About = ({
     if (visitingUser) return
     return (
       <button
-        className="font-mainFont flex w-[90svw] items-center justify-center gap-1 rounded-3xl bg-purpleSoft p-1 text-center text-medium font-semibold text-purpleMain lg:w-[clamp(400px,50svw,1400px)]"
+        className="font-mainFont lg:hover:bg-purpleHoverSoft flex w-[90svw] items-center justify-center gap-1 rounded-3xl bg-purpleSoft p-1 text-center text-medium font-semibold text-purpleMain lg:w-[clamp(400px,50svw,1400px)]"
         onClick={() => {
           setEditMode(!editMode)
           saveAboutInput()
@@ -113,13 +113,13 @@ const About = ({
     if (editMode)
       return (
         <div className="grid justify-center justify-items-center gap-3 p-3 lg:w-[clamp(600px,55svw,1500px)]">
-          <div className="font-mainFont w-[90svw] rounded-3xl bg-purpleMain p-1 text-center text-large font-semibold text-white lg:w-[clamp(400px,55svw,1400px)]">
+          <div className="font-mainFont w-[90svw] rounded-3xl bg-purpleMain p-1 text-center text-large font-semibold text-white lg:w-[clamp(400px,50svw,1400px)]">
             Bio
           </div>
           <textarea
             ref={textareaRef}
             placeholder="Write a bio about yourself"
-            className="min-h-min w-[90svw] resize-none break-words rounded-3xl bg-graySoft p-4 text-center text-grayMain lg:w-[clamp(400px,55svw,1400px)]"
+            className="min-h-min w-[90svw] resize-none break-words rounded-3xl bg-graySoft p-4 text-center text-grayMain lg:w-[clamp(400px,50svw,1400px)]"
             onChange={(e) => {
               setBioText(e.target.value)
               handleTextareaChange()
@@ -146,7 +146,7 @@ const About = ({
             <>
               <label
                 htmlFor="featuredPhotoInput"
-                className="flex justify-center gap-1 rounded-3xl bg-purpleSoft pl-5 pr-5 text-medium text-purpleMain hover:cursor-pointer"
+                className="lg:hover:bg-purpleHoverSoft flex justify-center gap-1 rounded-3xl bg-purpleSoft pl-5 pr-5 text-medium text-purpleMain hover:cursor-pointer"
               >
                 <img src={editPurpleFilled} alt="" className="h-[17px] w-[17px] self-center" />
                 <div>Edit</div>
@@ -232,7 +232,7 @@ const About = ({
         <button
           className={`${
             openProfileId === loggedInUserId ? '' : 'hidden'
-          } flex items-center gap-2 rounded-3xl bg-black pb-2 pl-9 pr-9 pt-2 font-semibold text-white`}
+          } flex items-center gap-2 rounded-3xl bg-black pb-2 pl-9 pr-9 pt-2 font-semibold text-white lg:hover:bg-grayMain`}
           onClick={() => userSignOut()}
         >
           <img src={signoutWhiteEmpty} alt="" className="w-[20px] fill-white" />
