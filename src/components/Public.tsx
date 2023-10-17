@@ -247,7 +247,7 @@ function Public() {
         <section className="grid max-w-[100svw] grid-cols-2 gap-2 whitespace-nowrap bg-white p-4 lg:flex lg:justify-center lg:gap-40">
           <button
             className={`flex h-[45px] items-center justify-center gap-2 rounded-3xl pb-[8px] pt-[8px] text-white lg:pl-8 lg:pr-8
-          ${showGlobalPosts ? 'bg-black' : 'bg-graySoft'} `}
+          ${showGlobalPosts ? 'bg-black' : 'lg:hover:bg-grayHover bg-graySoft'} `}
             onClick={() => {
               setShowGlobalPosts(true)
               setShowFriendsPosts(false)
@@ -262,7 +262,7 @@ function Public() {
           </button>
           <button
             className={`flex max-h-[45px] items-center justify-center gap-2 rounded-3xl pb-[8px] pt-[8px] lg:pl-8 lg:pr-8 ${
-              showFriendsPosts ? 'bg-black text-white' : 'bg-graySoft text-textMain'
+              showFriendsPosts ? 'bg-black text-white' : 'lg:hover:bg-grayHover bg-graySoft text-textMain'
             } `}
             onClick={() => {
               setShowFriendsPosts(true)

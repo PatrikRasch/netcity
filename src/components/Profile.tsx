@@ -636,7 +636,7 @@ const Profile = () => {
       return (
         <div>
           <button
-            className="font-mainFont flex h-[33px] w-[190px] items-center justify-center gap-[5px] rounded-3xl bg-purpleSoft text-[17px] text-purpleMain"
+            className="font-mainFont lg:hover:bg-purpleHoverSoft flex h-[33px] w-[190px] items-center justify-center gap-[5px] rounded-3xl bg-purpleSoft text-[17px] text-purpleMain"
             onClick={() => {
               setIsDeleteFriendDropdownMenuOpen(
                 (prevIsDeleteFriendDropdownMenuOpen) => !prevIsDeleteFriendDropdownMenuOpen
@@ -658,7 +658,7 @@ const Profile = () => {
     if (sentFriendRequestToUser)
       return (
         <button
-          className="font-mainFont flex h-[33px] w-[190px] items-center justify-center gap-1 rounded-3xl bg-graySoft text-[17px] text-black"
+          className="font-mainFont lg:hover:bg-grayHover flex h-[33px] w-[190px] items-center justify-center gap-1 rounded-3xl bg-graySoft text-[17px] text-black"
           onClick={() => {
             if (userDocRef && userData && loggedInUserData) {
               removeFriendRequest()
@@ -673,7 +673,7 @@ const Profile = () => {
       return (
         <div className="flex max-w-[390px] justify-evenly gap-4">
           <button
-            className="font-mainFont flex h-[33px] w-[220px] items-center justify-center gap-1 rounded-3xl bg-purpleMain text-[15px] text-white"
+            className="font-mainFont lg:hover:bg-purpleHover flex h-[33px] w-[220px] items-center justify-center gap-1 rounded-3xl bg-purpleMain text-[15px] text-white"
             onClick={() => {
               if (userDocRef && userData && loggedInUserData) {
                 acceptFriendRequest()
@@ -684,7 +684,7 @@ const Profile = () => {
             Accept Friend Request
           </button>
           <button
-            className="h-[33px] w-[115px] rounded-3xl bg-graySoft text-[15px] text-black"
+            className="lg:hover:bg-grayHover h-[33px] w-[115px] rounded-3xl bg-graySoft text-[15px] text-black"
             onClick={() => {
               if (userDocRef && userData && loggedInUserData) {
                 declineFriendRequest()
@@ -698,7 +698,7 @@ const Profile = () => {
     else
       return (
         <button
-          className="font-mainFont flex h-[33px] w-[190px] items-center justify-center gap-1 rounded-3xl bg-purpleMain text-[17px] text-white"
+          className="font-mainFont lg:hover:bg-purpleHover flex h-[33px] w-[190px] items-center justify-center gap-1 rounded-3xl bg-purpleMain text-[17px] text-white"
           onClick={() => {
             if (userDocRef && userData && loggedInUserData) {
               sendFriendRequest()
@@ -764,7 +764,7 @@ const Profile = () => {
             className={`${
               showPosts ? 'bg-black text-white' : 'bg-graySoft text-black'
             }  font-mainFont flex h-[38px] w-full items-center justify-center gap-2 rounded-3xl font-bold transition-colors duration-100
-            lg:w-48 ${showPosts ? '' : 'lg:hover:bg-grayMedium'}
+            lg:w-48 ${showPosts ? '' : 'lg:hover:bg-grayHover'}
             `}
             onClick={() => setShowPosts(true)}
           >
@@ -775,7 +775,7 @@ const Profile = () => {
             className={`${
               !showPosts ? 'bg-black text-white' : 'bg-graySoft text-black'
             } font-mainFont flex h-[38px] w-full items-center justify-center gap-1 rounded-3xl font-bold transition-colors duration-100 ${
-              showPosts ? 'lg:hover:bg-grayMedium' : ''
+              showPosts ? 'lg:hover:bg-grayHover' : ''
             } lg:w-48`}
             onClick={() => setShowPosts(false)}
           >

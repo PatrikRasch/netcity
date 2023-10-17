@@ -78,7 +78,7 @@ function Likes({
         <button
           onClick={() => handleClickLike()}
           className={`font-mainFont flex w-full cursor-pointer items-center justify-center gap-2 rounded-3xl p-1 font-semibold lg:h-[35px] ${
-            liked ? 'bg-purpleSoft text-purpleMain' : 'bg-graySoft text-grayMain lg:hover:bg-grayMedium'
+            liked ? 'bg-purpleSoft text-purpleMain' : 'lg:hover:bg-grayHover bg-graySoft text-grayMain'
           }`}
         >
           {showLikedOrNot()}

@@ -69,9 +69,9 @@ const DeletePost = ({
   const dropdownMenu = () => {
     if (showDropdownMenu) {
       return (
-        <div className="absolute right-0 top-4 z-20 grid min-w-max grid-rows-[1fr,1.5px,1fr] rounded-2xl rounded-tr-none bg-graySoft">
+        <div className="absolute right-0 top-4 z-20 grid min-w-max grid-rows-[1fr,1.5px,1fr] rounded-2xl rounded-tr-none bg-graySoft drop-shadow-md">
           <button
-            className="rounded-tl-2xl pb-1 pl-4 pr-4 pt-1 lg:hover:bg-grayMedium"
+            className="lg:hover:bg-grayHover rounded-tl-2xl pb-1 pl-4 pr-4 pt-1"
             onClick={() => {
               deletePostClicked()
               if (setPostTotalNumOfComments && postTotalNumOfComments) {
@@ -85,7 +85,7 @@ const DeletePost = ({
           </button>
           <div className="h-[1.5px] w-full bg-grayMedium"></div>
           <button
-            className="rounded-2xl rounded-tl-none rounded-tr-none pb-1 pl-4 pr-4 pt-1 lg:hover:bg-grayMedium"
+            className="lg:hover:bg-grayHover rounded-2xl rounded-tl-none rounded-tr-none pb-1 pl-4 pr-4 pt-1"
             onClick={() => {
               setShowDropdownMenu(false)
             }}

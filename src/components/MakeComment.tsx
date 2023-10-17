@@ -138,7 +138,7 @@ function MakeComment({
           resetTextarea()
         }}
       >
-        <img src={postBlackFilled} alt="" className="max-w-[33px]" />
+        <img src={postBlackFilled} alt="" className="max-w-[33px] outline-none" />
       </button>
     </div>
   )

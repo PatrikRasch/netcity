@@ -569,7 +569,7 @@ const Post = ({
           {/* //1 Comment */}
           <div
             className={`font-mainFont grid w-full cursor-pointer items-center justify-center rounded-3xl p-1 font-semibold tracking-wide text-grayMain lg:h-[35px] ${
-              showMakeComment ? 'bg-black text-white' : 'bg-graySoft lg:hover:bg-grayMedium'
+              showMakeComment ? 'bg-black text-white' : 'lg:hover:bg-grayHover bg-graySoft'
             }`}
             onClick={() => handleCommentButtonClicked()}
           >

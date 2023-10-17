@@ -1,25 +1,25 @@
 # Summary
 
-Date : 2023-09-12 11:01:19
+Date : 2023-10-15 18:48:57
 
 Directory /Users/patrikrasch/Documents/CODE/the-odin-project/113. JavaScript/Finishing-Up-With-JavaScript/top-netcity/src/components
 
-Total : 37 files,  3972 codes, 601 comments, 506 blanks, all 5079 lines
+Total : 40 files,  4822 codes, 568 comments, 545 blanks, all 5935 lines
 
 Summary / [Details](details.md) / [Diff Summary](diff.md) / [Diff Details](diff-details.md)
 
 ## Languages
 | language | files | code | comment | blank | total |
 | :--- | ---: | ---: | ---: | ---: | ---: |
-| TypeScript JSX | 36 | 3,888 | 601 | 505 | 4,994 |
-| CSS | 1 | 84 | 0 | 1 | 85 |
+| TypeScript JSX | 39 | 4,787 | 484 | 543 | 5,814 |
+| CSS | 1 | 35 | 84 | 2 | 121 |
 
 ## Directories
 | path | files | code | comment | blank | total |
 | :--- | ---: | ---: | ---: | ---: | ---: |
-| . | 37 | 3,972 | 601 | 506 | 5,079 |
-| . (Files) | 23 | 3,610 | 384 | 395 | 4,389 |
-| context | 5 | 149 | 46 | 40 | 235 |
-| custom-hooks | 9 | 213 | 171 | 71 | 455 |
+| . | 40 | 4,822 | 568 | 545 | 5,935 |
+| . (Files) | 28 | 4,472 | 519 | 465 | 5,456 |
+| context | 4 | 142 | 21 | 31 | 194 |
+| custom-hooks | 8 | 208 | 28 | 49 | 285 |
 
 Summary / [Details](details.md) / [Diff Summary](diff.md) / [Diff Details](diff-details.md)

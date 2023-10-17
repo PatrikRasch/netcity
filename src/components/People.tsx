@@ -321,7 +321,7 @@ const People = () => {
           <div className="grid grid-cols-4 gap-2 bg-white p-4 lg:gap-5">
             <button
               className={`rounded-2xl pb-[4px] pl-[3px] pr-[3px] pt-[4px] text-[12.5px] font-semibold lg:rounded-3xl lg:p-2 lg:text-medium 
-          ${showOtherUsers ? 'bg-black text-white' : 'bg-graySoft text-black'} `}
+          ${showOtherUsers ? 'bg-black text-white' : 'lg:hover:bg-grayHover bg-graySoft text-black'} `}
               onClick={() => {
                 sectionControlSwitcher('setShowOtherUsers')
                 updateOtherUsers()
@@ -331,7 +331,7 @@ const People = () => {
             </button>
             <button
               className={`rounded-2xl pb-[4px] pl-[3px] pr-[3px] pt-[4px] text-[12.5px] font-semibold lg:rounded-3xl lg:p-2 lg:text-medium ${
-                showFriends ? 'bg-black text-white' : 'bg-graySoft text-black'
+                showFriends ? 'bg-black text-white' : 'lg:hover:bg-grayHover bg-graySoft text-black'
               } `}
               onClick={() => {
                 sectionControlSwitcher('setShowFriends')
@@ -342,7 +342,7 @@ const People = () => {
             </button>
             <button
               className={`relative rounded-2xl pb-[6px] pl-[3px] pr-[3px] pt-[6px] text-[12.5px] font-semibold leading-4 lg:rounded-3xl lg:p-2 lg:text-medium ${
-                showReceivedFriendRequests ? 'bg-black text-white' : 'bg-graySoft text-black'
+                showReceivedFriendRequests ? 'bg-black text-white' : 'lg:hover:bg-grayHover bg-graySoft text-black'
               } `}
               onClick={() => {
                 sectionControlSwitcher('setShowReceivedFriendRequests')
@@ -360,7 +360,7 @@ const People = () => {
             </button>
             <button
               className={`rounded-2xl pb-[6px] pl-[3px] pr-[3px] pt-[6px] text-[12.5px] font-semibold leading-4 lg:rounded-3xl lg:p-2 lg:text-medium ${
-                showSentFriendRequests ? 'bg-black text-white' : 'bg-graySoft text-black'
+                showSentFriendRequests ? 'bg-black text-white' : 'lg:hover:bg-grayHover bg-graySoft text-black'
               } `}
               onClick={() => {
                 sectionControlSwitcher('setShowSentFriendRequests')

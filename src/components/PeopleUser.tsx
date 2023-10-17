@@ -330,7 +330,7 @@ function PeopleUser({
               setIsFriendsDropdownMenuOpen(!isFriendsDropdownMenuOpen)
             }}
           >
-            <div className="flex w-[120px] items-center justify-center gap-[5px] rounded-3xl bg-purpleSoft p-2 text-medium font-semibold text-purpleMain">
+            <div className="lg:hover:bg-purpleHoverSoft flex w-[120px] items-center justify-center gap-[5px] rounded-3xl bg-purpleSoft p-2 text-medium font-semibold text-purpleMain">
               <img src={starPurpleFilled} alt="" className="h-[18px]" />
               <div>Friends</div>
               {/* <img src={arrowDropdown} alt="" className="max-w-[30px]" /> */}
@@ -351,7 +351,7 @@ function PeopleUser({
             removeFriendRequest()
           }}
         >
-          <div className="flex w-[120px] gap-[1px] rounded-3xl bg-graySoft p-2 text-[14px] font-semibold text-grayMain">
+          <div className="lg:hover:bg-grayHover flex w-[120px] gap-[1px] rounded-3xl bg-graySoft p-2 text-[14px] font-semibold text-grayMain">
             <img src={clockGrayEmpty} alt="" className="w-[20px]" />
             <div>Requested</div>
           </div>
@@ -365,7 +365,7 @@ function PeopleUser({
             sendFriendRequest()
           }}
         >
-          <div className="w-[120px] rounded-3xl bg-purpleMain p-2 text-[14px] font-semibold text-white">
+          <div className="lg:hover:bg-purpleHover w-[120px] rounded-3xl bg-purpleMain p-2 text-[14px] font-semibold text-white">
             <div>+ Add Friend</div>
           </div>
         </button>
@@ -391,7 +391,7 @@ function PeopleUser({
       return (
         <>
           <button
-            className="w-[120px] cursor-pointer rounded-3xl  bg-purpleMain p-2 text-medium font-semibold text-white"
+            className="lg:hover:bg-purpleHover w-[120px] cursor-pointer rounded-3xl bg-purpleMain p-2 text-medium font-semibold text-white"
             onClick={() => {
               acceptFriendRequest()
             }}
@@ -402,7 +402,7 @@ function PeopleUser({
             </div>
           </button>
           <button
-            className="w-[120px] cursor-pointer rounded-3xl bg-graySoftest p-2 text-[14px] font-semibold text-grayMain"
+            className="lg:hover:bg-grayHover w-[120px] cursor-pointer rounded-3xl bg-graySoftest p-2 text-[14px] font-semibold text-grayMain"
             onClick={() => {
               declineFriendRequest()
             }}

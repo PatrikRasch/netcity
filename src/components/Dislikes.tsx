@@ -74,7 +74,7 @@ function Dislikes({
         <button
           onClick={() => handleClickDislike()}
           className={`font-mainFont weight flex w-full cursor-pointer items-center justify-center gap-2 rounded-3xl p-1 font-semibold lg:h-[35px] ${
-            disliked ? 'bg-redSoft text-redMain' : 'bg-graySoft text-grayMain lg:hover:bg-grayMedium'
+            disliked ? 'bg-redSoft text-redMain' : 'lg:hover:bg-grayHover bg-graySoft text-grayMain'
           }`}
         >
           {showDislikedOrNot()}
