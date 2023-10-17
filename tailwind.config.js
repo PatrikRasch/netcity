@@ -14,6 +14,7 @@ module.exports = {
         purpleMain: '#6E77D1',
         purpleSoft: '#e2e5f8',
         purpleHover: '#7d85d1',
+        purpleHoverSoft: '#dce0fc',
         redMain: '#e83640',
         redSoft: '#f9e5e4',
         redHover: '#e6535a',
@@ -22,6 +23,7 @@ module.exports = {
         grayMedium: '#bbbbba',
         graySoft: '#e6e6e7',
         graySoftest: '#efeeef',
+        grayHover: '#dbdbdb',
 
         textMain: '#373736',
         textMedium: '#858485',
