@@ -149,8 +149,8 @@ const Post = ({
   const feedPostsCollection = collection(db, 'publicPosts')
   const feedPostDocRef = doc(feedPostsCollection, postId) // Grab the posts on the user's profile
 
-  const navigateToUser = () => {
-    navigate(`/profile/${postUserId}`)
+  const navigateToUser = (userToNavigateTo: string) => {
+    navigate(`/profile/${userToNavigateTo}`)
   }
 
   const getNumOfComments = async (postDocRef: DocumentReference) => {
@@ -450,25 +450,35 @@ const Post = ({
   const displayPostNames = () => {
     if (context !== 'profile' || openProfileId === postUserId)
       return (
-        <div>
+        <button
+          className="cursor-pointer"
+          onClick={() => {
+            navigateToUser(postUserId)
+          }}
+        >
           {postFirstName} {postLastName}
-        </div>
+        </button>
       )
     if (!visitingUser && openProfileId !== postUserId)
       return (
         <div className="flex gap-1">
           <button
             onClick={() => {
-              navigateToUser()
+              navigateToUser(postUserId)
             }}
             className="cursor-pointer"
           >
             {postFirstName + ' ' + postLastName}
           </button>
-          <img src={triangleBlackFilled} alt="" className="w-[12px] pt-[2px]" />
-          <div>
+          <img src={triangleBlackFilled} alt="" className="w-[12px] cursor-auto pt-[2px]" />
+          <button
+            className="cursor-auto"
+            onClick={() => {
+              navigateToUser(loggedInUserId)
+            }}
+          >
             {loggedInUserFirstName} {loggedInUserLastName}
-          </div>
+          </button>
         </div>
       )
     else
@@ -476,16 +486,21 @@ const Post = ({
         <div className="flex gap-1">
           <button
             onClick={() => {
-              navigateToUser()
+              navigateToUser(postUserId)
             }}
             className="cursor-pointer"
           >
             {postFirstName + ' ' + postLastName}
           </button>
-          <img src={triangleBlackFilled} alt="" className="w-[12px] pt-[2px]" />
-          <div>
+          <img src={triangleBlackFilled} alt="" className="w-[12px] cursor-auto pt-[2px]" />
+          <button
+            className="cursor-pointer"
+            onClick={() => {
+              if (openProfileId) navigateToUser(openProfileId)
+            }}
+          >
             {openProfileFirstName} {openProfileLastName}
-          </div>
+          </button>
         </div>
       )
   }
@@ -500,19 +515,14 @@ const Post = ({
                 <img
                   src={postProfilePicture === '' ? emptyProfilePicture : postProfilePicture}
                   alt="profile"
-                  className="h-[40px] w-[40px] rounded-[50%] object-cover hover:cursor-pointer lg:h-[55px] lg:w-[55px]"
+                  className="h-[40px] w-[40px] cursor-pointer rounded-[50%] object-cover lg:h-[55px] lg:w-[55px]"
                   onClick={() => {
-                    navigateToUser()
+                    navigateToUser(postUserId)
                   }}
                 />
               </div>
               <div className="items-center gap-[15px] lg:flex">
-                <button
-                  className="font-mainFont cursor-pointer font-bold tracking-wide lg:text-[clamp(16px,1.5svw,19px)]"
-                  onClick={() => {
-                    navigateToUser()
-                  }}
-                >
+                <button className="font-mainFont font-bold tracking-wide lg:text-[clamp(16px,1.5svw,19px)]">
                   {displayPostNames()}
                 </button>
                 {renderFriendsPostIconOrNot()}
@@ -569,7 +579,7 @@ const Post = ({
           {/* //1 Comment */}
           <div
             className={`font-mainFont grid w-full cursor-pointer items-center justify-center rounded-3xl p-1 font-semibold tracking-wide text-grayMain lg:h-[35px] ${
-              showMakeComment ? 'bg-black text-white' : 'lg:hover:bg-grayHover bg-graySoft'
+              showMakeComment ? 'bg-black text-white' : 'bg-graySoft lg:hover:bg-grayHover'
             }`}
             onClick={() => handleCommentButtonClicked()}
           >
