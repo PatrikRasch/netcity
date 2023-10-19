@@ -17,6 +17,8 @@ import mailPurpleFilled from '../assets/icons/mail/mailPurpleFilled.svg'
 import lockPurpleFilled from '../assets/icons/lock/lockPurpleFilled.webp'
 import logoGoogle from '../assets/icons/google/logoGoogle.svg'
 import closeGrayFilled from './../assets/icons/close/closeGrayFilled.svg'
+import error from './../assets/icons/error/error.svg'
+import { validate } from 'uuid'
 
 const Login = () => {
   const { loggedInUserId, setLoggedInUserId } = useLoggedInUserId()
@@ -27,6 +29,9 @@ const Login = () => {
   const [showLoadingBar, setShowLoadingBar] = useState(false)
   const [unsubscribeFunction, setUnsubscribeFunction] = useState<Unsubscribe | null>(null)
   const [showRegister, setShowRegister] = useState(false)
+  const [validateEmail, setValidateEmail] = useState(false)
+  const [validatePassword, setValidatePassword] = useState(false)
+  const [showValidationMessage, setShowValidationMessage] = useState(false)
   const navigate = useNavigate()
 
   // - Check if user is signed in
@@ -44,7 +49,49 @@ const Login = () => {
     if (unsubscribeFunction) unsubscribeFunction()
   }
 
+  const handleFormValidation = () => {
+    if (email.length === 0) setValidateEmail(true)
+    if (password.length === 0) setValidatePassword(true)
+    if (email.length === 0 || password.length === 0) return true
+  }
+
+  const unmatchedLoginCredentialsMessage = () => {
+    return (
+      <>
+        <div
+          className={`transition-opacity-transform absolute left-1/2 top-1/2 grid min-h-[8svh] w-[clamp(100px,70svw,370px)] translate-x-[-50%] translate-y-[-50%] items-center 
+          rounded-xl
+          bg-white p-4 pr-8 drop-shadow-lg lg:w-[clamp(100px,35svw,560px)] lg:p-12 ${
+            showValidationMessage ? 'pointer-events-auto scale-110 opacity-100' : 'pointer-events-none opacity-0 '
+          } z-40 duration-300`}
+        >
+          <button
+            className="absolute right-0 top-0 cursor-pointer p-2"
+            onClick={() => {
+              setShowValidationMessage(false)
+            }}
+          >
+            <img src={closeGrayFilled} alt="exit register" className="w-[30px] lg:w-[50px]" />
+          </button>
+          <div className="flex gap-2">
+            <img src={error} alt="" className="w-[18px] lg:w-[25px]" />
+            <div className="text-[15px] text-black lg:text-[23px]">Username and password does not match</div>
+          </div>
+        </div>
+        <div
+          className={`pointer-events-none absolute z-10 h-full w-full bg-black transition-opacity duration-300 ${
+            showValidationMessage ? 'pointer-events-auto opacity-25' : 'opacity-0'
+          }`}
+          onClick={() => {
+            setShowValidationMessage(false)
+          }}
+        ></div>
+      </>
+    )
+  }
+
   const handleLogin = async () => {
+    if (handleFormValidation() === true) return
     setShowLoadingBar(true)
     const auth = getAuth()
     try {
@@ -55,7 +102,10 @@ const Login = () => {
     } catch (err) {
       setShowLoadingBar(false)
       console.error(err)
-      alert('Username and/or password does not match')
+      setShowValidationMessage(true)
+      setTimeout(() => {
+        setShowValidationMessage(false)
+      }, 3000)
     }
   }
 
@@ -65,15 +115,15 @@ const Login = () => {
         <div className="animate-project-information1 italic opacity-0">A social media project by</div>
         <a
           href="https://www.GitHub.com/PatrikRasch"
-          className="animate-project-information2 w-min justify-self-center font-semibold text-purpleMain opacity-0"
+          className="w-min animate-project-information2 justify-self-center font-semibold text-purpleMain opacity-0"
         >
           GitHub.com/PatrikRasch
         </a>
         <div className="just grid justify-center gap-0 lg:gap-1">
-          <div className="animate-project-information3 w-[60svw] italic opacity-0 lg:w-[clamp(100px,40svw,400px)]">
+          <div className="w-[60svw] animate-project-information3 italic opacity-0 lg:w-[clamp(100px,40svw,400px)]">
             Built from scratch with
           </div>
-          <div className="animate-project-information4 relative flex h-[24px] justify-center overflow-hidden font-semibold opacity-0">
+          <div className="relative flex h-[24px] animate-project-information4 justify-center overflow-hidden font-semibold opacity-0">
             <div className="absolute animate-slide-in-and-out1 opacity-0">React</div>
             <div className="absolute animate-slide-in-and-out2 opacity-0">TypeScript</div>
             <div className="absolute animate-slide-in-and-out3 opacity-0">Tailwind</div>
@@ -131,24 +181,31 @@ const Login = () => {
   return (
     <>
       {displayRegister()}
+      {unmatchedLoginCredentialsMessage()}
       <div
-        className={`grid h-[100vh] grid-rows-[9fr,11fr] justify-items-center gap-4 bg-purpleSoft lg:flex lg:items-center lg:justify-center lg:p-10 ${
+        className={`grid h-[100svh] grid-rows-[9fr,11fr] justify-items-center gap-4 bg-purpleSoft lg:flex lg:items-center lg:justify-center lg:p-10 ${
           showRegister ? 'pointer-events-none hidden lg:block' : ''
         }`}
       >
-        <div className={`${showLoadingBar ? 'opacity-100' : 'opacity-0'} pointer-events-none transition`}>
-          <div className="absolute inset-0 z-20 flex items-center justify-center">
-            <LoadingBar />
-          </div>
-          <div className="absolute inset-0 z-10 h-full w-full bg-black opacity-25"></div>
+        <div
+          className={`absolute inset-0 z-30 flex items-center justify-center duration-300 ${
+            showLoadingBar ? 'opacity-100' : 'opacity-0'
+          } pointer-events-none transition-opacity`}
+        >
+          <LoadingBar />
         </div>
+        <div
+          className={`absolute inset-0 z-20 h-full w-full bg-black transition-opacity duration-300 ${
+            showLoadingBar ? 'opacity-25' : 'opacity-0'
+          } pointer-events-none `}
+        ></div>
 
         {/*// - Logo & Title */}
         <div className="grid justify-items-center text-center lg:mr-[10svw]">
-          <img src={logoBlackFilled} alt="" className="animate-logo w-[125px] lg:w-[clamp(100px,20svw,300px)]" />
+          <img src={logoBlackFilled} alt="" className="w-[125px] animate-logo lg:w-[clamp(100px,20svw,300px)]" />
           <div className="text-[35px] lg:text-[clamp(40px,5svw,70px)]">
             <div className="ml-[4px]">
-              <div className="font-mainFont nowrap animate-title-reveal h-full w-full text-[35px] font-bold text-black opacity-0 lg:text-[clamp(40px,5svw,70px)]">
+              <div className="font-mainFont nowrap h-full w-full animate-title-reveal text-[35px] font-bold text-black opacity-0 lg:text-[clamp(40px,5svw,70px)]">
                 NetCity
               </div>
             </div>
@@ -161,10 +218,10 @@ const Login = () => {
 
         <div className="grid justify-items-center gap-6 text-xl">
           <div className="hidden w-full gap-4 lg:grid">
-            <div className="relative text-center text-[30px] font-bold">
+            <div className="relative z-10 text-center text-[30px] font-bold">
               Login
               <button
-                className={`animate-button-pop-in-desktop absolute right-0 h-[30px] w-[120px] scale-0 rounded-xl bg-black text-small font-semibold leading-[17px] text-white outline-purpleMain transition duration-300 hover:scale-[96%] ${
+                className={`absolute right-0 h-[30px] w-[120px] scale-0 animate-button-pop-in-desktop rounded-xl bg-black text-small font-semibold leading-[17px] text-white outline-purpleMain transition duration-300 hover:scale-[96%] ${
                   (email === 'test@gmail.com' && password === '123123') || email !== '' || password !== ''
                     ? 'pointer-events-none opacity-0'
                     : 'opacity-100'
@@ -180,9 +237,9 @@ const Login = () => {
             </div>
             <div className=" h-[1px] w-full bg-black"></div>
           </div>
-          <div className="relative flex w-[clamp(100px,75svw,400px)] items-center rounded-3xl bg-graySoft">
+          <div className="relative flex w-[clamp(100px,75svw,400px)] items-center rounded-3xl">
             <button
-              className={`animate-button-pop-in-mobile absolute right-2 h-[30px] w-[100px] scale-0 rounded-xl bg-black text-smaller font-semibold leading-[10px] text-white outline-purpleMain transition duration-300 hover:scale-[96%] lg:hidden ${
+              className={`absolute right-2 h-[30px] w-[100px] scale-0 animate-button-pop-in-mobile rounded-xl bg-black text-smaller font-semibold leading-[10px] text-white outline-purpleMain transition duration-300 hover:scale-[96%] lg:hidden ${
                 (email === 'test@gmail.com' && password === '123123') || email !== ''
                   ? 'pointer-events-none opacity-0'
                   : 'opacity-100'
@@ -195,22 +252,32 @@ const Login = () => {
               Use test user
             </button>
 
-            <img src={mailPurpleFilled} alt="" className="absolute h-[33px] pl-4" />
+            <img src={mailPurpleFilled} alt="" className="absolute z-10 h-[33px] pl-4" />
             <input
               type="email"
-              className="h-[45px] w-full rounded-3xl bg-white pl-16 text-[16px] text-black outline-purpleMain"
-              placeholder="Email"
-              onChange={(e) => setEmail(e.target.value)}
+              className={`h-[45px] w-full rounded-3xl border-2 bg-white pl-16  text-[16px] text-black outline-purpleMain transition-colors duration-500 ${
+                validateEmail ? ' border-redMain' : 'border-transparent'
+              }`}
+              placeholder={validateEmail ? 'Email is required' : 'Email'}
+              onChange={(e) => {
+                setEmail(e.target.value)
+                setValidateEmail(false)
+              }}
               value={email}
             />
           </div>
-          <div className="flex w-[clamp(100px,75svw,400px)] items-center rounded-3xl bg-graySoft">
-            <img src={lockPurpleFilled} alt="" className="absolute h-[33px] pl-4" />
+          <div className="flex w-[clamp(100px,75svw,400px)] items-center rounded-3xl">
+            <img src={lockPurpleFilled} alt="" className="absolute z-10 h-[33px] pl-4" />
             <input
               type="password"
-              className="h-[45px] w-full rounded-3xl bg-white pl-16 text-[16px] text-black outline-purpleMain"
-              placeholder="Password"
-              onChange={(e) => setPassword(e.target.value)}
+              className={`h-[45px] w-full rounded-3xl border-2 bg-white pl-16 text-[16px] text-black outline-purpleMain transition-colors duration-500 ${
+                validatePassword ? ' border-redMain' : 'border-transparent'
+              }`}
+              placeholder={validatePassword ? 'Password is required' : 'Password'}
+              onChange={(e) => {
+                setPassword(e.target.value)
+                setValidatePassword(false)
+              }}
               value={password}
             />
           </div>
@@ -242,7 +309,7 @@ const Login = () => {
               </button>
 
               {/*// - Create new account button */}
-              <div className="flex justify-center">
+              <div className="flex items-center justify-center">
                 <div className="text-medium text-grayMain">Don't have an account?</div>
                 <button
                   className="pl-1 text-medium font-semibold text-purpleMain underline"
