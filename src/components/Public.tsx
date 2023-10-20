@@ -17,6 +17,7 @@ import { useLoggedInUserId } from './context/LoggedInUserProfileDataContextProvi
 import { useLoggedInUserFirstName } from './context/LoggedInUserProfileDataContextProvider'
 import { useLoggedInUserLastName } from './context/LoggedInUserProfileDataContextProvider'
 import { useLoggedInUserProfilePicture } from './context/LoggedInUserProfileDataContextProvider'
+import { useEmptyProfilePicture } from './context/EmptyProfilePictureContextProvider'
 import { useDateFunctions } from './custom-hooks/useDateFunctions'
 import useInfinityScrollFunctions from './custom-hooks/useInfinityScrollFunctions'
 import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage'
@@ -42,6 +43,7 @@ function Public() {
   const { loggedInUserFirstName, setLoggedInUserFirstName } = useLoggedInUserFirstName()
   const { loggedInUserLastName, setLoggedInUserLastName } = useLoggedInUserLastName()
   const loggedInUserProfilePicture = useLoggedInUserProfilePicture()
+  const emptyProfilePicture = useEmptyProfilePicture()
   const { dateDayMonthYear } = useDateFunctions()
   const [postInput, setPostInput] = useState('')
   const [postId, setPostId] = useState('')
@@ -247,7 +249,7 @@ function Public() {
         <section className="grid max-w-[100svw] grid-cols-2 gap-2 whitespace-nowrap bg-white p-4 lg:flex lg:justify-center lg:gap-40">
           <button
             className={`flex h-[45px] items-center justify-center gap-2 rounded-3xl pb-[8px] pt-[8px] text-white lg:pl-8 lg:pr-8
-          ${showGlobalPosts ? 'bg-black' : 'lg:hover:bg-grayHover bg-graySoft'} `}
+          ${showGlobalPosts ? 'bg-black' : 'bg-graySoft lg:hover:bg-grayHover'} `}
             onClick={() => {
               setShowGlobalPosts(true)
               setShowFriendsPosts(false)
@@ -262,7 +264,7 @@ function Public() {
           </button>
           <button
             className={`flex max-h-[45px] items-center justify-center gap-2 rounded-3xl pb-[8px] pt-[8px] lg:pl-8 lg:pr-8 ${
-              showFriendsPosts ? 'bg-black text-white' : 'lg:hover:bg-grayHover bg-graySoft text-textMain'
+              showFriendsPosts ? 'bg-black text-white' : 'bg-graySoft text-textMain lg:hover:bg-grayHover'
             } `}
             onClick={() => {
               setShowFriendsPosts(true)
@@ -285,7 +287,7 @@ function Public() {
         <section className="bg-white pl-3 pr-3 lg:pl-8 lg:pr-4">
           <div className="grid grid-cols-[50px,1fr,50px] items-center justify-items-center gap-3 pb-2 pt-3">
             <img
-              src={loggedInUserProfilePicture}
+              src={loggedInUserProfilePicture === '' ? emptyProfilePicture : loggedInUserProfilePicture}
               alt=""
               className="ml-2 aspect-square h-[40px] w-[40px] rounded-[50px] object-cover lg:h-[55px] lg:w-[55px]"
             />
