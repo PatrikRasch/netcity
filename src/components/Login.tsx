@@ -276,12 +276,13 @@ const Login = () => {
             <input
               type="email"
               className={`transition-colors-outline h-[45px] w-full rounded-3xl border-2 bg-white pl-16 text-[16px] text-black outline-purpleMain duration-500 ${
-                validateEmail ? ' border-redMain' : 'border-transparent'
+                validateEmail && !useTestUserActive ? ' border-redMain' : ''
               } ${useTestUserActive ? 'border-purpleMain' : ''}`}
               placeholder={validateEmail ? 'Email is required' : 'Email'}
               onChange={(e) => {
                 setEmail(e.target.value)
-                setValidateEmail(false)
+                if (validateEmail) setValidateEmail(false)
+                if (validatePassword) setValidatePassword(false)
                 if (useTestUserActive) setUseTestUserActive(false)
               }}
               value={email}
@@ -292,12 +293,13 @@ const Login = () => {
             <input
               type="password"
               className={`transition-colors-outline h-[45px] w-full rounded-3xl border-2 bg-white pl-16 text-[16px] text-black outline-purpleMain duration-500 ${
-                validatePassword ? ' border-redMain' : 'border-transparent'
-              } ${useTestUserActive ? 'border-purpleMain' : ''}`}
+                validatePassword && !useTestUserActive ? ' border-redMain' : ''
+              } ${useTestUserActive ? 'border-2 border-purpleMain' : ''}`}
               placeholder={validatePassword ? 'Password is required' : 'Password'}
               onChange={(e) => {
                 setPassword(e.target.value)
-                setValidatePassword(false)
+                if (validateEmail) setValidateEmail(false)
+                if (validatePassword) setValidatePassword(false)
                 if (useTestUserActive) setUseTestUserActive(false)
               }}
               value={password}
