@@ -32,6 +32,7 @@ const Login = () => {
   const [validateEmail, setValidateEmail] = useState(false)
   const [validatePassword, setValidatePassword] = useState(false)
   const [showValidationMessage, setShowValidationMessage] = useState(false)
+  const [useTestUserActive, setUseTestUserActive] = useState(false)
   const navigate = useNavigate()
 
   // - Check if user is signed in
@@ -229,6 +230,7 @@ const Login = () => {
                 onClick={() => {
                   setEmail('test@gmail.com')
                   setPassword('123123')
+                  setUseTestUserActive(true)
                 }}
                 aria-label="add test user information into input fields"
               >
@@ -255,13 +257,14 @@ const Login = () => {
             <img src={mailPurpleFilled} alt="" className="absolute z-10 h-[33px] pl-4" />
             <input
               type="email"
-              className={`h-[45px] w-full rounded-3xl border-2 bg-white pl-16  text-[16px] text-black outline-purpleMain transition-colors duration-500 ${
+              className={`transition-colors-outline h-[45px] w-full rounded-3xl border-2 bg-white pl-16 text-[16px] text-black outline-purpleMain duration-500 ${
                 validateEmail ? ' border-redMain' : 'border-transparent'
-              }`}
+              } ${useTestUserActive ? 'border-purpleMain' : ''}`}
               placeholder={validateEmail ? 'Email is required' : 'Email'}
               onChange={(e) => {
                 setEmail(e.target.value)
                 setValidateEmail(false)
+                if (useTestUserActive) setUseTestUserActive(false)
               }}
               value={email}
             />
@@ -270,13 +273,14 @@ const Login = () => {
             <img src={lockPurpleFilled} alt="" className="absolute z-10 h-[33px] pl-4" />
             <input
               type="password"
-              className={`h-[45px] w-full rounded-3xl border-2 bg-white pl-16 text-[16px] text-black outline-purpleMain transition-colors duration-500 ${
+              className={`transition-colors-outline h-[45px] w-full rounded-3xl border-2 bg-white pl-16 text-[16px] text-black outline-purpleMain duration-500 ${
                 validatePassword ? ' border-redMain' : 'border-transparent'
-              }`}
+              } ${useTestUserActive ? 'border-purpleMain' : ''}`}
               placeholder={validatePassword ? 'Password is required' : 'Password'}
               onChange={(e) => {
                 setPassword(e.target.value)
                 setValidatePassword(false)
+                if (useTestUserActive) setUseTestUserActive(false)
               }}
               value={password}
             />
