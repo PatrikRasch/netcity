@@ -7,6 +7,7 @@ import { auth } from '../config/firebase.config'
 //6 Login user alert error must be sexified later on.
 
 import Register from './Register'
+import FormValidationAlertMessage from './FormValidationAlertMessage'
 import LoadingBar from './LoadingBar'
 
 import { useLoggedInUserId } from './context/LoggedInUserProfileDataContextProvider'
@@ -17,7 +18,6 @@ import mailPurpleFilled from '../assets/icons/mail/mailPurpleFilled.svg'
 import lockPurpleFilled from '../assets/icons/lock/lockPurpleFilled.webp'
 import logoGoogle from '../assets/icons/google/logoGoogle.svg'
 import closeGrayFilled from './../assets/icons/close/closeGrayFilled.svg'
-import error from './../assets/icons/error/error.svg'
 import { validate } from 'uuid'
 
 const Login = () => {
@@ -31,8 +31,15 @@ const Login = () => {
   const [showRegister, setShowRegister] = useState(false)
   const [validateEmail, setValidateEmail] = useState(false)
   const [validatePassword, setValidatePassword] = useState(false)
-  const [showValidationMessage, setShowValidationMessage] = useState(false)
+  const [showValidationAlertMessage, setShowValidationAlertMessage] = useState(false)
   const [useTestUserActive, setUseTestUserActive] = useState(false)
+
+  const [validateRegisterFirstName, setValidateRegisterFirstName] = useState(false)
+  const [validateRegisterLastName, setValidateRegisterLastName] = useState(false)
+  const [validateRegisterEmail, setValidateRegisterEmail] = useState(false)
+  const [validateRegisterPassword, setValidateRegisterPassword] = useState(false)
+  const [validateRegisterConfirmPassword, setValidateRegisterConfirmPassword] = useState(false)
+
   const navigate = useNavigate()
 
   // - Check if user is signed in
@@ -50,45 +57,20 @@ const Login = () => {
     if (unsubscribeFunction) unsubscribeFunction()
   }
 
+  const resetRegisterFormValidationState = () => {
+    setTimeout(() => {
+      setValidateRegisterFirstName(false)
+      setValidateRegisterLastName(false)
+      setValidateRegisterEmail(false)
+      setValidateRegisterPassword(false)
+      setValidateRegisterConfirmPassword(false)
+    }, 300)
+  }
+
   const handleFormValidation = () => {
     if (email.length === 0) setValidateEmail(true)
     if (password.length === 0) setValidatePassword(true)
     if (email.length === 0 || password.length === 0) return true
-  }
-
-  const unmatchedLoginCredentialsMessage = () => {
-    return (
-      <>
-        <div
-          className={`transition-opacity-transform absolute left-1/2 top-1/2 grid min-h-[8svh] w-[clamp(100px,70svw,370px)] translate-x-[-50%] translate-y-[-50%] items-center 
-          rounded-xl
-          bg-white p-4 pr-8 drop-shadow-lg lg:w-[clamp(100px,35svw,560px)] lg:p-12 ${
-            showValidationMessage ? 'pointer-events-auto scale-110 opacity-100' : 'pointer-events-none opacity-0 '
-          } z-40 duration-300`}
-        >
-          <button
-            className="absolute right-0 top-0 cursor-pointer p-2"
-            onClick={() => {
-              setShowValidationMessage(false)
-            }}
-          >
-            <img src={closeGrayFilled} alt="exit register" className="w-[30px] lg:w-[50px]" />
-          </button>
-          <div className="flex gap-2">
-            <img src={error} alt="" className="w-[18px] lg:w-[25px]" />
-            <div className="text-[15px] text-black lg:text-[23px]">Username and password does not match</div>
-          </div>
-        </div>
-        <div
-          className={`pointer-events-none absolute z-10 h-full w-full bg-black transition-opacity duration-300 ${
-            showValidationMessage ? 'pointer-events-auto opacity-25' : 'opacity-0'
-          }`}
-          onClick={() => {
-            setShowValidationMessage(false)
-          }}
-        ></div>
-      </>
-    )
   }
 
   const handleLogin = async () => {
@@ -103,9 +85,9 @@ const Login = () => {
     } catch (err) {
       setShowLoadingBar(false)
       console.error(err)
-      setShowValidationMessage(true)
+      setShowValidationAlertMessage(true)
       setTimeout(() => {
-        setShowValidationMessage(false)
+        setShowValidationAlertMessage(false)
       }, 3000)
     }
   }
@@ -151,12 +133,27 @@ const Login = () => {
               className="absolute right-0 top-0 cursor-pointer p-6"
               onClick={() => {
                 setShowRegister(false)
+                resetRegisterFormValidationState()
               }}
             >
               <img src={closeGrayFilled} alt="exit register" className="w-[50px]" />
             </button>
             <div className="">
-              <Register showRegister={showRegister} setShowRegister={setShowRegister} />
+              <Register
+                showRegister={showRegister}
+                setShowRegister={setShowRegister}
+                validateRegisterFirstName={validateRegisterFirstName}
+                setValidateRegisterFirstName={setValidateRegisterFirstName}
+                validateRegisterLastName={validateRegisterLastName}
+                setValidateRegisterLastName={setValidateRegisterLastName}
+                validateRegisterEmail={validateRegisterEmail}
+                setValidateRegisterEmail={setValidateRegisterEmail}
+                validateRegisterPassword={validateRegisterPassword}
+                setValidateRegisterPassword={setValidateRegisterPassword}
+                validateRegisterConfirmPassword={validateRegisterConfirmPassword}
+                setValidateRegisterConfirmPassword={setValidateRegisterConfirmPassword}
+                resetRegisterFormValidationState={resetRegisterFormValidationState}
+              />
             </div>
           </div>
 
@@ -166,6 +163,7 @@ const Login = () => {
             } absolute z-10 h-[100svh] w-[100svw] bg-black transition-opacity duration-700`}
             onClick={() => {
               setShowRegister(false)
+              resetRegisterFormValidationState()
             }}
             aria-hidden="true"
           ></div>
@@ -173,7 +171,21 @@ const Login = () => {
 
         {/* Register for small screens */}
         <div className={`block lg:hidden ${showRegister ? '' : 'pointer-events-none hidden'}`}>
-          <Register showRegister={showRegister} setShowRegister={setShowRegister} />
+          <Register
+            showRegister={showRegister}
+            setShowRegister={setShowRegister}
+            validateRegisterFirstName={validateRegisterFirstName}
+            setValidateRegisterFirstName={setValidateRegisterFirstName}
+            validateRegisterLastName={validateRegisterLastName}
+            setValidateRegisterLastName={setValidateRegisterLastName}
+            validateRegisterEmail={validateRegisterEmail}
+            setValidateRegisterEmail={setValidateRegisterEmail}
+            validateRegisterPassword={validateRegisterPassword}
+            setValidateRegisterPassword={setValidateRegisterPassword}
+            validateRegisterConfirmPassword={validateRegisterConfirmPassword}
+            setValidateRegisterConfirmPassword={setValidateRegisterConfirmPassword}
+            resetRegisterFormValidationState={resetRegisterFormValidationState}
+          />
         </div>
       </>
     )
@@ -182,7 +194,13 @@ const Login = () => {
   return (
     <>
       {displayRegister()}
-      {unmatchedLoginCredentialsMessage()}
+      <div>
+        <FormValidationAlertMessage
+          message={'Username and password do not match'}
+          showValidationAlertMessage={showValidationAlertMessage}
+          setShowValidationAlertMessage={setShowValidationAlertMessage}
+        />
+      </div>
       <div
         className={`grid h-[100svh] grid-rows-[9fr,11fr] justify-items-center gap-4 bg-purpleSoft lg:flex lg:items-center lg:justify-center lg:p-10 ${
           showRegister ? 'pointer-events-none hidden lg:block' : ''
