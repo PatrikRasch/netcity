@@ -41,6 +41,7 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
   const [imageAddedToPost, setImageAddedToPost] = useState<string>('')
   const [imageAddedToPostId, setImageAddedToPostId] = useState<string>('')
   const [textareaActive, setTextareaActive] = useState(false)
+  const [validateMakePost, setValidateMakePost] = useState(false)
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
 
@@ -158,13 +159,14 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
           />
           <textarea
             ref={textareaRef}
-            placeholder="Make a post"
-            className={`transition-height w-full resize-none self-start overflow-y-auto rounded-3xl bg-graySoft p-3 placeholder-grayMediumPlus outline-none duration-500 ${
+            placeholder={validateMakePost ? 'Write something before posting' : 'Make a post'}
+            className={`transition-height w-full resize-none self-start overflow-y-auto rounded-3xl border-2 bg-graySoft p-3 placeholder-grayMediumPlus outline-none duration-500 ${
               textareaActive ? 'min-h-[144px]' : 'min-h-[48px]'
-            }`}
+            } ${validateMakePost ? 'border-purpleMain' : 'border-transparent'}`}
             maxLength={1000}
             value={postInput}
             onChange={(e) => {
+              if (validateMakePost) setValidateMakePost(false)
               setPostInput(e.target.value)
               handleTextareaChange()
               setFullTimestamp(new Date())
@@ -187,6 +189,7 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
             onChange={(e) => {
               addImageToPost(e.target.files?.[0] || null)
               e.target.value = ''
+              if (validateMakePost) setValidateMakePost(false)
             }}
           />
           <label htmlFor="addImageToPostFeedButton" className="mr-2 flex flex-col hover:cursor-pointer">
@@ -203,10 +206,12 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
           <div></div>
           <div className="flex w-full items-center justify-around gap-4 lg:justify-between lg:gap-6 lg:pl-4 lg:pr-4">
             <button
-              className="font-mainFont hover:bg-purpleHover h-[30px] w-full rounded-3xl bg-purpleMain text-[clamp(16px,1svw,20px)] font-bold text-white transition-colors duration-100 lg:h-[38px] lg:w-[clamp(30%,20vw,300px)]"
+              className="font-mainFont h-[30px] w-full rounded-3xl bg-purpleMain text-[clamp(16px,1svw,20px)] font-bold text-white transition-colors duration-100 hover:bg-purpleHover lg:h-[38px] lg:w-[clamp(30%,20vw,300px)]"
               onClick={(e) => {
-                if (postInput.length === 0 && imageAddedToPost === '')
+                if (postInput.length === 0 && imageAddedToPost === '') {
+                  setValidateMakePost(true)
                   return console.log('add text or image before posting')
+                }
                 setFullTimestamp(new Date())
                 writePost({
                   timestamp: fullTimestamp,
