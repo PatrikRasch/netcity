@@ -48,6 +48,7 @@ function MakeComment({
   const [fullTimestamp, setFullTimestamp] = useState({})
   const { dateDayMonthYear } = useDateFunctions()
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
+  const [validateMakeComment, setValidateMakeComment] = useState(false)
 
   const postComment = async (commentData: {
     timestamp: object
@@ -101,14 +102,19 @@ function MakeComment({
         alt="logged in user"
         className="aspect-square max-w-[38px] justify-self-center rounded-[50%] object-cover"
       />
-      <div className="font-mainFont grid gap-4 rounded-3xl bg-graySoft pl-2">
+      <div
+        className={`font-mainFont grid gap-4 rounded-3xl border-2 bg-graySoft pl-2 ${
+          validateMakeComment ? 'border-purpleMain' : 'border-transparent'
+        } transition-border duration-500`}
+      >
         <textarea
           ref={textareaRef}
-          placeholder="Write a comment"
-          className="m-2 w-full flex-grow resize-none overflow-y-auto bg-transparent placeholder-grayMediumPlus outline-none"
+          placeholder={validateMakeComment ? 'Write something before commenting' : 'Write a comment'}
+          className={`m-2 w-full flex-grow resize-none overflow-y-auto bg-transparent placeholder-grayMediumPlus outline-none`}
           maxLength={1000}
           value={postCommentInput}
           onChange={(e) => {
+            if (validateMakeComment) setValidateMakeComment(false)
             setPostCommentInput(e.target.value)
             handleTextareaChange()
             setFullTimestamp(new Date())
@@ -119,7 +125,7 @@ function MakeComment({
       <button
         className="self-center justify-self-center rounded-[50%]"
         onClick={(e) => {
-          if (postCommentInput.length === 0) return console.log('add text to input before posting')
+          if (postCommentInput.length === 0) return setValidateMakeComment(true)
           postComment({
             timestamp: fullTimestamp,
             firstName: loggedInUserFirstName,
