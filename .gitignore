@@ -29,3 +29,6 @@ yarn-error.log*
 /src/assets/images/ignore-images
 /src/assets/icons/0.deprecated
 /public/ignore-favicons
+
+.VSCodeCounter
+.github/workflows
