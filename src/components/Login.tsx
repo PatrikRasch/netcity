@@ -42,6 +42,10 @@ const Login = () => {
 
   const navigate = useNavigate()
 
+  useEffect(() => {
+    document.body.style.backgroundColor = '#e2e5f8'
+  }, [])
+
   // - Check if user is signed in
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(getAuth(), async (user) => {
@@ -192,8 +196,8 @@ const Login = () => {
   }
 
   return (
-    <>
-      {displayRegister()}
+    <div className="bg-purpleSoft">
+      <div className={`${showRegister ? 'block' : 'hidden'}`}>{displayRegister()}</div>
       <div>
         <FormValidationAlertMessage
           message={'Username and password do not match'}
@@ -202,154 +206,156 @@ const Login = () => {
         />
       </div>
       <div
-        className={`grid h-[100svh] grid-rows-[9fr,11fr] justify-items-center gap-4 bg-purpleSoft lg:flex lg:items-center lg:justify-center lg:p-10 ${
+        className={`grid h-[110svh] items-center bg-purpleSoft ${
           showRegister ? 'pointer-events-none hidden lg:block' : ''
         }`}
       >
-        <div
-          className={`absolute inset-0 z-30 flex items-center justify-center duration-300 ${
-            showLoadingBar ? 'opacity-100' : 'opacity-0'
-          } pointer-events-none transition-opacity`}
-        >
-          <LoadingBar />
-        </div>
-        <div
-          className={`absolute inset-0 z-20 h-full w-full bg-black transition-opacity duration-300 ${
-            showLoadingBar ? 'opacity-25' : 'opacity-0'
-          } pointer-events-none `}
-        ></div>
+        <div className={`grid gap-4 lg:flex lg:items-center lg:justify-center lg:p-10`}>
+          <div
+            className={`absolute inset-0 z-30 flex items-center justify-center duration-300 ${
+              showLoadingBar ? 'opacity-100' : 'opacity-0'
+            } pointer-events-none transition-opacity`}
+          >
+            <LoadingBar />
+          </div>
+          <div
+            className={`absolute inset-0 z-20 h-full w-full bg-black transition-opacity duration-300 ${
+              showLoadingBar ? 'opacity-25' : 'opacity-0'
+            } pointer-events-none `}
+          ></div>
 
-        {/*// - Logo & Title */}
-        <div className="grid justify-items-center text-center lg:mr-[10svw]">
-          <img src={logoBlackFilled} alt="" className="w-[125px] animate-logo lg:w-[clamp(100px,20svw,300px)]" />
-          <div className="text-[35px] lg:text-[clamp(40px,5svw,70px)]">
-            <div className="ml-[4px]">
-              <div className="font-mainFont nowrap h-full w-full animate-title-reveal text-[35px] font-bold text-black opacity-0 lg:text-[clamp(40px,5svw,70px)]">
-                NetCity
+          {/*// - Logo & Title */}
+          <div className="grid h-fit justify-items-center text-center lg:mr-[10svw]">
+            <img src={logoBlackFilled} alt="" className="w-[125px] animate-logo lg:w-[clamp(100px,20svw,300px)]" />
+            <div className="text-[35px] lg:text-[clamp(40px,5svw,70px)]">
+              <div className="ml-[4px]">
+                <div className="font-mainFont nowrap h-full w-full animate-title-reveal text-[35px] font-bold text-black opacity-0 lg:text-[clamp(40px,5svw,70px)]">
+                  NetCity
+                </div>
               </div>
             </div>
+            {/* // - Patrik Rasch info */}
+            {projectInformation()}
           </div>
-          {/* // - Patrik Rasch info */}
-          {projectInformation()}
-        </div>
 
-        {/*// - The rest */}
+          {/*// - The rest */}
 
-        <div className="grid justify-items-center gap-6 text-xl">
-          <div className="hidden w-full gap-4 lg:grid">
-            <div className="relative z-10 text-center text-[30px] font-bold">
-              Login
+          <div className="grid h-fit justify-items-center gap-6 text-xl">
+            <div className="hidden w-full gap-4 lg:grid">
+              <div className="relative z-10 text-center text-[30px] font-bold">
+                Login
+                <button
+                  className={`absolute right-0 h-[30px] w-[120px] scale-0 animate-button-pop-in-desktop rounded-xl bg-black text-small font-semibold leading-[17px] text-white outline-purpleMain transition duration-300 hover:scale-[96%] ${
+                    (email === 'test@gmail.com' && password === '123123') || email !== '' || password !== ''
+                      ? 'pointer-events-none opacity-0'
+                      : 'opacity-100'
+                  } `}
+                  onClick={() => {
+                    setEmail('test@gmail.com')
+                    setPassword('123123')
+                    setUseTestUserActive(true)
+                  }}
+                  aria-label="add test user information into input fields"
+                >
+                  Use test user
+                </button>
+              </div>
+              <div className=" h-[1px] w-full bg-black"></div>
+            </div>
+            <div className="relative flex w-[clamp(100px,75svw,400px)] items-center rounded-3xl">
               <button
-                className={`absolute right-0 h-[30px] w-[120px] scale-0 animate-button-pop-in-desktop rounded-xl bg-black text-small font-semibold leading-[17px] text-white outline-purpleMain transition duration-300 hover:scale-[96%] ${
-                  (email === 'test@gmail.com' && password === '123123') || email !== '' || password !== ''
+                className={`absolute right-2 h-[30px] w-[100px] scale-0 animate-button-pop-in-mobile rounded-xl bg-black text-smaller font-semibold leading-[10px] text-white outline-purpleMain transition duration-300 hover:scale-[96%] lg:hidden ${
+                  (email === 'test@gmail.com' && password === '123123') || email !== ''
                     ? 'pointer-events-none opacity-0'
                     : 'opacity-100'
-                } `}
+                }`}
                 onClick={() => {
                   setEmail('test@gmail.com')
                   setPassword('123123')
-                  setUseTestUserActive(true)
                 }}
-                aria-label="add test user information into input fields"
               >
                 Use test user
               </button>
+
+              <img src={mailPurpleFilled} alt="" className="absolute z-10 h-[33px] pl-4" />
+              <input
+                type="email"
+                className={`transition-colors-outline h-[45px] w-full rounded-3xl border-2 bg-white pl-16 text-[16px] text-black outline-purpleMain duration-500 ${
+                  validateEmail && !useTestUserActive ? ' border-redMain' : ''
+                } ${useTestUserActive ? 'border-purpleMain' : ''}`}
+                placeholder={validateEmail ? 'Email is required' : 'Email'}
+                onChange={(e) => {
+                  setEmail(e.target.value)
+                  if (validateEmail) setValidateEmail(false)
+                  if (validatePassword) setValidatePassword(false)
+                  if (useTestUserActive) setUseTestUserActive(false)
+                }}
+                value={email}
+              />
             </div>
-            <div className=" h-[1px] w-full bg-black"></div>
-          </div>
-          <div className="relative flex w-[clamp(100px,75svw,400px)] items-center rounded-3xl">
-            <button
-              className={`absolute right-2 h-[30px] w-[100px] scale-0 animate-button-pop-in-mobile rounded-xl bg-black text-smaller font-semibold leading-[10px] text-white outline-purpleMain transition duration-300 hover:scale-[96%] lg:hidden ${
-                (email === 'test@gmail.com' && password === '123123') || email !== ''
-                  ? 'pointer-events-none opacity-0'
-                  : 'opacity-100'
-              }`}
-              onClick={() => {
-                setEmail('test@gmail.com')
-                setPassword('123123')
-              }}
-            >
-              Use test user
-            </button>
-
-            <img src={mailPurpleFilled} alt="" className="absolute z-10 h-[33px] pl-4" />
-            <input
-              type="email"
-              className={`transition-colors-outline h-[45px] w-full rounded-3xl border-2 bg-white pl-16 text-[16px] text-black outline-purpleMain duration-500 ${
-                validateEmail && !useTestUserActive ? ' border-redMain' : ''
-              } ${useTestUserActive ? 'border-purpleMain' : ''}`}
-              placeholder={validateEmail ? 'Email is required' : 'Email'}
-              onChange={(e) => {
-                setEmail(e.target.value)
-                if (validateEmail) setValidateEmail(false)
-                if (validatePassword) setValidatePassword(false)
-                if (useTestUserActive) setUseTestUserActive(false)
-              }}
-              value={email}
-            />
-          </div>
-          <div className="flex w-[clamp(100px,75svw,400px)] items-center rounded-3xl">
-            <img src={lockPurpleFilled} alt="" className="absolute z-10 h-[33px] pl-4" />
-            <input
-              type="password"
-              className={`transition-colors-outline h-[45px] w-full rounded-3xl border-2 bg-white pl-16 text-[16px] text-black outline-purpleMain duration-500 ${
-                validatePassword && !useTestUserActive ? ' border-redMain' : ''
-              } ${useTestUserActive ? 'border-2 border-purpleMain' : ''}`}
-              placeholder={validatePassword ? 'Password is required' : 'Password'}
-              onChange={(e) => {
-                setPassword(e.target.value)
-                if (validateEmail) setValidateEmail(false)
-                if (validatePassword) setValidatePassword(false)
-                if (useTestUserActive) setUseTestUserActive(false)
-              }}
-              value={password}
-            />
-          </div>
-
-          {/*// - Login and Sign up with Google section */}
-          <div className="grid justify-items-center gap-3 text-xl lg:gap-4">
-            <button
-              className="h-[45px] w-[clamp(100px,75svw,400px)] rounded-3xl bg-black text-white outline-purpleMain"
-              onClick={() => {
-                handleLogin()
-              }}
-            >
-              Login with e-mail
-            </button>
-            {/*// - "or" divider */}
-            <div className="flex items-center justify-around">
-              <div className="text-medium text-grayMain">OR</div>
+            <div className="flex w-[clamp(100px,75svw,400px)] items-center rounded-3xl">
+              <img src={lockPurpleFilled} alt="" className="absolute z-10 h-[33px] pl-4" />
+              <input
+                type="password"
+                className={`transition-colors-outline h-[45px] w-full rounded-3xl border-2 bg-white pl-16 text-[16px] text-black outline-purpleMain duration-500 ${
+                  validatePassword && !useTestUserActive ? ' border-redMain' : ''
+                } ${useTestUserActive ? 'border-2 border-purpleMain' : ''}`}
+                placeholder={validatePassword ? 'Password is required' : 'Password'}
+                onChange={(e) => {
+                  setPassword(e.target.value)
+                  if (validateEmail) setValidateEmail(false)
+                  if (validatePassword) setValidatePassword(false)
+                  if (useTestUserActive) setUseTestUserActive(false)
+                }}
+                value={password}
+              />
             </div>
 
-            <div className="grid justify-center gap-2 lg:gap-6">
+            {/*// - Login and Sign up with Google section */}
+            <div className="grid justify-items-center gap-3 text-xl lg:gap-4">
               <button
-                className="flex h-[45px] w-[clamp(100px,65svw,350px)] items-center justify-center gap-2 rounded-3xl bg-white p-3 text-[14px] text-black outline-purpleMain"
+                className="h-[45px] w-[clamp(100px,75svw,400px)] rounded-3xl bg-black text-white outline-purpleMain"
                 onClick={() => {
-                  alert('This feature is coming soon')
+                  handleLogin()
                 }}
               >
-                <img src={logoGoogle} alt="" className="w-[26px]" />
-                <div>Sign-In with Google</div>
+                Login with e-mail
               </button>
+              {/*// - "or" divider */}
+              <div className="flex items-center justify-around">
+                <div className="text-medium text-grayMain">OR</div>
+              </div>
 
-              {/*// - Create new account button */}
-              <div className="flex items-center justify-center">
-                <div className="text-medium text-grayMain">Don't have an account?</div>
+              <div className="grid justify-center gap-2 lg:gap-6">
                 <button
-                  className="pl-1 text-medium font-semibold text-purpleMain underline"
+                  className="flex h-[45px] w-[clamp(100px,65svw,350px)] items-center justify-center gap-2 rounded-3xl bg-white p-3 text-[14px] text-black outline-purpleMain"
                   onClick={() => {
-                    setShowRegister(true)
-                    stopAuthListener()
+                    alert('This feature is coming soon')
                   }}
                 >
-                  Signup
+                  <img src={logoGoogle} alt="" className="w-[26px]" />
+                  <div>Sign-In with Google</div>
                 </button>
+
+                {/*// - Create new account button */}
+                <div className="flex items-center justify-center">
+                  <div className="text-medium text-grayMain">Don't have an account?</div>
+                  <button
+                    className="pl-1 text-medium font-semibold text-purpleMain underline"
+                    onClick={() => {
+                      setShowRegister(true)
+                      stopAuthListener()
+                    }}
+                  >
+                    Signup
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }
 
