@@ -42,10 +42,6 @@ const Login = () => {
 
   const navigate = useNavigate()
 
-  useEffect(() => {
-    document.body.style.backgroundColor = '#e2e5f8'
-  }, [])
-
   // - Check if user is signed in
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(getAuth(), async (user) => {
@@ -196,7 +192,8 @@ const Login = () => {
   }
 
   return (
-    <div className="bg-purpleSoft">
+    <div>
+      <div className="fixed z-[-1] h-screen w-screen bg-purpleSoft"></div>
       <div className={`${showRegister ? 'block' : 'hidden'}`}>{displayRegister()}</div>
       <div>
         <FormValidationAlertMessage
