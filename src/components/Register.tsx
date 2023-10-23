@@ -216,7 +216,7 @@ const Register = ({
           <section className="grid justify-center gap-3 pt-6">
             <div className="grid gap-1">
               <div className="text-center text-[18px] font-semibold">Account Details</div>
-              <div className="h-[1.5px] w-full bg-grayLineThin"></div>
+              <div className="h-[1px] w-full bg-black"></div>
             </div>
             <div className="text-center text-[13px] text-base text-grayMain">
               You can use your real name or an alias
@@ -250,7 +250,7 @@ const Register = ({
           <section>
             <div className="flex flex-col items-center justify-around gap-1 pb-4 pt-4">
               <div className="text-[18px] font-semibold">Login Details</div>
-              <div className="h-[1.5px] w-full bg-grayLineThin"></div>
+              <div className="h-[1px] w-full bg-black"></div>
             </div>
             {/*//1 Email and password section */}
             <div className="grid gap-4 text-xl lg:justify-items-center">
