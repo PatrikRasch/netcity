@@ -1,6 +1,6 @@
 # NETCITY - Social Media Project
 
-####A fully functional social media app written in TypeScript with Firebase as a backend.
+#### A fully functional social media app written in TypeScript with Firebase as a backend.
 
 ## Visit this project live on: [netcity.city](https://netcity.city) or [top-netcity.web.app](https://top-netcity.web.app/)
 
@@ -12,7 +12,7 @@ From here on, you can either login by clicking "Use test user", or by clicking "
 
 The purpose of the project is to provide a fully functional social media app that covers all the core essentials of a traditional social media application.
 
-##Technlogies used
+## Technlogies used
 
 - TypeScript
 - React
