@@ -1,46 +1,68 @@
-# Getting Started with Create React App
+# NETCITY - Social Media Project
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+####A fully functional social media app written in TypeScript with Firebase as a backend.
 
-## Available Scripts
+## Visit this project live on: [netcity.city](https://netcity.city) or [top-netcity.web.app](https://top-netcity.web.app/)
 
-In the project directory, you can run:
+When visiting the site, you should be greeted with the login screen.
+From here on, you can either login by clicking "Use test user", or by clicking "signup" and registering a new user.
+![Login screen](https://i.imgur.com/rr6Y31E.png)
 
-### `npm start`
+## Purpose of the Project
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+The purpose of the project is to provide a fully functional social media app that covers all the core essentials of a traditional social media application.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+##Technlogies used
 
-### `npm test`
+- TypeScript
+- React
+- Tailwind
+- Firebase
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Firebase was chosen as a backend to ensure flexibility and to reduce backend workload, allowing more time for improving overall functionality and frontend aesthetic.
+TypeScript was chosen for its widespread use, type safety and flexibility.
+React was chosen for its widespread use, simplistic workflow and modularity.
+Finally, Tailwind was chosen as the designated CSS/UI framework as it's also highly adopted and easy to work with, producing pleasing results in an efficient manner.
 
-### `npm run build`
+## Essential features of the project
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+#### Login and signup page
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- User authetication and registration
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+#### Profile page
 
-### `npm run eject`
+- Customisable user profile: profile picture, bio and featured photo
+- Option for users to have a public or private profile (content on user's page visible or not)
+- Ability to create posts on profiles using text and user-uploaded images
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+#### People page
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- Four dynamically generated sections containing users with various links to the logged in user
+- Ability to see all users registered on the application
+- Ability to visit users
+- Ability to send, cancel, accept and decline friend request
+- Ability to delete friends
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+#### Public page
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+- Choose to either see public posts (posts available to all users on the page) or friends only posts (posts made by your current friends)
 
-## Learn More
+#### Posts
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- Users have the ability to delete posts they have made themselves
+- Ability to like and/or dislike posts
+- Ability to comment on posts
+- Ability to like and/or dislike comments
+- See date timestamp for when posts were made
+- On the public page: see if posts are global or friends-only
+- See who made the post
+- On the profile page: see who made the post to which profile
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Known issues with the project
+
+- Signing up and in with Google has not yet been implemented
+- Formatting on post text doesn't account for line breaks
+- Loading bar defaults to top left corner when changing between pages on wider screens
+
+Various other minor bugs have also been noted. If you come across bugs not listed, feel free to reach out to me at patrikrasch@hotmail.com
