@@ -121,53 +121,52 @@ const Login = () => {
     return (
       <>
         {/* Register for large screens */}
-        <div>
-          <div
-            className={`${
-              showRegister
-                ? 'opacity-1 hidden translate-y-[-50%] lg:block'
-                : 'pointer-events-none translate-y-[-60%] opacity-0'
-            } transition-transform-opacity absolute left-1/2 top-1/2 z-20 grid h-[clamp(300px,90svh,750px)] w-[600px] translate-x-[-50%] items-center rounded-3xl bg-purpleSoft duration-700 ease-in-out lg:grid`}
-          >
-            <button
-              className="absolute right-0 top-0 cursor-pointer p-6"
-              onClick={() => {
-                setShowRegister(false)
-                resetRegisterFormValidationState()
-              }}
-            >
-              <img src={closeGrayFilled} alt="exit register" className="w-[50px]" />
-            </button>
-            <div className="">
-              <Register
-                showRegister={showRegister}
-                setShowRegister={setShowRegister}
-                validateRegisterFirstName={validateRegisterFirstName}
-                setValidateRegisterFirstName={setValidateRegisterFirstName}
-                validateRegisterLastName={validateRegisterLastName}
-                setValidateRegisterLastName={setValidateRegisterLastName}
-                validateRegisterEmail={validateRegisterEmail}
-                setValidateRegisterEmail={setValidateRegisterEmail}
-                validateRegisterPassword={validateRegisterPassword}
-                setValidateRegisterPassword={setValidateRegisterPassword}
-                validateRegisterConfirmPassword={validateRegisterConfirmPassword}
-                setValidateRegisterConfirmPassword={setValidateRegisterConfirmPassword}
-                resetRegisterFormValidationState={resetRegisterFormValidationState}
-              />
-            </div>
-          </div>
 
-          <div
-            className={`${
-              showRegister ? 'pointer-events-auto hidden opacity-30 lg:block' : 'pointer-events-none opacity-0'
-            } absolute z-10 h-[100svh] w-[100svw] bg-black transition-opacity duration-700`}
+        <div
+          className={`${
+            showRegister
+              ? 'opacity-1 hidden translate-y-[-50%] lg:block'
+              : 'pointer-events-none translate-y-[-60%] opacity-0'
+          } transition-transform-opacity absolute left-1/2 top-1/2 z-20 grid h-[clamp(300px,90svh,750px)] w-[600px] translate-x-[-50%] items-center rounded-3xl bg-purpleSoft duration-700 ease-in-out lg:grid`}
+        >
+          <button
+            className="absolute right-0 top-0 cursor-pointer p-6"
             onClick={() => {
               setShowRegister(false)
               resetRegisterFormValidationState()
             }}
-            aria-hidden="true"
-          ></div>
+          >
+            <img src={closeGrayFilled} alt="exit register" className="w-[50px]" />
+          </button>
+          <div>
+            <Register
+              showRegister={showRegister}
+              setShowRegister={setShowRegister}
+              validateRegisterFirstName={validateRegisterFirstName}
+              setValidateRegisterFirstName={setValidateRegisterFirstName}
+              validateRegisterLastName={validateRegisterLastName}
+              setValidateRegisterLastName={setValidateRegisterLastName}
+              validateRegisterEmail={validateRegisterEmail}
+              setValidateRegisterEmail={setValidateRegisterEmail}
+              validateRegisterPassword={validateRegisterPassword}
+              setValidateRegisterPassword={setValidateRegisterPassword}
+              validateRegisterConfirmPassword={validateRegisterConfirmPassword}
+              setValidateRegisterConfirmPassword={setValidateRegisterConfirmPassword}
+              resetRegisterFormValidationState={resetRegisterFormValidationState}
+            />
+          </div>
         </div>
+
+        <div
+          className={`${
+            showRegister ? 'pointer-events-auto hidden opacity-30 lg:block' : 'pointer-events-none opacity-0'
+          } absolute z-10 h-[100svh] w-[100svw] bg-black transition-opacity duration-700`}
+          onClick={() => {
+            setShowRegister(false)
+            resetRegisterFormValidationState()
+          }}
+          aria-hidden="true"
+        ></div>
 
         {/* Register for small screens */}
         <div className={`block lg:hidden ${showRegister ? '' : 'pointer-events-none hidden'}`}>
@@ -192,9 +191,9 @@ const Login = () => {
   }
 
   return (
-    <div>
+    <>
       <div className="fixed z-[-1] h-screen w-screen bg-purpleSoft"></div>
-      <div className={`${showRegister ? 'block' : 'hidden'}`}>{displayRegister()}</div>
+      {displayRegister()}
       <div>
         <FormValidationAlertMessage
           message={'Username and password do not match'}
@@ -203,9 +202,8 @@ const Login = () => {
         />
       </div>
       <div
-        className={`grid h-[110svh] items-center bg-purpleSoft ${
-          showRegister ? 'pointer-events-none hidden lg:block' : ''
-        }`}
+        className={`grid h-[110svh] items-center bg-purpleSoft lg:flex lg:h-[100svh] lg:justify-center
+        ${showRegister ? 'pointer-events-none hidden lg:block' : ''}`}
       >
         <div className={`grid gap-4 lg:flex lg:items-center lg:justify-center lg:p-10`}>
           <div
@@ -352,7 +350,7 @@ const Login = () => {
           </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }
 
