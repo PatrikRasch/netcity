@@ -315,68 +315,71 @@ const People = () => {
   }
 
   return (
-    <div className="items-start lg:grid lg:justify-center lg:bg-graySoft">
-      <div className="min-h-[calc(100svh-80px)] bg-white">
-        <div className="items-start bg-white lg:grid lg:w-[clamp(600px,55svw,1500px)]">
-          <div className="grid grid-cols-4 gap-2 bg-white p-4 lg:gap-5">
-            <button
-              className={`rounded-2xl pb-[4px] pl-[3px] pr-[3px] pt-[4px] text-[12.5px] font-semibold lg:rounded-3xl lg:p-2 lg:text-medium 
-          ${showOtherUsers ? 'bg-black text-white' : 'lg:hover:bg-grayHover bg-graySoft text-black'} `}
-              onClick={() => {
-                sectionControlSwitcher('setShowOtherUsers')
-                updateOtherUsers()
-              }}
-            >
-              All People
-            </button>
-            <button
-              className={`rounded-2xl pb-[4px] pl-[3px] pr-[3px] pt-[4px] text-[12.5px] font-semibold lg:rounded-3xl lg:p-2 lg:text-medium ${
-                showFriends ? 'bg-black text-white' : 'lg:hover:bg-grayHover bg-graySoft text-black'
-              } `}
-              onClick={() => {
-                sectionControlSwitcher('setShowFriends')
-                updateFriends()
-              }}
-            >
-              Friends
-            </button>
-            <button
-              className={`relative rounded-2xl pb-[6px] pl-[3px] pr-[3px] pt-[6px] text-[12.5px] font-semibold leading-4 lg:rounded-3xl lg:p-2 lg:text-medium ${
-                showReceivedFriendRequests ? 'bg-black text-white' : 'lg:hover:bg-grayHover bg-graySoft text-black'
-              } `}
-              onClick={() => {
-                sectionControlSwitcher('setShowReceivedFriendRequests')
-                updateReceivedFriendRequests()
-              }}
-            >
-              <div
-                className={`absolute left-[85%] top-[-10%] flex h-[18px] w-[18px] items-center justify-center rounded-[50%] bg-red-500 text-white lg:rounded-3xl lg:p-2 ${
-                  numOfReceivedFriendRequests > 0 ? 'opacity-1' : 'opacity-0'
-                }`}
+    <div>
+      <div className="fixed z-[-1] h-screen w-screen lg:bg-graySoft"></div>
+      <div className="items-start lg:grid lg:justify-center lg:bg-graySoft">
+        <div className="min-h-[calc(100svh-80px)] bg-white">
+          <div className="items-start bg-white lg:grid lg:w-[clamp(600px,55svw,1500px)]">
+            <div className="grid grid-cols-4 gap-2 bg-white p-4 lg:gap-5">
+              <button
+                className={`rounded-2xl pb-[4px] pl-[3px] pr-[3px] pt-[4px] text-[12.5px] font-semibold lg:rounded-3xl lg:p-2 lg:text-medium 
+          ${showOtherUsers ? 'bg-black text-white' : 'bg-graySoft text-black lg:hover:bg-grayHover'} `}
+                onClick={() => {
+                  sectionControlSwitcher('setShowOtherUsers')
+                  updateOtherUsers()
+                }}
               >
-                {numOfReceivedFriendRequests}
-              </div>
-              Friend Requests
-            </button>
-            <button
-              className={`rounded-2xl pb-[6px] pl-[3px] pr-[3px] pt-[6px] text-[12.5px] font-semibold leading-4 lg:rounded-3xl lg:p-2 lg:text-medium ${
-                showSentFriendRequests ? 'bg-black text-white' : 'lg:hover:bg-grayHover bg-graySoft text-black'
-              } `}
-              onClick={() => {
-                sectionControlSwitcher('setShowSentFriendRequests')
-                updateSentFriendRequests()
-              }}
-            >
-              Sent Requests
-            </button>
+                All People
+              </button>
+              <button
+                className={`rounded-2xl pb-[4px] pl-[3px] pr-[3px] pt-[4px] text-[12.5px] font-semibold lg:rounded-3xl lg:p-2 lg:text-medium ${
+                  showFriends ? 'bg-black text-white' : 'bg-graySoft text-black lg:hover:bg-grayHover'
+                } `}
+                onClick={() => {
+                  sectionControlSwitcher('setShowFriends')
+                  updateFriends()
+                }}
+              >
+                Friends
+              </button>
+              <button
+                className={`relative rounded-2xl pb-[6px] pl-[3px] pr-[3px] pt-[6px] text-[12.5px] font-semibold leading-4 lg:rounded-3xl lg:p-2 lg:text-medium ${
+                  showReceivedFriendRequests ? 'bg-black text-white' : 'bg-graySoft text-black lg:hover:bg-grayHover'
+                } `}
+                onClick={() => {
+                  sectionControlSwitcher('setShowReceivedFriendRequests')
+                  updateReceivedFriendRequests()
+                }}
+              >
+                <div
+                  className={`absolute left-[85%] top-[-10%] flex h-[18px] w-[18px] items-center justify-center rounded-[50%] bg-red-500 text-white lg:rounded-3xl lg:p-2 ${
+                    numOfReceivedFriendRequests > 0 ? 'opacity-1' : 'opacity-0'
+                  }`}
+                >
+                  {numOfReceivedFriendRequests}
+                </div>
+                Friend Requests
+              </button>
+              <button
+                className={`rounded-2xl pb-[6px] pl-[3px] pr-[3px] pt-[6px] text-[12.5px] font-semibold leading-4 lg:rounded-3xl lg:p-2 lg:text-medium ${
+                  showSentFriendRequests ? 'bg-black text-white' : 'bg-graySoft text-black lg:hover:bg-grayHover'
+                } `}
+                onClick={() => {
+                  sectionControlSwitcher('setShowSentFriendRequests')
+                  updateSentFriendRequests()
+                }}
+              >
+                Sent Requests
+              </button>
+            </div>
+            <ThickSeparatorLine />
+            <div className="font-mainFont pb-1 pl-4 pt-2 text-medium font-semibold">{pageTitle()}</div>
+            <ThinSeparatorLine />
+            <div className="lg grid justify-evenly justify-items-center lg:grid lg:grid-cols-[repeat(auto-fit,370px)] lg:pl-4 lg:pr-4">
+              {populateUsersOnPage()}
+            </div>
+            {categoryMessage()}
           </div>
-          <ThickSeparatorLine />
-          <div className="font-mainFont pb-1 pl-4 pt-2 text-medium font-semibold">{pageTitle()}</div>
-          <ThinSeparatorLine />
-          <div className="lg grid justify-evenly justify-items-center lg:grid lg:grid-cols-[repeat(auto-fit,370px)] lg:pl-4 lg:pr-4">
-            {populateUsersOnPage()}
-          </div>
-          {categoryMessage()}
         </div>
       </div>
     </div>
