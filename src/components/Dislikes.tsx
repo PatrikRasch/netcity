@@ -62,9 +62,9 @@ function Dislikes({
   //1 The dislike icon on each post. Shows if the user has disliked a post.
   const showDislikedOrNot = () => {
     if (!disliked) {
-      return <img src={dislikeGrayEmpty} alt="" className="max-h-6" />
+      return <img src={dislikeGrayEmpty} alt="" className="max-h-7" />
     } else {
-      return <img src={dislikeRedFilled} alt="" className="max-h-6" />
+      return <img src={dislikeRedFilled} alt="" className="max-h-7" />
     }
   }
 
@@ -74,7 +74,7 @@ function Dislikes({
         <button
           onClick={() => handleClickDislike()}
           className={`font-mainFont weight flex w-full cursor-pointer items-center justify-center gap-2 rounded-3xl p-1 font-semibold lg:h-[35px] ${
-            disliked ? 'bg-redSoft text-redMain' : 'lg:hover:bg-grayHover bg-graySoft text-grayMain'
+            disliked ? 'bg-redSoft text-redMain' : 'bg-graySoft text-grayMain lg:hover:bg-grayHover'
           }`}
         >
           {showDislikedOrNot()}

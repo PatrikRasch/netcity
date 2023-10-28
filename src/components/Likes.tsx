@@ -66,9 +66,9 @@ function Likes({
   //1 The like icon on each post. Shows if the user has liked a post.
   const showLikedOrNot = () => {
     if (!liked) {
-      return <img src={likeGrayEmpty} alt="" className="max-h-6" />
+      return <img src={likeGrayEmpty} alt="" className="max-h-7" />
     } else {
-      return <img src={likePurpleFilled} alt="" className="max-h-6" />
+      return <img src={likePurpleFilled} alt="" className="max-h-7" />
     }
   }
 
@@ -78,7 +78,7 @@ function Likes({
         <button
           onClick={() => handleClickLike()}
           className={`font-mainFont flex w-full cursor-pointer items-center justify-center gap-2 rounded-3xl p-1 font-semibold lg:h-[35px] ${
-            liked ? 'bg-purpleSoft text-purpleMain' : 'lg:hover:bg-grayHover bg-graySoft text-grayMain'
+            liked ? 'bg-purpleSoft text-purpleMain' : 'bg-graySoft text-grayMain lg:hover:bg-grayHover'
           }`}
         >
           {showLikedOrNot()}
