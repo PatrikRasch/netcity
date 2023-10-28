@@ -63,7 +63,7 @@ const AllCommentsOnPost = ({
     if (postTotalNumOfComments > numOfCommentsShowing) {
       return (
         <button
-          className="font-mainFont font-semibold text-grayMedium"
+          className="font-mainFont p-1 font-semibold text-grayMedium"
           onClick={() => {
             setNumOfCommentsShowing(numOfCommentsShowing + 5)
           }}
@@ -75,7 +75,7 @@ const AllCommentsOnPost = ({
     if (postTotalNumOfComments <= numOfCommentsShowing) {
       return (
         <button
-          className="font-mainFont font-semibold text-grayMedium"
+          className="font-mainFont p-1 font-semibold text-grayMedium"
           onClick={() => {
             setNumOfCommentsShowing(0)
             setShowMakeComment(false)
@@ -93,7 +93,7 @@ const AllCommentsOnPost = ({
       <div>
         {commentsToRender.map((comment, index) => {
           return (
-            <div key={comment.id}>
+            <div key={comment.id} className={`${index + 1 !== postTotalNumOfComments ? 'pb-3' : 'pb-0'}`}>
               <Comment
                 commentFirstName={comment.firstName}
                 commentLastName={comment.lastName}

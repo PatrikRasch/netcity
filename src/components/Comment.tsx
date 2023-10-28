@@ -165,7 +165,7 @@ const Comment = ({
   }
 
   return (
-    <div className="grid pt-2">
+    <div className="grid">
       <div className="grid grid-cols-[50px,1fr] items-center gap-4 lg:grid-cols-[50px,1fr]">
         <img
           src={profilePicture === '' ? emptyProfilePicture : profilePicture}
@@ -175,10 +175,12 @@ const Comment = ({
             navigateToUser()
           }}
         />
-        <div className="flex flex-col">
+        <div className="grid lg:grid-cols-[1fr,120px] lg:items-center">
           <div className="rounded-xl bg-graySoft p-2.5">
             <div className="grid grid-cols-[20fr,30px]">
-              <div className="flex flex-col">
+              {/* // - Comment content layout */}
+              {/* MOBILE */}
+              <div className="flex flex-col lg:hidden">
                 <div
                   className="max-w-min cursor-pointer whitespace-nowrap text-[14px] font-bold"
                   onClick={() => {
@@ -188,6 +190,21 @@ const Comment = ({
                   {commentFirstName + ' ' + commentLastName}
                 </div>
                 <div className="text-[11px] text-grayMain">{commentDate}</div>
+                <div className="gap-4 hyphens-auto">{commentText}</div>
+              </div>
+              {/* DESKTOP */}
+              <div className="flex hidden flex-col lg:block">
+                <div className="flex items-center gap-2">
+                  <div
+                    className="max-w-min cursor-pointer whitespace-nowrap text-[14px] font-bold"
+                    onClick={() => {
+                      navigateToUser()
+                    }}
+                  >
+                    {commentFirstName + ' ' + commentLastName}
+                  </div>
+                  <div className="text-[11px] text-grayMain">{commentDate}</div>
+                </div>
                 <div className="gap-4 hyphens-auto">{commentText}</div>
               </div>
               <DeletePost
@@ -205,7 +222,7 @@ const Comment = ({
               />
             </div>
           </div>
-          <div className="mb-1 mt-1 grid h-max grid-cols-[50px,50px] items-start justify-items-start">
+          <div className="mb-1 mt-1 grid h-max grid-cols-[50px,50px] items-start justify-items-start lg:justify-self-end">
             {/*//1 Like/Dislike */}
             {
               <Likes
