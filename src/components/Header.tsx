@@ -43,7 +43,7 @@ const Header = ({ feedOpen, setFeedOpen, peopleOpen, setPeopleOpen }: Props) => 
             navigate('/public')
           }}
         >
-          <img src={logoPurpleFilled} alt="" className="absolute left-10 hidden w-[50px] lg:block" />
+          <img src={logoBlackFilled} alt="" className="absolute left-10 hidden w-[50px] lg:block" />
           <div>
             <img
               src={homePurpleFilled}
