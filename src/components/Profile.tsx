@@ -293,7 +293,7 @@ const Profile = () => {
     return (
       <button
         className={`transition-transform-colors absolute bottom-[60px] left-[20px] z-10 grid h-[35px] w-[80px] grid-cols-[1fr,3fr] items-center gap-1 rounded-3xl pl-1 pr-1 text-start text-[10px] text-white outline-none duration-100 active:scale-[98%] lg:w-[125px] lg:pl-2 lg:pr-2 lg:text-verySmall ${
-          openProfile ? 'lg:hover:bg-purpleHover bg-purpleMain' : 'lg:hover:bg-redHover bg-redMain'
+          openProfile ? 'bg-purpleMain lg:hover:bg-purpleHover' : 'bg-redMain lg:hover:bg-redHover'
         } `}
         onClick={() => {
           openOrPrivateProfileSwitcher()
@@ -636,7 +636,7 @@ const Profile = () => {
       return (
         <div>
           <button
-            className="font-mainFont lg:hover:bg-purpleHoverSoft flex h-[33px] w-[190px] items-center justify-center gap-[5px] rounded-3xl bg-purpleSoft text-[17px] text-purpleMain"
+            className="font-mainFont flex h-[33px] w-[190px] items-center justify-center gap-[5px] rounded-3xl bg-purpleSoft text-[17px] text-purpleMain lg:hover:bg-purpleHoverSoft"
             onClick={() => {
               setIsDeleteFriendDropdownMenuOpen(
                 (prevIsDeleteFriendDropdownMenuOpen) => !prevIsDeleteFriendDropdownMenuOpen
@@ -658,7 +658,7 @@ const Profile = () => {
     if (sentFriendRequestToUser)
       return (
         <button
-          className="font-mainFont lg:hover:bg-grayHover flex h-[33px] w-[190px] items-center justify-center gap-1 rounded-3xl bg-graySoft text-[17px] text-black"
+          className="font-mainFont flex h-[33px] w-[190px] items-center justify-center gap-1 rounded-3xl bg-graySoft text-[17px] text-black lg:hover:bg-grayHover"
           onClick={() => {
             if (userDocRef && userData && loggedInUserData) {
               removeFriendRequest()
@@ -673,7 +673,7 @@ const Profile = () => {
       return (
         <div className="flex max-w-[390px] justify-evenly gap-4">
           <button
-            className="font-mainFont lg:hover:bg-purpleHover flex h-[33px] w-[220px] items-center justify-center gap-1 rounded-3xl bg-purpleMain text-[15px] text-white"
+            className="font-mainFont flex h-[33px] w-[220px] items-center justify-center gap-1 rounded-3xl bg-purpleMain text-[15px] text-white lg:hover:bg-purpleHover"
             onClick={() => {
               if (userDocRef && userData && loggedInUserData) {
                 acceptFriendRequest()
@@ -684,7 +684,7 @@ const Profile = () => {
             Accept Friend Request
           </button>
           <button
-            className="lg:hover:bg-grayHover h-[33px] w-[115px] rounded-3xl bg-graySoft text-[15px] text-black"
+            className="h-[33px] w-[115px] rounded-3xl bg-graySoft text-[15px] text-black lg:hover:bg-grayHover"
             onClick={() => {
               if (userDocRef && userData && loggedInUserData) {
                 declineFriendRequest()
@@ -698,7 +698,7 @@ const Profile = () => {
     else
       return (
         <button
-          className="font-mainFont lg:hover:bg-purpleHover flex h-[33px] w-[190px] items-center justify-center gap-1 rounded-3xl bg-purpleMain text-[17px] text-white"
+          className="font-mainFont flex h-[33px] w-[190px] items-center justify-center gap-1 rounded-3xl bg-purpleMain text-[17px] text-white lg:hover:bg-purpleHover"
           onClick={() => {
             if (userDocRef && userData && loggedInUserData) {
               sendFriendRequest()
@@ -721,86 +721,91 @@ const Profile = () => {
   }
 
   return (
-    <div className="grid min-h-[calc(100svh-80px)] w-screen items-start justify-center bg-graySoft">
-      {/*//1 Profile picture and name */}
-      <div className="w-[100svw] bg-white lg:grid lg:w-[clamp(600px,55svw,1500px)]">
-        <div className="flex justify-center">
-          <div className="absolute top-[0%] z-0 h-[200px] w-[93svw] rounded-3xl bg-purpleSoft lg:w-[clamp(200px,46svw,1300px)]">
-            {/* // - Open/Private profile button */}
-            {openProfileButton()}
+    <div>
+      <div className="fixed z-[-1] h-screen w-screen lg:bg-graySoft"></div>
+      <div className="grid min-h-[calc(100svh-80px)] w-screen items-start justify-center bg-graySoft">
+        {/*//1 Profile picture and name */}
+        <div className="w-[100svw] bg-white lg:grid lg:w-[clamp(600px,55svw,1500px)]">
+          <div className="flex justify-center">
+            <div className="absolute top-[0%] z-0 h-[200px] w-[93svw] rounded-3xl bg-purpleSoft lg:w-[clamp(200px,46svw,1300px)]">
+              {/* // - Open/Private profile button */}
+              {openProfileButton()}
+            </div>
           </div>
-        </div>
-        <div className="grid items-center justify-center gap-2 pl-8 pr-8 pt-4">
-          <div className="relative">
-            <label htmlFor="fileInput" className="flex h-max justify-center hover:cursor-pointer">
-              {displayProfilePicture()}
-            </label>
-            <input
-              ref={profilePictureRef}
-              type="file"
-              id="fileInput"
-              className="opacity-0"
-              hidden
-              onChange={(e) => {
-                uploadProfilePicture(e.target.files?.[0] || null)
-              }}
-              disabled={visitingUser} // Disables fileInput if it's not your profile
-            />
+          <div className="grid items-center justify-center gap-2 pl-8 pr-8 pt-4">
+            <div className="relative">
+              <label htmlFor="fileInput" className="flex h-max justify-center hover:cursor-pointer">
+                {displayProfilePicture()}
+              </label>
+              <input
+                ref={profilePictureRef}
+                type="file"
+                id="fileInput"
+                className="opacity-0"
+                hidden
+                onChange={(e) => {
+                  uploadProfilePicture(e.target.files?.[0] || null)
+                }}
+                disabled={visitingUser} // Disables fileInput if it's not your profile
+              />
+            </div>
+            <div
+              className={`${
+                openProfileId === loggedInUserId ? 'pb-2' : ''
+              } font-mainFont text-center text-3xl font-bold`}
+            >
+              {displayUserName()}
+            </div>
+          </div>
+
+          {/* // - Friend status */}
+          {showFriendStatusWithUser()}
+          <ThinSeparatorLine />
+
+          {/*// - Posts/About selection */}
+          <div className="grid h-[65px] grid-cols-2 gap-4 rounded-lg p-3 pl-4 pr-4 text-[clamp(16px,1svw,20px)] lg:flex lg:justify-center lg:gap-4 lg:pl-8 lg:pr-8">
+            <button
+              className={`${
+                showPosts ? 'bg-black text-white' : 'bg-graySoft text-black'
+              }  font-mainFont flex h-[38px] items-center justify-center gap-2 rounded-3xl font-bold transition-colors duration-100 lg:w-full
+             ${showPosts ? '' : 'lg:hover:bg-grayHover'}
+            `}
+              onClick={() => setShowPosts(true)}
+            >
+              <img src={showPosts ? postsWhiteEmpty : postsBlackEmpty} alt="" className="w-[24px]" />
+              <div>Posts</div>
+            </button>
+            <button
+              className={`${
+                !showPosts ? 'bg-black text-white' : 'bg-graySoft text-black'
+              } font-mainFont flex h-[38px] w-full items-center justify-center gap-1 rounded-3xl font-bold transition-colors duration-100 ${
+                showPosts ? 'lg:hover:bg-grayHover' : ''
+              }`}
+              onClick={() => setShowPosts(false)}
+            >
+              <img src={showPosts ? aboutBlackEmpty : aboutWhiteEmpty} alt="" className="w-[27px]" />
+              <div>About Me</div>
+            </button>
+          </div>
+
+          <ThickSeparatorLine />
+          {/*//1 Posts or About */}
+          <div>{publicOrPrivateProfile()}</div>
+          <div>{showPostsOrAbout()}</div>
+          <div
+            className={`grid h-[128px] items-center justify-center text-medium font-semibold opacity-30 ${
+              posts.length === 0 && showPosts && displayProfileContent ? '' : 'hidden'
+            }`}
+          >
+            This profile has no posts. Be the first!
           </div>
           <div
-            className={`${openProfileId === loggedInUserId ? 'pb-2' : ''} font-mainFont text-center text-3xl font-bold`}
+            className={`grid h-[128px] items-center justify-center text-medium font-semibold opacity-30 ${
+              posts.length !== 0 && showPosts && displayProfileContent ? '' : 'hidden'
+            }`}
           >
-            {displayUserName()}
+            No more posts on profile
           </div>
-        </div>
-
-        {/* // - Friend status */}
-        {showFriendStatusWithUser()}
-        <ThinSeparatorLine />
-
-        {/*// - Posts/About selection */}
-        <div className="grid h-[65px] grid-cols-2 gap-4 rounded-lg p-3 pl-4 pr-4 text-[clamp(16px,1svw,20px)] lg:flex lg:justify-center lg:gap-[clamp(10px,5svw,150px)]">
-          <button
-            className={`${
-              showPosts ? 'bg-black text-white' : 'bg-graySoft text-black'
-            }  font-mainFont flex h-[38px] w-full items-center justify-center gap-2 rounded-3xl font-bold transition-colors duration-100
-            lg:w-48 ${showPosts ? '' : 'lg:hover:bg-grayHover'}
-            `}
-            onClick={() => setShowPosts(true)}
-          >
-            <img src={showPosts ? postsWhiteEmpty : postsBlackEmpty} alt="" className="w-[24px]" />
-            <div>Posts</div>
-          </button>
-          <button
-            className={`${
-              !showPosts ? 'bg-black text-white' : 'bg-graySoft text-black'
-            } font-mainFont flex h-[38px] w-full items-center justify-center gap-1 rounded-3xl font-bold transition-colors duration-100 ${
-              showPosts ? 'lg:hover:bg-grayHover' : ''
-            } lg:w-48`}
-            onClick={() => setShowPosts(false)}
-          >
-            <img src={showPosts ? aboutBlackEmpty : aboutWhiteEmpty} alt="" className="w-[27px]" />
-            <div>About Me</div>
-          </button>
-        </div>
-
-        <ThickSeparatorLine />
-        {/*//1 Posts or About */}
-        <div>{publicOrPrivateProfile()}</div>
-        <div>{showPostsOrAbout()}</div>
-        <div
-          className={`grid h-[128px] items-center justify-center text-medium font-semibold opacity-30 ${
-            posts.length === 0 && showPosts && displayProfileContent ? '' : 'hidden'
-          }`}
-        >
-          This profile has no posts. Be the first!
-        </div>
-        <div
-          className={`grid h-[128px] items-center justify-center text-medium font-semibold opacity-30 ${
-            posts.length !== 0 && showPosts && displayProfileContent ? '' : 'hidden'
-          }`}
-        >
-          No more posts on profile
         </div>
       </div>
     </div>

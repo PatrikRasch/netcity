@@ -509,7 +509,7 @@ const Post = ({
 
   return (
     <div>
-      <div className="w-full bg-white pl-4 pr-4 lg:pl-8 lg:pr-8">
+      <div className="w-full bg-white pl-4 pr-4 lg:pl-4 lg:pr-4">
         <div className="gap-2 pt-3">
           <div className="grid grid-cols-[20fr,1fr] items-center">
             <div className="flex items-center gap-3">

@@ -247,11 +247,13 @@ function Public() {
       <div className="lg:w-100svw bg-graySoft lg:grid lg:justify-center">
         {/* Choose posts to see */}
         <div className="lg:w-[clamp(500px,55svw,1500px)]">
-          <div className="hidden bg-white p-2 pl-4 font-bold lg:block lg:text-[clamp(16px,1.5svw,18px)]">Home Feed</div>
+          <div className="hidden bg-white p-2 pl-4 font-bold lg:block lg:pl-8 lg:text-[clamp(16px,1.5svw,18px)]">
+            Home Feed
+          </div>
           <ThinSeparatorLine />
-          <section className="grid max-w-[100svw] grid-cols-2 gap-2 whitespace-nowrap bg-white p-4 lg:flex lg:justify-center lg:gap-40">
+          <section className="grid max-w-[100svw] grid-cols-2 gap-2 whitespace-nowrap bg-white p-4 lg:flex lg:justify-center lg:gap-4 lg:pl-8 lg:pr-8">
             <button
-              className={`flex h-[45px] items-center justify-center gap-2 rounded-3xl pb-[8px] pt-[8px] text-white lg:pl-8 lg:pr-8
+              className={`flex h-[45px] w-full items-center justify-center gap-2 rounded-3xl pb-[8px] pt-[8px] text-white lg:pl-8 lg:pr-8
           ${showGlobalPosts ? 'bg-black' : 'bg-graySoft lg:hover:bg-grayHover'} `}
               onClick={() => {
                 setShowGlobalPosts(true)
@@ -266,7 +268,7 @@ function Public() {
               </div>
             </button>
             <button
-              className={`flex max-h-[45px] items-center justify-center gap-2 rounded-3xl pb-[8px] pt-[8px] lg:pl-8 lg:pr-8 ${
+              className={`flex max-h-[45px] w-full items-center justify-center gap-2 rounded-3xl pb-[8px] pt-[8px] lg:pl-8 lg:pr-8 ${
                 showFriendsPosts ? 'bg-black text-white' : 'bg-graySoft text-textMain lg:hover:bg-grayHover'
               } `}
               onClick={() => {
@@ -341,7 +343,7 @@ function Public() {
             {/* Post section */}
             <div className="grid grid-cols-[50px,1fr,50px] items-center justify-items-center gap-3 pb-3">
               <div></div>
-              <div className="flex w-full items-center justify-around gap-4 lg:justify-between lg:gap-6 lg:pl-4 lg:pr-4">
+              <div className="flex w-full items-center justify-around gap-4 lg:justify-between lg:gap-6">
                 <button
                   className="font-mainFont h-[30px] w-full rounded-3xl bg-purpleMain text-[clamp(16px,1svw,20px)] font-bold text-white lg:h-[38px] lg:w-[clamp(30%,20vw,300px)]"
                   onClick={(e) => {

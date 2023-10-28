@@ -70,7 +70,7 @@ const About = ({
     if (visitingUser) return
     return (
       <button
-        className="font-mainFont lg:hover:bg-purpleHoverSoft flex w-[90svw] items-center justify-center gap-1 rounded-3xl bg-purpleSoft p-1 text-center text-medium font-semibold text-purpleMain lg:w-[clamp(400px,50svw,1400px)]"
+        className="font-mainFont lg:w-min-[400px] lg:w-max-[1400px] flex w-full items-center justify-center gap-1 rounded-3xl bg-purpleSoft p-1 text-center text-medium font-semibold text-purpleMain lg:pl-8 lg:pr-8 lg:hover:bg-purpleHoverSoft"
         onClick={() => {
           setEditMode(!editMode)
           saveAboutInput()
@@ -96,14 +96,14 @@ const About = ({
   const aboutInformation = () => {
     if (!editMode) {
       return (
-        <div className="grid justify-center justify-items-center gap-3 p-3 lg:w-[clamp(600px,55svw,1500px)]">
+        <div className="grid w-full justify-items-center gap-3 p-3 pl-4 pr-4 lg:w-[clamp(600px,55svw,1500px)] lg:pl-8 lg:pr-8">
           <div
-            className="font-mainFont w-[90svw] rounded-3xl bg-purpleMain p-1 text-center text-large font-semibold text-white 
-          lg:w-[clamp(400px,50svw,1400px)]"
+            className="font-mainFont lg:w-min-[400px] lg:w-max-[1400px] w-full rounded-3xl bg-purpleMain p-1 text-center text-large 
+          font-semibold text-white"
           >
             Bio
           </div>
-          <div className="min-h-min w-[90svw] resize-none break-words rounded-3xl bg-graySoft p-4 text-center text-grayMain lg:w-[clamp(400px,50svw,1400px)]">
+          <div className="lg:w-min-[400px] lg:w-max-[1400px] min-h-min w-full resize-none break-words rounded-3xl bg-graySoft p-4 text-center text-grayMain">
             {bioText}
           </div>
           {showEditButton()}
@@ -112,14 +112,14 @@ const About = ({
     }
     if (editMode)
       return (
-        <div className="grid justify-center justify-items-center gap-3 p-3 lg:w-[clamp(600px,55svw,1500px)]">
-          <div className="font-mainFont w-[90svw] rounded-3xl bg-purpleMain p-1 text-center text-large font-semibold text-white lg:w-[clamp(400px,50svw,1400px)]">
+        <div className="lg:w-min-[600px] lg:w-max-[1500px] grid w-full justify-items-center gap-3 p-3 lg:pl-8 lg:pr-8">
+          <div className="font-mainFont lg:w-min-[400px] lg:w-max-[1400px] w-full rounded-3xl bg-purpleMain p-1 text-center text-large font-semibold text-white">
             Bio
           </div>
           <textarea
             ref={textareaRef}
             placeholder="Write a bio about yourself"
-            className="min-h-min w-[90svw] resize-none break-words rounded-3xl bg-graySoft p-4 text-center text-grayMain lg:w-[clamp(400px,50svw,1400px)]"
+            className="lg:w-min-[400px] lg:w-max-[1400px] min-h-min w-full resize-none break-words rounded-3xl bg-graySoft p-4 text-center text-grayMain"
             onChange={(e) => {
               setBioText(e.target.value)
               handleTextareaChange()
@@ -146,7 +146,7 @@ const About = ({
             <>
               <label
                 htmlFor="featuredPhotoInput"
-                className="lg:hover:bg-purpleHoverSoft flex justify-center gap-1 rounded-3xl bg-purpleSoft pl-5 pr-5 text-medium text-purpleMain hover:cursor-pointer"
+                className="flex justify-center gap-1 rounded-3xl bg-purpleSoft pl-5 pr-5 text-medium text-purpleMain hover:cursor-pointer lg:hover:bg-purpleHoverSoft"
               >
                 <img src={editPurpleFilled} alt="" className="h-[17px] w-[17px] self-center" />
                 <div>Edit</div>
