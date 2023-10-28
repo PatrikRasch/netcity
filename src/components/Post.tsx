@@ -308,7 +308,8 @@ const Post = ({
 
   const handleCommentButtonClicked = () => {
     if (showMakeComment && numOfCommentsShowing === 0 && postTotalNumOfComments !== 0) {
-      setNumOfCommentsShowing(numOfCommentsShowing + 3)
+      if (numOfCommentsShowing + 5 > postTotalNumOfComments) setNumOfCommentsShowing(postTotalNumOfComments)
+      else setNumOfCommentsShowing(numOfCommentsShowing + 5)
       setShowLoadMoreCommentsButton(true)
       return
     }
@@ -321,7 +322,8 @@ const Post = ({
     }
     if (!showMakeComment) {
       setShowMakeComment(true)
-      setNumOfCommentsShowing(numOfCommentsShowing + 3)
+      if (numOfCommentsShowing + 5 > postTotalNumOfComments) setNumOfCommentsShowing(postTotalNumOfComments)
+      else setNumOfCommentsShowing(numOfCommentsShowing + 3)
       setShowLoadMoreCommentsButton(true)
     } else {
       setShowMakeComment(false)

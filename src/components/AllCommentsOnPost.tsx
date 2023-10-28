@@ -65,6 +65,8 @@ const AllCommentsOnPost = ({
         <button
           className="font-mainFont p-1 font-semibold text-grayMedium"
           onClick={() => {
+            if (numOfCommentsShowing + 5 > postTotalNumOfComments)
+              return setNumOfCommentsShowing(postTotalNumOfComments)
             setNumOfCommentsShowing(numOfCommentsShowing + 5)
           }}
         >
@@ -93,7 +95,12 @@ const AllCommentsOnPost = ({
       <div>
         {commentsToRender.map((comment, index) => {
           return (
-            <div key={comment.id} className={`${index + 1 !== postTotalNumOfComments ? 'pb-3' : 'pb-0'}`}>
+            <div
+              key={comment.id}
+              className={`${index + 1 !== numOfCommentsShowing ? 'pb-1 lg:pb-3' : 'pb-0'} ${
+                showLoadMoreCommentsButton ? '' : 'lg:pb-1'
+              }`}
+            >
               <Comment
                 commentFirstName={comment.firstName}
                 commentLastName={comment.lastName}
@@ -116,8 +123,8 @@ const AllCommentsOnPost = ({
             </div>
           )
         })}
-        <div className={`grid ${postTotalNumOfComments === 0 ? '' : 'pb-1 pt-1'}`}>
-          <div className="grid grid-cols-[50px,1fr] items-center gap-4">
+        <div className={`grid ${postTotalNumOfComments === 0 ? '' : 'pb-1 pt-0 lg:pt-1'}`}>
+          <div className="grid grid-cols-[50px,1fr] items-center gap-1 lg:gap-4">
             <div></div>
             <div>{showMoreCommentsButton()}</div>
           </div>

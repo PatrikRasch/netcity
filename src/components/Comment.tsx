@@ -166,7 +166,7 @@ const Comment = ({
 
   return (
     <div className="grid">
-      <div className="grid grid-cols-[50px,1fr] items-center gap-4 lg:grid-cols-[50px,1fr]">
+      <div className="grid grid-cols-[50px,1fr] items-center gap-1 lg:grid-cols-[50px,1fr] lg:gap-4">
         <img
           src={profilePicture === '' ? emptyProfilePicture : profilePicture}
           alt="User who made comment"
