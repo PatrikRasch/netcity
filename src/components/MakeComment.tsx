@@ -103,7 +103,7 @@ function MakeComment({
         className="aspect-square max-w-[38px] justify-self-center rounded-[50%] object-cover"
       />
       <div
-        className={`font-mainFont grid gap-4 rounded-3xl border-2 bg-graySoft pl-2 ${
+        className={`font-mainFont grid gap-4 rounded-3xl border-2 bg-graySoft pl-2 pr-6 ${
           validateMakeComment ? 'border-purpleMain' : 'border-transparent'
         } transition-border duration-500`}
       >
