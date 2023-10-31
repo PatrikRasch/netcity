@@ -53,6 +53,10 @@ const About = ({
 
   useEffect(() => {
     setEditButtonText(editMode ? 'Save bio' : 'Edit bio')
+    if (editMode) {
+      textareaRef.current?.focus()
+      textareaRef.current?.setSelectionRange(textareaRef.current?.value.length, textareaRef.current?.value.length)
+    }
   }, [editMode])
 
   useEffect(() => {
