@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 
+import SearchPeople from './SearchPeople'
 import PeopleUser from './PeopleUser'
 import ThinSeparatorLine from './ThinSeparatorLine'
 
@@ -33,7 +34,10 @@ const People = () => {
   const [numOfReceivedFriendRequests, setNumOfReceivedFriendRequests] = useState(0)
 
   const [allUsers, setAllUsers] = useState<DocumentData>()
+  const [usersToShow, setUsersToShow] = useState<UserData[]>([])
   // Holds all the users in their various categories
+
+  const [allUsersEveryCategory, setAllUsersEveryCategory] = useState<UserData[]>([])
   const [allOtherUsers, setAllOtherUsers] = useState<UserData[]>([])
   const [allFriends, setAllFriends] = useState<UserData[]>([])
   const [allReceivedFriendRequests, setAllReceivedFriendRequests] = useState<UserData[]>([])
@@ -60,17 +64,17 @@ const People = () => {
 
   const usersCollection = collection(db, 'users')
 
-  // - Allows for editing a global property in Firestore if necessary
-  const editGlobalFirestoreProperty = async () => {
-    try {
-      const allUsersRef = await getDocs(usersCollection)
-      allUsersRef.forEach(async (doc) => {
-        await updateDoc(doc.ref, { openProfile: true })
-      })
-    } catch (err) {
-      console.error(err)
-    }
-  }
+  // // - Allows for editing a global property in Firestore if necessary
+  // const editGlobalFirestoreProperty = async () => {
+  //   try {
+  //     const allUsersRef = await getDocs(usersCollection)
+  //     allUsersRef.forEach(async (doc) => {
+  //       await updateDoc(doc.ref, { openProfile: true })
+  //     })
+  //   } catch (err) {
+  //     console.error(err)
+  //   }
+  // }
 
   // -  Gets and categorises all users
   const getAndCategoriseUsers = async () => {
@@ -101,9 +105,33 @@ const People = () => {
       setAllReceivedFriendRequests(usersReceivedFriendRequestsArray)
       setAllSentFriendRequests(usersSentFriendRequestsArray)
       setAllOtherUsers(otherUsersArray)
+      setAllUsersEveryCategory([
+        ...otherUsersArray,
+        ...usersFriendsArray,
+        ...usersReceivedFriendRequestsArray,
+        ...usersSentFriendRequestsArray,
+      ])
+      setUsersToShow(allUsersEveryCategory)
     } catch (err) {
       console.error(err)
     }
+  }
+
+  // - Calls the filterUsers function with the appropriate users to be filtered
+  const displayUsersToShow = (searchInput: string) => {
+    if (showOtherUsers) filterUsers(allUsersEveryCategory, searchInput)
+    if (showFriends) filterUsers(allFriends, searchInput)
+    if (showReceivedFriendRequests) filterUsers(allReceivedFriendRequests, searchInput)
+    if (showSentFriendRequests) filterUsers(allSentFriendRequests, searchInput)
+  }
+
+  // - Filters what users are to be shown based on the search input
+  const filterUsers = (usersToFilter: DocumentData, searchInput: string) => {
+    // Check if string is substring of another string
+    const newUsersToShow = usersToFilter.filter((user: DocumentData) => {
+      return (user.firstName + ' ' + user.lastName).toLowerCase().includes(searchInput.toLowerCase())
+    })
+    setUsersToShow(newUsersToShow) // Updates the users that are to be shown
   }
 
   // - Updates the list of friends of the logged in user
@@ -117,6 +145,7 @@ const People = () => {
         else return
       })
       setAllFriends(usersFriendsArray)
+      setUsersToShow(usersFriendsArray)
     } catch (err) {
       console.error(err)
     }
@@ -134,6 +163,7 @@ const People = () => {
         else return
       })
       setAllReceivedFriendRequests(usersReceivedFriendRequestsArray)
+      setUsersToShow(usersReceivedFriendRequestsArray)
     } catch (err) {
       console.error(err)
     }
@@ -150,6 +180,7 @@ const People = () => {
         } else return
       })
       setAllSentFriendRequests(usersSentFriendRequestsArray)
+      setUsersToShow(usersSentFriendRequestsArray)
     } catch (err) {
       console.error(err)
     }
@@ -178,6 +209,12 @@ const People = () => {
     setAllReceivedFriendRequests(usersReceivedFriendRequestsArray)
     setAllSentFriendRequests(usersSentFriendRequestsArray)
     setAllOtherUsers(otherUsersArray)
+    setUsersToShow([
+      ...otherUsersArray,
+      ...usersFriendsArray,
+      ...usersReceivedFriendRequestsArray,
+      ...usersSentFriendRequestsArray,
+    ])
   }
 
   // - Allows for switching of the categories when called with the correct string
@@ -197,17 +234,20 @@ const People = () => {
     if (section) section(true)
   }
 
-  // - Returns the category that is to be rendered
-  const getUsersToRender = () => {
-    if (showOtherUsers) return [...allOtherUsers, ...allReceivedFriendRequests, ...allSentFriendRequests, ...allFriends]
-    if (showFriends) return allFriends
-    if (showReceivedFriendRequests) return allReceivedFriendRequests
-    if (showSentFriendRequests) return allSentFriendRequests
-  }
+  // // - Returns the category that is to be rendered
+  // const getUsersToRender = () => {
+  //   if (showOtherUsers)
+  //     setUsersToShow([...allOtherUsers, ...allReceivedFriendRequests, ...allSentFriendRequests, ...allFriends])
+  //   if (showFriends) setUsersToShow(allFriends)
+  //   if (showReceivedFriendRequests) setUsersToShow(allReceivedFriendRequests)
+  //   if (showSentFriendRequests) setUsersToShow(allSentFriendRequests)
+  // }
 
   // - Displays all the users within the open category
   const populateUsersOnPage = () => {
-    return getUsersToRender()?.map((user: UserData) => (
+    // getUsersToRender()
+    // console.log(object)
+    return usersToShow.map((user: UserData) => (
       <div key={user.id}>
         <PeopleUser
           userId={user.id}
@@ -320,13 +360,21 @@ const People = () => {
       <div className="items-start lg:grid lg:justify-center lg:bg-graySoft">
         <div className="min-h-[calc(100svh-80px)] bg-white">
           <div className="items-start bg-white lg:grid lg:w-[clamp(600px,55svw,1500px)]">
+            <div>Find Friends</div>
+            <ThinSeparatorLine />
+            <SearchPeople
+              usersToShow={usersToShow}
+              setUsersToShow={setUsersToShow}
+              displayUsersToShow={displayUsersToShow}
+            />
             <div className="grid grid-cols-4 gap-2 bg-white p-4 lg:gap-5">
               <button
                 className={`rounded-2xl pb-[4px] pl-[3px] pr-[3px] pt-[4px] text-[12.5px] font-semibold lg:rounded-3xl lg:p-2 lg:text-medium 
-          ${showOtherUsers ? 'bg-black text-white' : 'bg-graySoft text-black lg:hover:bg-grayHover'} `}
+                ${showOtherUsers ? 'bg-black text-white' : 'bg-graySoft text-black lg:hover:bg-grayHover'} `}
                 onClick={() => {
                   sectionControlSwitcher('setShowOtherUsers')
                   updateOtherUsers()
+                  // setSearchInput('')
                 }}
               >
                 All People
@@ -338,6 +386,7 @@ const People = () => {
                 onClick={() => {
                   sectionControlSwitcher('setShowFriends')
                   updateFriends()
+                  // setSearchInput('')
                 }}
               >
                 Friends
@@ -349,6 +398,7 @@ const People = () => {
                 onClick={() => {
                   sectionControlSwitcher('setShowReceivedFriendRequests')
                   updateReceivedFriendRequests()
+                  // setSearchInput('')
                 }}
               >
                 <div
@@ -367,6 +417,7 @@ const People = () => {
                 onClick={() => {
                   sectionControlSwitcher('setShowSentFriendRequests')
                   updateSentFriendRequests()
+                  // setSearchInput('')
                 }}
               >
                 Sent Requests
