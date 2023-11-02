@@ -5,9 +5,11 @@ interface Props {
   usersToShow: DocumentData | undefined
   setUsersToShow: DocumentData | undefined
   displayUsersToShow: (searchInput: string) => void
+  searchValue: string
+  setSearchValue: (value: string) => void
 }
 
-function SearchPeople({ usersToShow, setUsersToShow, displayUsersToShow }: Props) {
+function SearchPeople({ usersToShow, setUsersToShow, displayUsersToShow, searchValue, setSearchValue }: Props) {
   const [textareaActive, setTextareaActive] = useState(false)
   const [validateMakePost, setValidateMakePost] = useState(false)
 
@@ -20,9 +22,9 @@ function SearchPeople({ usersToShow, setUsersToShow, displayUsersToShow }: Props
         } ${validateMakePost ? 'border-purpleMain' : 'border-transparent'}
         `}
         maxLength={1000}
-        // value={searchInput}
+        value={searchValue}
         onChange={(e) => {
-          //   setSearchInput(e.target.value)
+          setSearchValue(e.target.value)
           displayUsersToShow(e.target.value)
           //   if (validateMakePost) setValidateMakePost(false)
           //   handleChangeSearch()

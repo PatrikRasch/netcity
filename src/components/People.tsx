@@ -43,6 +43,8 @@ const People = () => {
   const [allReceivedFriendRequests, setAllReceivedFriendRequests] = useState<UserData[]>([])
   const [allSentFriendRequests, setAllSentFriendRequests] = useState<UserData[]>([])
 
+  const [searchValue, setSearchValue] = useState('')
+
   const [loggedInUserData, setLoggedInUserData] = useState<DocumentData>()
 
   const loggedInUserDocRef = doc(db, 'users', loggedInUserId)
@@ -137,6 +139,10 @@ const People = () => {
       return (user.firstName + ' ' + user.lastName).toLowerCase().includes(searchInput.toLowerCase())
     })
     setUsersToShow(newUsersToShow) // Updates the users that are to be shown
+  }
+
+  const resetSearchInput = () => {
+    setSearchValue('')
   }
 
   // - Updates the list of friends of the logged in user
@@ -369,6 +375,8 @@ const People = () => {
               usersToShow={usersToShow}
               setUsersToShow={setUsersToShow}
               displayUsersToShow={displayUsersToShow}
+              searchValue={searchValue}
+              setSearchValue={setSearchValue}
             />
             <ThickSeparatorLine />
             <div className="grid grid-cols-4 gap-2 bg-white pb-3 pl-4 pr-4 pt-3 lg:gap-5">
@@ -378,7 +386,7 @@ const People = () => {
                 onClick={() => {
                   sectionControlSwitcher('setShowOtherUsers')
                   updateOtherUsers()
-                  // setSearchInput('')
+                  resetSearchInput()
                 }}
               >
                 All People
@@ -390,7 +398,7 @@ const People = () => {
                 onClick={() => {
                   sectionControlSwitcher('setShowFriends')
                   updateFriends()
-                  // setSearchInput('')
+                  resetSearchInput()
                 }}
               >
                 Friends
@@ -402,7 +410,7 @@ const People = () => {
                 onClick={() => {
                   sectionControlSwitcher('setShowReceivedFriendRequests')
                   updateReceivedFriendRequests()
-                  // setSearchInput('')
+                  resetSearchInput()
                 }}
               >
                 <div
@@ -421,7 +429,7 @@ const People = () => {
                 onClick={() => {
                   sectionControlSwitcher('setShowSentFriendRequests')
                   updateSentFriendRequests()
-                  // setSearchInput('')
+                  resetSearchInput()
                 }}
               >
                 Sent Requests
