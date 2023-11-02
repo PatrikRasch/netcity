@@ -111,7 +111,12 @@ const People = () => {
         ...usersReceivedFriendRequestsArray,
         ...usersSentFriendRequestsArray,
       ])
-      setUsersToShow(allUsersEveryCategory)
+      setUsersToShow([
+        ...otherUsersArray,
+        ...usersFriendsArray,
+        ...usersReceivedFriendRequestsArray,
+        ...usersSentFriendRequestsArray,
+      ])
     } catch (err) {
       console.error(err)
     }
@@ -245,8 +250,6 @@ const People = () => {
 
   // - Displays all the users within the open category
   const populateUsersOnPage = () => {
-    // getUsersToRender()
-    // console.log(object)
     return usersToShow.map((user: UserData) => (
       <div key={user.id}>
         <PeopleUser
@@ -360,14 +363,15 @@ const People = () => {
       <div className="items-start lg:grid lg:justify-center lg:bg-graySoft">
         <div className="min-h-[calc(100svh-80px)] bg-white">
           <div className="items-start bg-white lg:grid lg:w-[clamp(600px,55svw,1500px)]">
-            <div>Find Friends</div>
+            <div className="pb-1 pl-4 pt-2 font-semibold lg:text-medium">Find Friends</div>
             <ThinSeparatorLine />
             <SearchPeople
               usersToShow={usersToShow}
               setUsersToShow={setUsersToShow}
               displayUsersToShow={displayUsersToShow}
             />
-            <div className="grid grid-cols-4 gap-2 bg-white p-4 lg:gap-5">
+            <ThickSeparatorLine />
+            <div className="grid grid-cols-4 gap-2 bg-white pb-3 pl-4 pr-4 pt-3 lg:gap-5">
               <button
                 className={`rounded-2xl pb-[4px] pl-[3px] pr-[3px] pt-[4px] text-[12.5px] font-semibold lg:rounded-3xl lg:p-2 lg:text-medium 
                 ${showOtherUsers ? 'bg-black text-white' : 'bg-graySoft text-black lg:hover:bg-grayHover'} `}
