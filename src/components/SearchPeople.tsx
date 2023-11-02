@@ -12,10 +12,10 @@ function SearchPeople({ usersToShow, setUsersToShow, displayUsersToShow }: Props
   const [validateMakePost, setValidateMakePost] = useState(false)
 
   return (
-    <div>
+    <div className="pb-3 pl-4 pr-4 pt-3">
       <input
-        placeholder={validateMakePost ? 'Write something before posting' : 'Search users'}
-        className={`transition-height w-full resize-none self-start overflow-y-auto rounded-3xl border-2 bg-graySoft p-3 placeholder-grayMediumPlus outline-none duration-500 ${
+        placeholder={validateMakePost ? 'Write something before posting' : 'Search for people'}
+        className={`transition-height w-full resize-none self-start overflow-y-auto rounded-3xl border-2 bg-graySoft p-2 pl-3 placeholder-grayMediumPlus outline-none duration-500 placeholder:font-semibold ${
           textareaActive ? 'min-h-[144px]' : 'min-h-[48px]'
         } ${validateMakePost ? 'border-purpleMain' : 'border-transparent'}
         `}
