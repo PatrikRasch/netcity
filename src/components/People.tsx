@@ -281,8 +281,9 @@ const People = () => {
   }
 
   const numberOfUsersFoundMessage = () => {
-    if (searchValue !== '' && usersToShow.length === 0) return 'There are no users with that name'
-    if (searchValue !== '') return usersToShow.length + ' users found'
+    if (searchValue !== '' && usersToShow.length === 0) return 'No results found'
+    if (searchValue !== '' && usersToShow.length === 1) return usersToShow.length + ' person found'
+    if (searchValue !== '') return usersToShow.length + ' people found'
     else return 'No more to show'
   }
 
