@@ -280,6 +280,12 @@ const People = () => {
     if (showSentFriendRequests) return `Sent Friend Requests (${allSentFriendRequests.length})`
   }
 
+  const numberOfUsersFoundMessage = () => {
+    if (searchValue !== '' && usersToShow.length === 0) return 'There are no users with that name'
+    if (searchValue !== '') return usersToShow.length + ' users found'
+    else return 'No more to show'
+  }
+
   const categoryMessage = () => {
     if (showFriends) {
       return (
@@ -296,7 +302,7 @@ const People = () => {
               allFriends.length === 0 ? 'hidden' : ''
             }`}
           >
-            No more to show
+            {numberOfUsersFoundMessage()}
           </div>
         </>
       )
@@ -316,7 +322,7 @@ const People = () => {
               allReceivedFriendRequests.length === 0 ? 'hidden' : ''
             }`}
           >
-            No more to show
+            {numberOfUsersFoundMessage()}
           </div>
         </>
       )
@@ -336,7 +342,7 @@ const People = () => {
               allOtherUsers.length === 0 ? 'hidden' : ''
             }`}
           >
-            No more to show
+            {numberOfUsersFoundMessage()}
           </div>
         </>
       )
@@ -356,7 +362,7 @@ const People = () => {
               allSentFriendRequests.length === 0 ? 'hidden' : ''
             }`}
           >
-            No more to show
+            {numberOfUsersFoundMessage()}
           </div>
         </>
       )
