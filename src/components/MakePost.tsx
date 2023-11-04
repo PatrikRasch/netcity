@@ -42,6 +42,7 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
   const [imageAddedToPostId, setImageAddedToPostId] = useState<string>('')
   const [textareaActive, setTextareaActive] = useState(false)
   const [validateMakePost, setValidateMakePost] = useState(false)
+  const [commandOrControlKeyDown, setCommandOrControlKeyDown] = useState(false)
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
 
@@ -146,6 +147,39 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
     textarea.rows = 1
   }
 
+  const handleKeyDown = (e: any) => {
+    if (e.key === 'Meta' || e.key === 'Control') setCommandOrControlKeyDown(true)
+  }
+  const handleKeyUp = (e: any) => {
+    if (e.key === 'Meta' || e.key === 'Control') setCommandOrControlKeyDown(false)
+  }
+
+  const handlePost = () => {
+    if (postInput.length === 0 && imageAddedToPost === '') {
+      setValidateMakePost(true)
+      return console.log('add text or image before posting')
+    }
+    setFullTimestamp(new Date())
+    writePost({
+      timestamp: fullTimestamp,
+      firstName: loggedInUserFirstName,
+      lastName: loggedInUserLastName,
+      text: postInput,
+      image: imageAddedToPost,
+      imageId: imageAddedToPostId,
+      date: dateDayMonthYear,
+      likes: {},
+      dislikes: {},
+      comments: {},
+      userId: loggedInUserId,
+    })
+    getAllPosts()
+    setPostInput('')
+    setImageAddedToPost('')
+    resetTextarea()
+    setTextareaActive(false)
+  }
+
   return (
     <div>
       <div className="font-mainFont pb-1 pl-4 pt-3 font-semibold lg:pl-8">Create a Post</div>
@@ -170,6 +204,13 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
               setPostInput(e.target.value)
               handleTextareaChange()
               setFullTimestamp(new Date())
+            }}
+            onKeyDown={(e) => {
+              handleKeyDown(e)
+              if (e.key === 'Enter' && commandOrControlKeyDown) handlePost()
+            }}
+            onKeyUp={(e) => {
+              handleKeyUp(e)
             }}
             onFocus={() => {
               setTextareaActive(true)
@@ -207,30 +248,8 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
           <div className="flex w-full items-center justify-around gap-4 lg:justify-between lg:gap-6">
             <button
               className="font-mainFont h-[30px] w-full rounded-3xl bg-purpleMain text-[clamp(16px,1svw,20px)] font-bold text-white transition-colors duration-100 hover:bg-purpleHover lg:h-[38px] lg:w-[clamp(30%,20vw,300px)]"
-              onClick={(e) => {
-                if (postInput.length === 0 && imageAddedToPost === '') {
-                  setValidateMakePost(true)
-                  return console.log('add text or image before posting')
-                }
-                setFullTimestamp(new Date())
-                writePost({
-                  timestamp: fullTimestamp,
-                  firstName: loggedInUserFirstName,
-                  lastName: loggedInUserLastName,
-                  text: postInput,
-                  image: imageAddedToPost,
-                  imageId: imageAddedToPostId,
-                  date: dateDayMonthYear,
-                  likes: {},
-                  dislikes: {},
-                  comments: {},
-                  userId: loggedInUserId,
-                })
-                getAllPosts()
-                setPostInput('')
-                setImageAddedToPost('')
-                resetTextarea()
-                setTextareaActive(false)
+              onClick={() => {
+                handlePost()
               }}
             >
               Post
