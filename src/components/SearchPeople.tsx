@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { DocumentData } from 'firebase/firestore'
 
 interface Props {
@@ -12,6 +12,7 @@ interface Props {
 function SearchPeople({ usersToShow, setUsersToShow, displayUsersToShow, searchValue, setSearchValue }: Props) {
   const [textareaActive, setTextareaActive] = useState(false)
   const [validateMakePost, setValidateMakePost] = useState(false)
+  const searchRef = useRef<HTMLInputElement | null>(null)
 
   return (
     <div className="pb-3 pl-4 pr-4 pt-3">
@@ -22,6 +23,7 @@ function SearchPeople({ usersToShow, setUsersToShow, displayUsersToShow, searchV
         } ${validateMakePost ? 'border-purpleMain' : 'border-transparent'}
         `}
         maxLength={1000}
+        ref={searchRef}
         value={searchValue}
         onChange={(e) => {
           setSearchValue(e.target.value)
@@ -33,6 +35,9 @@ function SearchPeople({ usersToShow, setUsersToShow, displayUsersToShow, searchV
         }}
         onFocus={() => {
           //   setTextareaActive(true)
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') searchRef.current?.blur()
         }}
         onBlur={() => {
           //   if (postInput.length === 0) {
