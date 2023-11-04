@@ -157,7 +157,7 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
   const handlePost = () => {
     if (postInput.length === 0 && imageAddedToPost === '') {
       setValidateMakePost(true)
-      return console.log('add text or image before posting')
+      return
     }
     setFullTimestamp(new Date())
     writePost({
