@@ -59,6 +59,7 @@ function Public() {
   const [imageAddedToPostFeedId, setImageAddedToPostFeedId] = useState<string>('')
   const [textareaActive, setTextareaActive] = useState(false)
   const [validateMakePost, setValidateMakePost] = useState(false)
+  const [commandOrControlKeyDown, setCommandOrControlKeyDown] = useState(false)
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
 
@@ -241,6 +242,40 @@ function Public() {
     textarea.rows = 1
   }
 
+  const handleKeyDown = (e: any) => {
+    if (e.key === 'Meta' || e.key === 'Control') setCommandOrControlKeyDown(true)
+  }
+  const handleKeyUp = (e: any) => {
+    if (e.key === 'Meta' || e.key === 'Control') setCommandOrControlKeyDown(false)
+  }
+
+  const handlePost = () => {
+    if (postInput.length === 0 && imageAddedToPostFeed === '') {
+      setValidateMakePost(true)
+      return
+    }
+    setFullTimestamp(new Date())
+    writePost({
+      timestamp: fullTimestamp,
+      firstName: loggedInUserFirstName,
+      lastName: loggedInUserLastName,
+      text: postInput,
+      image: imageAddedToPostFeed,
+      imageId: imageAddedToPostFeedId,
+      date: dateDayMonthYear,
+      likes: {},
+      dislikes: {},
+      comments: {},
+      userId: loggedInUserId,
+      publicPost: publicPost,
+    })
+    getGlobalPosts()
+    setPostInput('')
+    setImageAddedToPostFeed('')
+    resetTextarea()
+    setTextareaActive(false)
+  }
+
   return (
     <div>
       <div className="fixed z-[-1] h-screen w-screen lg:bg-graySoft"></div>
@@ -310,6 +345,13 @@ function Public() {
                   handleTextareaChange()
                   setFullTimestamp(new Date())
                 }}
+                onKeyDown={(e) => {
+                  handleKeyDown(e)
+                  if (e.key === 'Enter' && commandOrControlKeyDown) handlePost()
+                }}
+                onKeyUp={(e) => {
+                  handleKeyUp(e)
+                }}
                 onFocus={() => {
                   setTextareaActive(true)
                 }}
@@ -347,30 +389,7 @@ function Public() {
                 <button
                   className="font-mainFont h-[30px] w-full rounded-3xl bg-purpleMain text-[clamp(16px,1svw,20px)] font-bold text-white lg:h-[38px] lg:w-[clamp(30%,20vw,300px)]"
                   onClick={(e) => {
-                    if (postInput.length === 0 && imageAddedToPostFeed === '') {
-                      setValidateMakePost(true)
-                      return console.log('add text or image before posting')
-                    }
-                    setFullTimestamp(new Date())
-                    writePost({
-                      timestamp: fullTimestamp,
-                      firstName: loggedInUserFirstName,
-                      lastName: loggedInUserLastName,
-                      text: postInput,
-                      image: imageAddedToPostFeed,
-                      imageId: imageAddedToPostFeedId,
-                      date: dateDayMonthYear,
-                      likes: {},
-                      dislikes: {},
-                      comments: {},
-                      userId: loggedInUserId,
-                      publicPost: publicPost,
-                    })
-                    getGlobalPosts()
-                    setPostInput('')
-                    setImageAddedToPostFeed('')
-                    resetTextarea()
-                    setTextareaActive(false)
+                    handlePost()
                   }}
                 >
                   Post
