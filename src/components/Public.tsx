@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react'
+import BackgroundOuter from './BackgroundOuter'
 import AllPosts from './AllPosts'
 import ThinSeparatorLine from './ThinSeparatorLine'
 
@@ -278,7 +279,7 @@ function Public() {
 
   return (
     <div>
-      <div className="fixed z-[-1] h-screen w-screen lg:bg-graySoft"></div>
+      <BackgroundOuter />
       <div className="lg:w-100svw bg-graySoft lg:grid lg:justify-center">
         {/* Choose posts to see */}
         <div className="lg:w-[clamp(500px,55svw,1500px)]">

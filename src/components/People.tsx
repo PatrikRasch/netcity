@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import BackgroundOuter from './BackgroundOuter'
 
 import SearchPeople from './SearchPeople'
 import PeopleUser from './PeopleUser'
@@ -372,7 +373,7 @@ const People = () => {
 
   return (
     <div>
-      <div className="fixed z-[-1] h-screen w-screen lg:bg-graySoft"></div>
+      <BackgroundOuter />
       <div className="items-start lg:grid lg:justify-center lg:bg-graySoft">
         <div className="min-h-[calc(100svh-80px)] bg-white">
           <div className="items-start bg-white lg:grid lg:w-[clamp(600px,55svw,1500px)]">

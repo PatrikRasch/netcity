@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
+import BackgroundOuter from './BackgroundOuter'
+
 import { useNavigate, useParams } from 'react-router-dom'
 
 import globalWhiteEmpty from '../assets/icons/global/globalWhiteEmpty.svg'
@@ -37,9 +39,8 @@ import { useLoggedInUserId } from './context/LoggedInUserProfileDataContextProvi
 import { useLoggedInUserFirstName } from './context/LoggedInUserProfileDataContextProvider'
 import { useLoggedInUserLastName } from './context/LoggedInUserProfileDataContextProvider'
 import { useLoggedInUserProfilePicture } from './context/LoggedInUserProfileDataContextProvider'
-// import { useLoggedInUserBio } from "./context/LoggedInUserProfileDataContextProvider";
 
-// import { useLoadingScreen } from "./context/LoadingContextProvider";
+import { useDarkMode } from './context/DarkModeContextPovider'
 
 import { PostData } from '../interfaces'
 import ThickSeparatorLine from './ThickSeparatorLine'
@@ -722,7 +723,7 @@ const Profile = () => {
 
   return (
     <div>
-      <div className="fixed z-[-1] h-screen w-screen lg:bg-graySoft"></div>
+      <BackgroundOuter />
       <div className="grid min-h-[calc(100svh-80px)] w-screen items-start justify-center bg-graySoft">
         {/*//1 Profile picture and name */}
         <div className="w-[100svw] bg-white lg:grid lg:w-[clamp(600px,55svw,1500px)]">
