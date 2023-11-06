@@ -17,6 +17,7 @@ function RouteSwitch() {
   const HeaderDisplaying = () => {
     const [feedOpen, setFeedOpen] = useState(false)
     const [peopleOpen, setPeopleOpen] = useState(false)
+    const [darkenBackground, setDarkenBackground] = useState(false)
 
     const location = useLocation()
     const currentPath = location.pathname
@@ -36,11 +37,21 @@ function RouteSwitch() {
     return (
       <Suspense fallback={<LoadingBar />}>
         <div className="fixed z-50">
-          <Header feedOpen={feedOpen} setFeedOpen={setFeedOpen} peopleOpen={peopleOpen} setPeopleOpen={setPeopleOpen} />
+          <Header
+            feedOpen={feedOpen}
+            setFeedOpen={setFeedOpen}
+            peopleOpen={peopleOpen}
+            setPeopleOpen={setPeopleOpen}
+            darkenBackground={darkenBackground}
+            setDarkenBackground={setDarkenBackground}
+          />
         </div>
         <div className="h-[80px]"></div>
         <Routes>
-          <Route path="/profile/:openProfileId" element={<Profile />} />
+          <Route
+            path="/profile/:openProfileId"
+            element={<Profile darkenBackground={darkenBackground} setDarkenBackground={setDarkenBackground} />}
+          />
           <Route path="/people" element={<People />} />
           <Route path="/public" element={<Public />} />
         </Routes>

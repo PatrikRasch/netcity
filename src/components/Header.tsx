@@ -4,6 +4,7 @@ import { useEmptyProfilePicture } from './context/EmptyProfilePictureContextProv
 
 import { useLoggedInUserId } from './context/LoggedInUserProfileDataContextProvider'
 import { useLoggedInUserProfilePicture } from './context/LoggedInUserProfileDataContextProvider'
+import { useDarkMode } from './context/DarkModeContextPovider'
 
 import homeGrayEmpty from './../assets/icons/home/homeGrayEmpty.svg'
 import homePurpleFilled from './../assets/icons/home/homePurpleFilled.svg'
@@ -17,12 +18,15 @@ interface Props {
   setFeedOpen(value: boolean): void
   peopleOpen: boolean
   setPeopleOpen(value: boolean): void
+  darkenBackground: boolean
+  setDarkenBackground: (value: boolean) => void
 }
 
-const Header = ({ feedOpen, setFeedOpen, peopleOpen, setPeopleOpen }: Props) => {
+const Header = ({ feedOpen, setFeedOpen, peopleOpen, setPeopleOpen, darkenBackground, setDarkenBackground }: Props) => {
   const emptyProfilePicture = useEmptyProfilePicture()
   const loggedInUserProfilePicture = useLoggedInUserProfilePicture()
   const { loggedInUserId } = useLoggedInUserId()
+  const { darkMode, setDarkMode } = useDarkMode()
   const navigate = useNavigate()
   const location = useLocation()
   const [profileOpen, setProfileOpen] = useState(false)
@@ -36,6 +40,11 @@ const Header = ({ feedOpen, setFeedOpen, peopleOpen, setPeopleOpen }: Props) => 
 
   return (
     <div className="lg:w-100svw bg-white lg:grid lg:justify-items-center">
+      <div
+        className={`absolute h-[81px] w-screen bg-black ${
+          darkenBackground ? 'pointer-events-auto opacity-30' : 'pointer-events-none opacity-0'
+        }`}
+      ></div>
       <div className="grid h-[80px] grid-cols-3 items-center bg-white text-center text-3xl lg:w-[clamp(500px,60svw,1700px)]">
         <div
           className="cursor-pointer justify-self-center"

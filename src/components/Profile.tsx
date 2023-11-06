@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import BackgroundOuter from './BackgroundOuter'
+import ProfilePictureOverlay from './ProfilePictureOverlay'
 
 import { useNavigate, useParams } from 'react-router-dom'
 
@@ -48,7 +49,12 @@ import ThickSeparatorLine from './ThickSeparatorLine'
 //6 Bug occurs when a private profile is visited (not friends with) and then the loggedInUser is instantly navigated to by clicking the profile picture.
 //6 Problem is likely an async state update problem (regarding updating openProfileId)
 
-const Profile = () => {
+interface Props {
+  darkenBackground: boolean
+  setDarkenBackground: (value: boolean) => void
+}
+
+const Profile = ({ darkenBackground, setDarkenBackground }: Props) => {
   //- Context declarations:
   const emptyProfilePicture = useEmptyProfilePicture()
 
@@ -82,6 +88,8 @@ const Profile = () => {
   const [isDeleteFriendDropdownMenuOpen, setIsDeleteFriendDropdownMenuOpen] = useState(false)
 
   const [featuredPhoto, setFeaturedPhoto] = useState('')
+
+  const [viewProfilePicture, setViewProfilePicture] = useState(false)
 
   const profilePictureRef = useRef<HTMLInputElement | null>(null)
 
@@ -723,6 +731,13 @@ const Profile = () => {
 
   return (
     <div>
+      <ProfilePictureOverlay
+        viewProfilePicture={viewProfilePicture}
+        setViewProfilePicture={setViewProfilePicture}
+        otherProfilePicture={otherProfilePicture}
+        darkenBackground={darkenBackground}
+        setDarkenBackground={setDarkenBackground}
+      />
       <BackgroundOuter />
       <div className="grid min-h-[calc(100svh-80px)] w-screen items-start justify-center bg-graySoft">
         {/*//1 Profile picture and name */}
@@ -735,7 +750,16 @@ const Profile = () => {
           </div>
           <div className="grid items-center justify-center gap-2 pl-8 pr-8 pt-4">
             <div className="relative">
-              <label htmlFor="fileInput" className="flex h-max justify-center hover:cursor-pointer">
+              <label
+                htmlFor="fileInput"
+                className="flex h-max justify-center hover:cursor-pointer"
+                onClick={() => {
+                  if (visitingUser) {
+                    setViewProfilePicture(true)
+                    setDarkenBackground(true)
+                  }
+                }}
+              >
                 {displayProfilePicture()}
               </label>
               <input
