@@ -18,11 +18,9 @@ interface Props {
   setFeedOpen(value: boolean): void
   peopleOpen: boolean
   setPeopleOpen(value: boolean): void
-  darkenBackground: boolean
-  setDarkenBackground: (value: boolean) => void
 }
 
-const Header = ({ feedOpen, setFeedOpen, peopleOpen, setPeopleOpen, darkenBackground, setDarkenBackground }: Props) => {
+const Header = ({ feedOpen, setFeedOpen, peopleOpen, setPeopleOpen }: Props) => {
   const emptyProfilePicture = useEmptyProfilePicture()
   const loggedInUserProfilePicture = useLoggedInUserProfilePicture()
   const { loggedInUserId } = useLoggedInUserId()
@@ -40,11 +38,14 @@ const Header = ({ feedOpen, setFeedOpen, peopleOpen, setPeopleOpen, darkenBackgr
 
   return (
     <div className="lg:w-100svw bg-white lg:grid lg:justify-items-center">
-      <div
-        className={`absolute h-[81px] w-screen bg-black ${
+      {/* <div
+        className={`absolute h-[81px] w-screen bg-black transition-opacity delay-75 duration-500 ${
           darkenBackground ? 'pointer-events-auto opacity-30' : 'pointer-events-none opacity-0'
         }`}
-      ></div>
+        onClick={() => {
+          setDarkenBackground(false)
+        }}
+      ></div> */}
       <div className="grid h-[80px] grid-cols-3 items-center bg-white text-center text-3xl lg:w-[clamp(500px,60svw,1700px)]">
         <div
           className="cursor-pointer justify-self-center"

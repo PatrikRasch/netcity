@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
 import BackgroundOuter from './BackgroundOuter'
-import ProfilePictureOverlay from './ProfilePictureOverlay'
 
 import { useNavigate, useParams } from 'react-router-dom'
 
@@ -50,11 +49,13 @@ import ThickSeparatorLine from './ThickSeparatorLine'
 //6 Problem is likely an async state update problem (regarding updating openProfileId)
 
 interface Props {
-  darkenBackground: boolean
-  setDarkenBackground: (value: boolean) => void
+  viewProfilePicture: boolean
+  setViewProfilePicture: (value: boolean) => void
+  otherProfilePicture: string
+  setOtherProfilePicture: (value: string) => void
 }
 
-const Profile = ({ darkenBackground, setDarkenBackground }: Props) => {
+const Profile = ({ viewProfilePicture, setViewProfilePicture, otherProfilePicture, setOtherProfilePicture }: Props) => {
   //- Context declarations:
   const emptyProfilePicture = useEmptyProfilePicture()
 
@@ -68,7 +69,6 @@ const Profile = ({ darkenBackground, setDarkenBackground }: Props) => {
   const [showPosts, setShowPosts] = useState(true)
   const [otherFirstName, setOtherFirstName] = useState('')
   const [otherLastName, setOtherLastName] = useState('')
-  const [otherProfilePicture, setOtherProfilePicture] = useState(emptyProfilePicture)
 
   const [dataLoaded, setDataLoaded] = useState(false)
 
@@ -88,8 +88,6 @@ const Profile = ({ darkenBackground, setDarkenBackground }: Props) => {
   const [isDeleteFriendDropdownMenuOpen, setIsDeleteFriendDropdownMenuOpen] = useState(false)
 
   const [featuredPhoto, setFeaturedPhoto] = useState('')
-
-  const [viewProfilePicture, setViewProfilePicture] = useState(false)
 
   const profilePictureRef = useRef<HTMLInputElement | null>(null)
 
@@ -271,7 +269,7 @@ const Profile = ({ darkenBackground, setDarkenBackground }: Props) => {
         <img
           src={otherProfilePicture === '' ? emptyProfilePicture : otherProfilePicture}
           alt="profile"
-          className="z-10 aspect-square h-[160px] w-[160px] rounded-[50%] border-4 border-white object-cover"
+          className="aspect-square h-[160px] w-[160px] rounded-[50%] border-4 border-white object-cover"
         />
       )
     }
@@ -731,19 +729,12 @@ const Profile = ({ darkenBackground, setDarkenBackground }: Props) => {
 
   return (
     <div>
-      <ProfilePictureOverlay
-        viewProfilePicture={viewProfilePicture}
-        setViewProfilePicture={setViewProfilePicture}
-        otherProfilePicture={otherProfilePicture}
-        darkenBackground={darkenBackground}
-        setDarkenBackground={setDarkenBackground}
-      />
       <BackgroundOuter />
       <div className="grid min-h-[calc(100svh-80px)] w-screen items-start justify-center bg-graySoft">
         {/*//1 Profile picture and name */}
         <div className="w-[100svw] bg-white lg:grid lg:w-[clamp(600px,55svw,1500px)]">
           <div className="flex justify-center">
-            <div className="absolute top-[0%] z-0 h-[200px] w-[93svw] rounded-3xl bg-purpleSoft lg:w-[clamp(200px,46svw,1300px)]">
+            <div className="absolute top-[0%] h-[200px] w-[93svw] rounded-3xl bg-purpleSoft lg:w-[clamp(200px,46svw,1300px)]">
               {/* // - Open/Private profile button */}
               {openProfileButton()}
             </div>
@@ -752,11 +743,12 @@ const Profile = ({ darkenBackground, setDarkenBackground }: Props) => {
             <div className="relative">
               <label
                 htmlFor="fileInput"
-                className="flex h-max justify-center hover:cursor-pointer"
+                className={`flex h-max justify-center ${
+                  otherProfilePicture === '' ? 'hover:cursor-auto' : 'hover:cursor-pointer'
+                }`}
                 onClick={() => {
-                  if (visitingUser) {
+                  if (visitingUser && otherProfilePicture !== '') {
                     setViewProfilePicture(true)
-                    setDarkenBackground(true)
                   }
                 }}
               >
