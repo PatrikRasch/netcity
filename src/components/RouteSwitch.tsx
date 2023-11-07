@@ -6,7 +6,10 @@ import Profile from './Profile'
 import Header from './Header'
 import LoadingBar from './LoadingBar'
 
+import closeGrayFilled from './../assets/icons/close/closeGrayFilled.svg'
+
 import { useLoggedInUserId } from './context/LoggedInUserProfileDataContextProvider'
+import { useEmptyProfilePicture } from './context/EmptyProfilePictureContextProvider'
 
 const People = lazy(() => import('./People'))
 const Public = lazy(() => import('./Public'))
@@ -17,7 +20,9 @@ function RouteSwitch() {
   const HeaderDisplaying = () => {
     const [feedOpen, setFeedOpen] = useState(false)
     const [peopleOpen, setPeopleOpen] = useState(false)
-    const [darkenBackground, setDarkenBackground] = useState(false)
+    const [viewProfilePicture, setViewProfilePicture] = useState(false)
+    const emptyProfilePicture = useEmptyProfilePicture()
+    const [otherProfilePicture, setOtherProfilePicture] = useState(emptyProfilePicture)
 
     const location = useLocation()
     const currentPath = location.pathname
@@ -36,21 +41,49 @@ function RouteSwitch() {
     if (!loggedInUserId) return <LoadingBar />
     return (
       <Suspense fallback={<LoadingBar />}>
-        <div className="fixed z-50">
-          <Header
-            feedOpen={feedOpen}
-            setFeedOpen={setFeedOpen}
-            peopleOpen={peopleOpen}
-            setPeopleOpen={setPeopleOpen}
-            darkenBackground={darkenBackground}
-            setDarkenBackground={setDarkenBackground}
-          />
+        <div>
+          <div
+            className={`transition-transform-opacity fixed left-1/2 top-1/2 z-50 translate-x-[-50%] translate-y-[-50%] duration-500 ${
+              viewProfilePicture
+                ? 'pointer-events-auto scale-100 opacity-100'
+                : 'pointer-events-none scale-95 opacity-0'
+            }`}
+          >
+            <img
+              src={closeGrayFilled}
+              alt="exit register"
+              className="absolute right-[15px] top-[15px] w-[50px] cursor-pointer"
+              onClick={() => setViewProfilePicture(false)}
+            />
+            <img
+              src={otherProfilePicture === '' ? emptyProfilePicture : otherProfilePicture}
+              alt="profile"
+              className="w-[80svw] min-w-[100px] max-w-[1000px] rounded-3xl border-4 border-white object-contain lg:w-[50svw] "
+            />
+          </div>
+          <div
+            className={`fixed z-20 h-screen w-screen bg-black transition-opacity duration-500 ${
+              viewProfilePicture ? 'pointer-events-auto opacity-30' : 'pointer-events-none opacity-0'
+            }`}
+            onClick={() => setViewProfilePicture(false)}
+          ></div>
+        </div>
+
+        <div className="fixed z-10">
+          <Header feedOpen={feedOpen} setFeedOpen={setFeedOpen} peopleOpen={peopleOpen} setPeopleOpen={setPeopleOpen} />
         </div>
         <div className="h-[80px]"></div>
         <Routes>
           <Route
             path="/profile/:openProfileId"
-            element={<Profile darkenBackground={darkenBackground} setDarkenBackground={setDarkenBackground} />}
+            element={
+              <Profile
+                viewProfilePicture={viewProfilePicture}
+                setViewProfilePicture={setViewProfilePicture}
+                otherProfilePicture={otherProfilePicture}
+                setOtherProfilePicture={setOtherProfilePicture}
+              />
+            }
           />
           <Route path="/people" element={<People />} />
           <Route path="/public" element={<Public />} />
