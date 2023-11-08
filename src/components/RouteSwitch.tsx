@@ -42,6 +42,7 @@ function RouteSwitch() {
     return (
       <Suspense fallback={<LoadingBar />}>
         <div>
+          {/* // - Show profile picture when clicking on it */}
           <div
             className={`transition-transform-opacity fixed left-1/2 top-1/2 z-50 translate-x-[-50%] translate-y-[-50%] duration-500 ${
               viewProfilePicture
@@ -58,7 +59,7 @@ function RouteSwitch() {
             <img
               src={otherProfilePicture === '' ? emptyProfilePicture : otherProfilePicture}
               alt="profile"
-              className="w-[80svw] min-w-[100px] max-w-[1000px] rounded-3xl border-4 border-white object-contain lg:w-[50svw] "
+              className="w-[80svw] min-w-[100px] max-w-[1000px] rounded-3xl border-[10px] border-white object-contain shadow-lg lg:w-[40svw]"
             />
           </div>
           <div
