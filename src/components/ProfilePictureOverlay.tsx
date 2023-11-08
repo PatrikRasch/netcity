@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { useLoggedInUserProfilePicture } from './context/LoggedInUserProfileDataContextProvider'
 import { useEmptyProfilePicture } from './context/EmptyProfilePictureContextProvider'
 
+import closeGrayFilled from './../assets/icons/close/closeGrayFilled.svg'
+
 interface Props {
   viewProfilePicture: boolean
   setViewProfilePicture: (value: boolean) => void
@@ -13,29 +15,31 @@ function ProfilePictureOverlay({ viewProfilePicture, setViewProfilePicture, othe
 
   const viewProfilePictureJSX = () => {
     return (
-      <div
-        className={`z-60 transition-all delay-75 duration-500 ${
-          viewProfilePicture ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
-        } transition-opacity`}
-      >
-        <div className="absolute left-[50%] top-[50%] z-20 translate-x-[-50%] translate-y-[-50%]">
+      <>
+        <div
+          className={`transition-transform-opacity fixed left-1/2 top-1/2 z-50 translate-x-[-50%] translate-y-[-50%] duration-500 ${
+            viewProfilePicture ? 'pointer-events-auto scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0'
+          }`}
+        >
+          <img
+            src={closeGrayFilled}
+            alt="exit register"
+            className="absolute right-[15px] top-[15px] w-[50px] cursor-pointer"
+            onClick={() => setViewProfilePicture(false)}
+          />
           <img
             src={otherProfilePicture === '' ? emptyProfilePicture : otherProfilePicture}
             alt="profile"
-            className={`transition-transform-opacity w-[80svw] min-w-[100px] max-w-[1000px] rounded-3xl border-4 border-white object-contain duration-500 lg:w-[50svw] ${
-              viewProfilePicture ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
-            }`}
+            className="w-[80svw] min-w-[100px] max-w-[1000px] rounded-3xl border-[10px] border-white object-contain shadow-lg lg:w-[40svw]"
           />
-          <div
-            className={`absolute left-[50%] top-[50%] z-[-1] h-screen w-screen translate-x-[-50%] translate-y-[-50%] bg-black transition-opacity delay-75 duration-500 ${
-              viewProfilePicture ? 'opacity-30' : 'opacity-0'
-            }`}
-            onClick={() => {
-              setViewProfilePicture(false)
-            }}
-          ></div>
         </div>
-      </div>
+        <div
+          className={`fixed z-20 h-screen w-screen bg-black transition-opacity duration-500 ${
+            viewProfilePicture ? 'pointer-events-auto opacity-30' : 'pointer-events-none opacity-0'
+          }`}
+          onClick={() => setViewProfilePicture(false)}
+        ></div>
+      </>
     )
   }
 
