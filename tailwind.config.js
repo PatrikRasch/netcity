@@ -25,6 +25,8 @@ module.exports = {
         graySoftest: '#efeeef',
         grayHover: '#dbdbdb',
 
+        grayMainDark: '#26292d',
+
         textMain: '#373736',
         textMedium: '#858485',
         textSoft: '#949495',
@@ -78,8 +80,8 @@ module.exports = {
         'project-information3': 'project-information 1s ease 1.4s forwards',
         'project-information4': 'project-information 1s ease 1.5s forwards',
         logo: 'logo 1s ease-in-out 0.4s both',
-        'button-pop-in-desktop': 'button-pop-in-desktop 1.5s cubic-bezier(.79,-0.01,.08,1) 4s forwards',
-        'button-pop-in-mobile': 'button-pop-in-mobile 1.5s cubic-bezier(.79,-0.01,.08,1) 4s forwards',
+        'button-pop-in-desktop': 'button-pop-in-desktop 1.5s cubic-bezier(.79,-0.01,.08,1) 2s forwards',
+        'button-pop-in-mobile': 'button-pop-in-mobile 1.5s cubic-bezier(.79,-0.01,.08,1) 2s forwards',
       },
     },
   },
