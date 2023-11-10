@@ -4,7 +4,7 @@ import AllPosts from './AllPosts'
 import ThinSeparatorLine from './ThinSeparatorLine'
 
 import { db, storage } from '../config/firebase.config'
-import { collection, doc, getDoc, addDoc, query, orderBy, onSnapshot, limit } from 'firebase/firestore'
+import { collection, doc, getDoc, addDoc, query, orderBy, onSnapshot, limit, Timestamp } from 'firebase/firestore'
 
 import { v4 as uuidv4 } from 'uuid'
 
@@ -34,7 +34,7 @@ interface PublicPostData {
   likes: object
   dislikes: object
   comments: object
-  timestamp: object
+  timestamp: Timestamp
   id: string
   publicPost: boolean
 }
