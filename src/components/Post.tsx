@@ -174,7 +174,17 @@ const Post = ({
   const displayTimeSincePosted = () => {
     const currentDate = firebase.firestore.Timestamp.fromDate(new Date())
     const hoursSincePosted = Math.floor((currentDate.seconds - postTimestamp.seconds) / 60 / 60)
+    const minutesSincePosted = Math.floor((currentDate.seconds - postTimestamp.seconds) / 60)
+    const secondsSincePosted = Math.floor(currentDate.seconds - postTimestamp.seconds)
+    if (secondsSincePosted < 60) {
+      return 'Less than 1 minute ago'
+    }
+    if (minutesSincePosted < 60) {
+      if (minutesSincePosted === 1) return minutesSincePosted + ' minute ago'
+      return minutesSincePosted + ' minutes ago'
+    }
     if (hoursSincePosted < 24) {
+      if (hoursSincePosted === 1) return hoursSincePosted + ' hour ago'
       return hoursSincePosted + ' hours ago'
     }
     return postDate
