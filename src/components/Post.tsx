@@ -7,6 +7,10 @@ import Dislikes from './Dislikes'
 import DeletePost from './DeletePost'
 import ThinSeparatorLine from './ThinSeparatorLine'
 
+import firebase from 'firebase/compat/app'
+
+import { useDateFunctions } from './custom-hooks/useDateFunctions'
+
 import commentGrayEmpty from './../assets/icons/comment/commentGrayEmpty.svg'
 import commentWhiteFilled from './../assets/icons/comment/commentWhiteFilled.svg'
 import starBlackFilled from './../assets/icons/star/starBlackFilled.svg'
@@ -25,6 +29,7 @@ import {
   onSnapshot,
   getDocs,
   DocumentReference,
+  Timestamp,
 } from 'firebase/firestore'
 import { ref, deleteObject } from 'firebase/storage'
 import { useEmptyProfilePicture } from './context/EmptyProfilePictureContextProvider'
@@ -38,6 +43,7 @@ interface Props {
   postImage: string
   postImageId: string
   postDate: string
+  postTimestamp: Timestamp
   postLikes: object
   postDislikes: object
   postComments: object
@@ -63,6 +69,7 @@ const Post = ({
   postImage,
   postImageId,
   postDate,
+  postTimestamp,
   postLikes,
   postDislikes,
   postComments,
@@ -110,6 +117,7 @@ const Post = ({
 
   const [showDropdownMenu, setShowDropdownMenu] = useState(false)
 
+  const { dateDayMonthYear } = useDateFunctions()
   const navigate = useNavigate()
 
   let profilePostDocRef: any // I know this is frowned upon
@@ -161,6 +169,15 @@ const Post = ({
     } catch (err) {
       console.error(err)
     }
+  }
+
+  const displayTimeSincePosted = () => {
+    const currentDate = firebase.firestore.Timestamp.fromDate(new Date())
+    const hoursSincePosted = Math.floor((currentDate.seconds - postTimestamp.seconds) / 60 / 60)
+    if (hoursSincePosted < 24) {
+      return hoursSincePosted + ' hours ago'
+    }
+    return postDate
   }
 
   const getLoggedInUserInformation = async (loggedInUserId: string) => {
@@ -435,7 +452,9 @@ const Post = ({
     if (openProfileId === undefined)
       return (
         <div className="mt-[2px] flex items-center gap-2">
-          <div className="font-mainFont text-smaller text-grayMain lg:text-[clamp(12px,1.5svw,13px)]">{postDate}</div>
+          <div className="font-mainFont text-smaller text-grayMain lg:text-[clamp(12px,1.5svw,13px)]">
+            {displayTimeSincePosted()}
+          </div>
           <div className="text-smaller text-grayMain">•</div>
           <img src={friendsOnlyPost ? starBlackFilled : globalBlackEmpty} alt="" className="w-[15px]" />
         </div>
@@ -443,7 +462,9 @@ const Post = ({
     else {
       return (
         <div className="mt-[2px] flex items-center gap-2">
-          <div className="font-mainFont text-smaller text-grayMain lg:text-[clamp(12px,1.5svw,13px)]">{postDate}</div>
+          <div className="font-mainFont text-smaller text-grayMain lg:text-[clamp(12px,1.5svw,13px)]">
+            {displayTimeSincePosted()}
+          </div>
         </div>
       )
     }
