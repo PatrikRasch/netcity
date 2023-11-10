@@ -555,9 +555,9 @@ const Post = ({
                 />
               </div>
               <div className="items-center gap-[15px] lg:flex">
-                <button className="font-mainFont font-bold tracking-wide lg:text-[clamp(16px,1.5svw,19px)]">
+                <div className="font-mainFont font-bold tracking-wide lg:text-[clamp(16px,1.5svw,19px)]">
                   {displayPostNames()}
-                </button>
+                </div>
                 {renderFriendsPostIconOrNot()}
               </div>
             </div>
