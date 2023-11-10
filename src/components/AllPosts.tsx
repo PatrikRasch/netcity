@@ -3,6 +3,7 @@ import Post from './Post'
 
 import { useEmptyProfilePicture } from './context/EmptyProfilePictureContextProvider'
 import ThickSeparatorLine from './ThickSeparatorLine'
+import { Timestamp } from 'firebase/firestore'
 
 interface posts {
   posts: PostData[]
@@ -19,7 +20,7 @@ interface PostData {
   likes: object
   dislikes: object
   comments: object
-  timestamp: object
+  timestamp: Timestamp
   id: string
 }
 
@@ -62,6 +63,7 @@ const AllPosts = ({
               postImage={post?.image}
               postImageId={post?.imageId}
               postDate={post.date}
+              postTimestamp={post.timestamp}
               postLikes={post.likes}
               postDislikes={post.dislikes}
               postComments={post.comments}
@@ -91,6 +93,7 @@ const AllPosts = ({
               postImage={post?.image}
               postImageId={post?.imageId}
               postDate={post.date}
+              postTimestamp={post.timestamp}
               postLikes={post.likes}
               postDislikes={post.dislikes}
               postComments={post.comments}
@@ -118,6 +121,7 @@ const AllPosts = ({
               postImage={post?.image}
               postImageId={post?.imageId}
               postDate={post.date}
+              postTimestamp={post.timestamp}
               postLikes={post.likes}
               postDislikes={post.dislikes}
               postComments={post.comments}
