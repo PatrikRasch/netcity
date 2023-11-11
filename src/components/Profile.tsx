@@ -14,6 +14,9 @@ import checkWhite from '../assets/icons/check/checkWhite.svg'
 import clockGrayEmpty from '../assets/icons/clock/clockGrayEmpty.webp'
 import lockWhiteFilled from '../assets/icons/lock/lockWhiteFilled.webp'
 
+// import imagemin from 'imagemin'
+// import imageminWebp from 'imagemin-webp'
+
 import { db, storage } from './../config/firebase.config'
 import {
   doc,
@@ -44,6 +47,7 @@ import { useDarkMode } from './context/DarkModeContextPovider'
 
 import { PostData } from '../interfaces'
 import ThickSeparatorLine from './ThickSeparatorLine'
+import FormValidationAlertMessage from './FormValidationAlertMessage'
 
 //6 Bug occurs when a private profile is visited (not friends with) and then the loggedInUser is instantly navigated to by clicking the profile picture.
 //6 Problem is likely an async state update problem (regarding updating openProfileId)
@@ -88,6 +92,8 @@ const Profile = ({ viewProfilePicture, setViewProfilePicture, otherProfilePictur
   const [isDeleteFriendDropdownMenuOpen, setIsDeleteFriendDropdownMenuOpen] = useState(false)
 
   const [featuredPhoto, setFeaturedPhoto] = useState('')
+
+  const [showValidationAlertMessage, setShowValidationAlertMessage] = useState(false)
 
   const profilePictureRef = useRef<HTMLInputElement | null>(null)
 
@@ -227,7 +233,6 @@ const Profile = ({ viewProfilePicture, setViewProfilePicture, otherProfilePictur
   const isUploadedProfilePictureTooLarge = (newProfilePicture: File | null) => {
     if (!newProfilePicture) return
     if (newProfilePicture.size > 2097152) {
-      alert('Profile picture must be smaller than 2MB')
       return false
     }
   }
@@ -236,8 +241,7 @@ const Profile = ({ viewProfilePicture, setViewProfilePicture, otherProfilePictur
   // - Also updates the user in the Firestore database with URL to the photo.
   const uploadProfilePicture = async (newProfilePicture: File | null) => {
     if (newProfilePicture === null) return // Return if no imagine is uploaded
-    if (isUploadedProfilePictureTooLarge(newProfilePicture) === false) return // Check if image is too large before proceeding
-
+    if (isUploadedProfilePictureTooLarge(newProfilePicture) === false) return setShowValidationAlertMessage(true) // Check if image is too large before proceeding
     const storageRef = ref(storage, `/profilePictures/${loggedInUserId}`) // Connect to storage
     try {
       const uploadedPicture = await uploadBytes(storageRef, newProfilePicture) // Upload the image
@@ -729,6 +733,11 @@ const Profile = ({ viewProfilePicture, setViewProfilePicture, otherProfilePictur
 
   return (
     <div>
+      <FormValidationAlertMessage
+        message={'Image size must be smaller than 2MB'}
+        showValidationAlertMessage={showValidationAlertMessage}
+        setShowValidationAlertMessage={setShowValidationAlertMessage}
+      />
       <BackgroundOuter />
       <div className="grid min-h-[calc(100svh-80px)] w-screen items-start justify-center bg-graySoft">
         {/*//1 Profile picture and name */}
