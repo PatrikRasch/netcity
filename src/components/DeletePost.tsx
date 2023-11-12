@@ -33,6 +33,7 @@ const DeletePost = ({
 }: Props) => {
   const { loggedInUserId } = useLoggedInUserId()
   const dropdownMenuRef = useRef<HTMLDivElement>(null)
+  const [hoverDeletePost, setHoverDeletePost] = useState(false)
 
   useEffect(() => {
     const handleClickOutsideOfDropdownMenu = (e: Event) => {
@@ -51,12 +52,20 @@ const DeletePost = ({
       return (
         <div ref={dropdownMenuRef} className="relative max-w-max">
           <div
-            className="max-h-[18px] cursor-pointer"
+            className="flex max-h-[18px] cursor-pointer"
             onClick={() => {
               setShowDropdownMenu(!showDropdownMenu)
             }}
+            onMouseEnter={() => {
+              setHoverDeletePost(true)
+              setTimeout(() => {
+                setHoverDeletePost(false)
+              }, 600)
+            }}
           >
-            •••
+            <div className={`${hoverDeletePost ? 'animate-delete-post-bounce1' : ''}`}>•</div>
+            <div className={`${hoverDeletePost ? 'animate-delete-post-bounce2' : ''}`}>•</div>
+            <div className={`${hoverDeletePost ? 'animate-delete-post-bounce3' : ''}`}>•</div>
           </div>
           <div
             className={`transition-transform duration-300 ${
