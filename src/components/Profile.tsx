@@ -303,7 +303,7 @@ const Profile = ({ viewProfilePicture, setViewProfilePicture, otherProfilePictur
     if (openProfileId !== loggedInUserId) return
     return (
       <button
-        className={`transition-transform-colors absolute bottom-[60px] left-[20px] z-10 grid h-[35px] w-[80px] grid-cols-[1fr,3fr] items-center gap-1 rounded-3xl pl-1 pr-1 text-start text-[10px] text-white outline-none duration-100 active:scale-[98%] lg:w-[125px] lg:pl-2 lg:pr-2 lg:text-verySmall ${
+        className={`transition-transform-colors absolute bottom-[60px] left-[20px] grid h-[35px] w-[80px] grid-cols-[1fr,3fr] items-center gap-1 rounded-3xl pl-1 pr-1 text-start text-[10px] text-white outline-none duration-100 active:scale-[98%] lg:w-[125px] lg:pl-2 lg:pr-2 lg:text-verySmall ${
           openProfile ? 'bg-purpleMain lg:hover:bg-purpleHover' : 'bg-redMain lg:hover:bg-redHover'
         } `}
         onClick={() => {
