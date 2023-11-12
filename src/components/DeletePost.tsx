@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
 
-import dotsGrayFilled from './../assets/icons/dots/dotsGrayFilled.webp'
-
 import { useLoggedInUserId } from './context/LoggedInUserProfileDataContextProvider'
 import { DocumentReference } from 'firebase/firestore'
 
@@ -52,52 +50,56 @@ const DeletePost = ({
     if (loggedInUserId === postUserId) {
       return (
         <div ref={dropdownMenuRef} className="relative max-w-max">
-          <img
-            src={dotsGrayFilled}
-            alt=""
+          <div
             className="max-h-[18px] cursor-pointer"
             onClick={() => {
               setShowDropdownMenu(!showDropdownMenu)
             }}
-          />
-          <div>{dropdownMenu()}</div>
+          >
+            •••
+          </div>
+          <div
+            className={`transition-transform duration-300 ${
+              showDropdownMenu ? 'scale-100' : 'pointer-events-none scale-0'
+            }`}
+          >
+            {dropdownMenu()}
+          </div>
         </div>
       )
     } else return <div></div>
   }
 
   const dropdownMenu = () => {
-    if (showDropdownMenu) {
-      return (
-        <div className="absolute right-0 top-4 z-20 grid min-w-max grid-rows-[1fr,1.5px,1fr] rounded-2xl rounded-tr-none bg-graySoft drop-shadow-md">
-          <button
-            className="lg:hover:bg-grayHover rounded-tl-2xl pb-1 pl-4 pr-4 pt-1"
-            onClick={() => {
-              deletePostClicked()
-              if (setPostTotalNumOfComments && postTotalNumOfComments) {
-                setPostTotalNumOfComments(postTotalNumOfComments - 1)
-              }
-              if (context === 'feed' && getNumOfComments && feedPostDocRef) getNumOfComments(feedPostDocRef)
-              if (context === 'profile' && getNumOfComments && profilePostDocRef) getNumOfComments(profilePostDocRef)
-            }}
-          >
-            {isPost ? 'Delete Post' : 'Delete Comment'}
-          </button>
-          <div className="h-[1.5px] w-full bg-grayMedium"></div>
-          <button
-            className="lg:hover:bg-grayHover rounded-2xl rounded-tl-none rounded-tr-none pb-1 pl-4 pr-4 pt-1"
-            onClick={() => {
-              setShowDropdownMenu(false)
-            }}
-          >
-            Close
-          </button>
-        </div>
-      )
-    }
+    return (
+      <div className="absolute right-0 top-0 z-20 grid min-w-max grid-rows-[1fr,1.5px,1fr] rounded-2xl rounded-tr-none bg-graySoft drop-shadow-md">
+        <button
+          className="rounded-tl-2xl pb-1 pl-4 pr-4 pt-1 lg:hover:bg-grayHover"
+          onClick={() => {
+            deletePostClicked()
+            if (setPostTotalNumOfComments && postTotalNumOfComments) {
+              setPostTotalNumOfComments(postTotalNumOfComments - 1)
+            }
+            if (context === 'feed' && getNumOfComments && feedPostDocRef) getNumOfComments(feedPostDocRef)
+            if (context === 'profile' && getNumOfComments && profilePostDocRef) getNumOfComments(profilePostDocRef)
+          }}
+        >
+          {isPost ? 'Delete Post' : 'Delete Comment'}
+        </button>
+        <div className="h-[1.5px] w-full bg-grayMedium"></div>
+        <button
+          className="rounded-2xl rounded-tl-none rounded-tr-none pb-1 pl-4 pr-4 pt-1 lg:hover:bg-grayHover"
+          onClick={() => {
+            setShowDropdownMenu(false)
+          }}
+        >
+          Close
+        </button>
+      </div>
+    )
   }
 
-  return <>{showDeletePostOrNot()}</>
+  return <div>{showDeletePostOrNot()}</div>
 }
 
 export default DeletePost
