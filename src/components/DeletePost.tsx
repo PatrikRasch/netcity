@@ -68,9 +68,7 @@ const DeletePost = ({
             <div className={`${hoverDeletePost ? 'animate-delete-post-bounce3' : ''}`}>•</div>
           </div>
           <div
-            className={`transition-transform duration-300 ${
-              showDropdownMenu ? 'scale-100' : 'pointer-events-none scale-0'
-            }`}
+            className={`transition-all duration-300 ${showDropdownMenu ? 'scale-100' : 'pointer-events-none scale-0'}`}
           >
             {dropdownMenu()}
           </div>
