@@ -68,6 +68,11 @@ module.exports = {
           '60%': { transform: 'scale(1.02)' },
           '100%': { transform: 'scale(1)' },
         },
+        'delete-post-bounce': {
+          '0%': { transform: 'translateY(0)' },
+          '60%': { transform: 'translateY(-5px)' },
+          '100%': { transform: 'translateY(0)' },
+        },
       },
       animation: {
         'slide-in-and-out1': 'slide-in-and-out 8s ease-in-out 1.5s infinite',
@@ -82,6 +87,9 @@ module.exports = {
         logo: 'logo 1s ease-in-out 0.4s both',
         'button-pop-in-desktop': 'button-pop-in-desktop 1.5s cubic-bezier(.79,-0.01,.08,1) 2s forwards',
         'button-pop-in-mobile': 'button-pop-in-mobile 1.5s cubic-bezier(.79,-0.01,.08,1) 2s forwards',
+        'delete-post-bounce1': 'delete-post-bounce 0.5s ease-in-out 0s both',
+        'delete-post-bounce2': 'delete-post-bounce 0.5s ease-in-out 0.05s both',
+        'delete-post-bounce3': 'delete-post-bounce 0.5s ease-in-out 0.1s both',
       },
     },
   },
