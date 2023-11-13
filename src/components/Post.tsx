@@ -561,13 +561,15 @@ const Post = ({
                 {renderFriendsPostIconOrNot()}
               </div>
             </div>
-            <DeletePost
-              postUserId={postUserId}
-              showDropdownMenu={showDropdownMenu}
-              setShowDropdownMenu={setShowDropdownMenu}
-              deletePostClicked={deletePostClicked}
-              isPost={true}
-            />
+            <div className="z-10">
+              <DeletePost
+                postUserId={postUserId}
+                showDropdownMenu={showDropdownMenu}
+                setShowDropdownMenu={setShowDropdownMenu}
+                deletePostClicked={deletePostClicked}
+                isPost={true}
+              />
+            </div>
           </div>
           <div className="grid gap-2 pb-3 pt-3">
             <div className="">{displayFullPostOrNot()}</div>
