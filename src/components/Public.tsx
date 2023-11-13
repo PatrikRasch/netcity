@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react'
 import BackgroundOuter from './BackgroundOuter'
 import AllPosts from './AllPosts'
 import ThinSeparatorLine from './ThinSeparatorLine'
+import FormValidationAlertMessage from './FormValidationAlertMessage'
 
 import { db, storage } from '../config/firebase.config'
 import { collection, doc, getDoc, addDoc, query, orderBy, onSnapshot, limit, Timestamp } from 'firebase/firestore'
@@ -22,6 +23,8 @@ import { useEmptyProfilePicture } from './context/EmptyProfilePictureContextProv
 import { useDateFunctions } from './custom-hooks/useDateFunctions'
 import useInfinityScrollFunctions from './custom-hooks/useInfinityScrollFunctions'
 import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage'
+
+import { imageSizeExceeded } from './utils/imageSizeUtils'
 
 interface PublicPostData {
   userId: string
@@ -61,6 +64,7 @@ function Public() {
   const [textareaActive, setTextareaActive] = useState(false)
   const [validateMakePost, setValidateMakePost] = useState(false)
   const [commandOrControlKeyDown, setCommandOrControlKeyDown] = useState(false)
+  const [showValidationAlertMessage, setShowValidationAlertMessage] = useState(false)
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
 
@@ -196,6 +200,7 @@ function Public() {
 
   const addImageToPost = async (imageToAddToPost: File | null) => {
     if (imageToAddToPost === null) return // Return if no imagine is uploaded
+    if (imageSizeExceeded(imageToAddToPost) === true) return setShowValidationAlertMessage(true) // Check if image is too large before proceeding
     const imageId = imageToAddToPost.name + ' ' + uuidv4()
     const storageRef = ref(storage, `postImages/${imageId}`) // Connect to storage
     try {
@@ -280,6 +285,11 @@ function Public() {
   return (
     <div>
       <BackgroundOuter />
+      <FormValidationAlertMessage
+        message={'Image size must be smaller than 2MB'}
+        showValidationAlertMessage={showValidationAlertMessage}
+        setShowValidationAlertMessage={setShowValidationAlertMessage}
+      />
       <div className="lg:w-100svw bg-graySoft lg:grid lg:justify-center">
         {/* Choose posts to see */}
         <div className="lg:w-[clamp(500px,55svw,1500px)]">
