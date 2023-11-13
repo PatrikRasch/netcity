@@ -1,22 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import BackgroundOuter from './BackgroundOuter'
-
 import { useNavigate, useParams } from 'react-router-dom'
-
-import globalWhiteEmpty from '../assets/icons/global/globalWhiteEmpty.svg'
-import lockWithCirclePurple from '../assets/icons/lockCircle/lockWithCirclePurple.webp'
-import postsWhiteEmpty from '../assets/icons/posts/postsWhiteEmpty.svg'
-import postsBlackEmpty from '../assets/icons/posts/postsBlackEmpty.svg'
-import aboutWhiteEmpty from '../assets/icons/about/aboutWhiteEmpty.webp'
-import aboutBlackEmpty from '../assets/icons/about/aboutBlackEmpty.webp'
-import starPurpleFilled from '../assets/icons/star/starPurpleFilled.svg'
-import checkWhite from '../assets/icons/check/checkWhite.svg'
-import clockGrayEmpty from '../assets/icons/clock/clockGrayEmpty.webp'
-import lockWhiteFilled from '../assets/icons/lock/lockWhiteFilled.webp'
-
-// import imagemin from 'imagemin'
-// import imageminWebp from 'imagemin-webp'
-
 import { db, storage } from './../config/firebase.config'
 import {
   doc,
@@ -32,25 +15,37 @@ import {
 } from 'firebase/firestore'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 
+//- Component imports
+import BackgroundOuter from './BackgroundOuter'
 import MakePost from './MakePost'
 import AllPosts from './AllPosts'
 import About from './About'
 import ThinSeparatorLine from './ThinSeparatorLine'
-
+import ThickSeparatorLine from './ThickSeparatorLine'
+import FormValidationAlertMessage from './FormValidationAlertMessage'
+//- Image imports
+import globalWhiteEmpty from '../assets/icons/global/globalWhiteEmpty.svg'
+import lockWithCirclePurple from '../assets/icons/lockCircle/lockWithCirclePurple.webp'
+import postsWhiteEmpty from '../assets/icons/posts/postsWhiteEmpty.svg'
+import postsBlackEmpty from '../assets/icons/posts/postsBlackEmpty.svg'
+import aboutWhiteEmpty from '../assets/icons/about/aboutWhiteEmpty.webp'
+import aboutBlackEmpty from '../assets/icons/about/aboutBlackEmpty.webp'
+import starPurpleFilled from '../assets/icons/star/starPurpleFilled.svg'
+import checkWhite from '../assets/icons/check/checkWhite.svg'
+import clockGrayEmpty from '../assets/icons/clock/clockGrayEmpty.webp'
+import lockWhiteFilled from '../assets/icons/lock/lockWhiteFilled.webp'
+//- Context imports
 import { useEmptyProfilePicture } from './context/EmptyProfilePictureContextProvider'
 import { useLoggedInUserId } from './context/LoggedInUserProfileDataContextProvider'
 import { useLoggedInUserFirstName } from './context/LoggedInUserProfileDataContextProvider'
 import { useLoggedInUserLastName } from './context/LoggedInUserProfileDataContextProvider'
 import { useLoggedInUserProfilePicture } from './context/LoggedInUserProfileDataContextProvider'
+//- Utils imports
+import { imageSizeExceeded } from './utils/imageSizeUtils'
 
 import { useDarkMode } from './context/DarkModeContextPovider'
 
 import { PostData } from '../interfaces'
-import ThickSeparatorLine from './ThickSeparatorLine'
-import FormValidationAlertMessage from './FormValidationAlertMessage'
-
-//6 Bug occurs when a private profile is visited (not friends with) and then the loggedInUser is instantly navigated to by clicking the profile picture.
-//6 Problem is likely an async state update problem (regarding updating openProfileId)
 
 interface Props {
   viewProfilePicture: boolean
@@ -62,47 +57,35 @@ interface Props {
 const Profile = ({ viewProfilePicture, setViewProfilePicture, otherProfilePicture, setOtherProfilePicture }: Props) => {
   //- Context declarations:
   const emptyProfilePicture = useEmptyProfilePicture()
-
   const { loggedInUserId, setLoggedInUserId } = useLoggedInUserId()
   const { loggedInUserFirstName, setLoggedInUserFirstName } = useLoggedInUserFirstName()
   const { loggedInUserLastName, setLoggedInUserLastName } = useLoggedInUserLastName()
-
   const loggedInUserProfilePicture = useLoggedInUserProfilePicture()
   //- State declarations:
   const [visitingUser, setVisitingUser] = useState(false)
   const [showPosts, setShowPosts] = useState(true)
   const [otherFirstName, setOtherFirstName] = useState('')
   const [otherLastName, setOtherLastName] = useState('')
-
   const [dataLoaded, setDataLoaded] = useState(false)
-
   const [bioText, setBioText] = useState('')
-
   const [openProfile, setOpenProfile] = useState(true)
   const [displayProfileContent, setDisplayProfileContent] = useState(false)
-
   const [friendsWithUser, setFriendsWithUser] = useState(false)
   const [sentFriendRequestToUser, setSentFriendRequestToUser] = useState(false)
   const [receivedFriendRequestFromUser, setReceivedFriendRequestFromUser] = useState(false)
-
   const [userDocRef, setUserDocRef] = useState<DocumentReference>()
   const [userData, setUserData] = useState<DocumentData>()
   const [loggedInUserData, setLoggedInUserData] = useState<DocumentData>()
-
   const [isDeleteFriendDropdownMenuOpen, setIsDeleteFriendDropdownMenuOpen] = useState(false)
-
   const [featuredPhoto, setFeaturedPhoto] = useState('')
-
   const [showValidationAlertMessage, setShowValidationAlertMessage] = useState(false)
-
+  const [posts, setPosts] = useState<PostData[]>([])
+  //- useRef's:
   const profilePictureRef = useRef<HTMLInputElement | null>(null)
-
   //- Navigation declarations:
   const navigate = useNavigate()
   //- useParams:
   const { openProfileId } = useParams()
-
-  const [posts, setPosts] = useState<PostData[]>([])
 
   useEffect(() => {
     getLoggedInUserData()
@@ -229,19 +212,11 @@ const Profile = ({ viewProfilePicture, setViewProfilePicture, otherProfilePictur
       )
   }
 
-  // - Stops the uploaded image if it's above 2MB
-  const isUploadedProfilePictureTooLarge = (newProfilePicture: File | null) => {
-    if (!newProfilePicture) return
-    if (newProfilePicture.size > 2097152) {
-      return false
-    }
-  }
-
   // - Allows user to select profile picture. Writes and stores the profile picture in Firebase Storage.
   // - Also updates the user in the Firestore database with URL to the photo.
   const uploadProfilePicture = async (newProfilePicture: File | null) => {
     if (newProfilePicture === null) return // Return if no imagine is uploaded
-    if (isUploadedProfilePictureTooLarge(newProfilePicture) === false) return setShowValidationAlertMessage(true) // Check if image is too large before proceeding
+    if (imageSizeExceeded(newProfilePicture) === true) return setShowValidationAlertMessage(true) // Check if image is too large before proceeding
     const storageRef = ref(storage, `/profilePictures/${loggedInUserId}`) // Connect to storage
     try {
       const uploadedPicture = await uploadBytes(storageRef, newProfilePicture) // Upload the image
