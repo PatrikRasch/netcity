@@ -5,6 +5,8 @@ import { useDateFunctions } from './custom-hooks/useDateFunctions'
 import { v4 as uuidv4 } from 'uuid'
 
 import ThinSeparatorLine from './ThinSeparatorLine'
+import FormValidationAlertMessage from './FormValidationAlertMessage'
+// import useUploadedImageSizeLimit from './utils/imageSizeUtils'
 
 import { GetAllPosts, VisitingUser } from '../interfaces'
 import { useEmptyProfilePicture } from './context/EmptyProfilePictureContextProvider'
@@ -20,6 +22,8 @@ import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage
 import imageGrayEmpty from './../assets/icons/image/imageGrayEmpty.webp'
 import imageBlackEmpty from './../assets/icons/image/imageBlackEmpty.webp'
 import userGrayFilled from './../assets/icons/user/userGrayFilled.svg'
+
+import { imageSizeExceeded } from './utils/imageSizeUtils'
 
 interface Props {
   getAllPosts: GetAllPosts['getAllPosts']
@@ -43,6 +47,7 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
   const [textareaActive, setTextareaActive] = useState(false)
   const [validateMakePost, setValidateMakePost] = useState(false)
   const [commandOrControlKeyDown, setCommandOrControlKeyDown] = useState(false)
+  const [showValidationAlertMessage, setShowValidationAlertMessage] = useState(false)
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
 
@@ -80,6 +85,7 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
 
   const addImageToPost = async (imageToAddToPost: File | null) => {
     if (imageToAddToPost === null) return // Return if no imagine is uploaded
+    if (imageSizeExceeded(imageToAddToPost) === true) return setShowValidationAlertMessage(true) // Check if image is too large before proceeding
     const imageId = imageToAddToPost.name + ' ' + uuidv4()
     const storageRef = ref(storage, `postImages/${imageId}`) // Connect to storage
     try {
@@ -184,6 +190,11 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
     <div>
       <div className="font-mainFont pb-1 pl-4 pt-3 font-semibold lg:pl-8">Create a Post</div>
       <ThinSeparatorLine />
+      <FormValidationAlertMessage
+        message={'Image size must be smaller than 2MB'}
+        showValidationAlertMessage={showValidationAlertMessage}
+        setShowValidationAlertMessage={setShowValidationAlertMessage}
+      />
       <section className="pl-3 pr-3 lg:pl-8 lg:pr-4">
         <div className="grid grid-cols-[50px,1fr,50px] items-center justify-items-center gap-3 pb-2 pt-3">
           <img
