@@ -23,6 +23,7 @@ import About from './About'
 import ThinSeparatorLine from './ThinSeparatorLine'
 import ThickSeparatorLine from './ThickSeparatorLine'
 import FormValidationAlertMessage from './FormValidationAlertMessage'
+import LoadingBar from './LoadingBar'
 //- Image imports
 import globalWhiteEmpty from '../assets/icons/global/globalWhiteEmpty.svg'
 import lockWithCirclePurple from '../assets/icons/lockCircle/lockWithCirclePurple.webp'
@@ -80,6 +81,7 @@ const Profile = ({ viewProfilePicture, setViewProfilePicture, otherProfilePictur
   const [featuredPhoto, setFeaturedPhoto] = useState('')
   const [showValidationAlertMessage, setShowValidationAlertMessage] = useState(false)
   const [posts, setPosts] = useState<PostData[]>([])
+  const [showLoadingBar, setShowLoadingBar] = useState(false)
   //- useRef's:
   const profilePictureRef = useRef<HTMLInputElement | null>(null)
   //- Navigation declarations:
@@ -219,6 +221,7 @@ const Profile = ({ viewProfilePicture, setViewProfilePicture, otherProfilePictur
     if (imageSizeExceeded(newProfilePicture) === true) return setShowValidationAlertMessage(true) // Check if image is too large before proceeding
     const storageRef = ref(storage, `/profilePictures/${loggedInUserId}`) // Connect to storage
     try {
+      setShowLoadingBar(true)
       const uploadedPicture = await uploadBytes(storageRef, newProfilePicture) // Upload the image
       const downloadURL = await getDownloadURL(uploadedPicture.ref) // Get the downloadURL for the image
       setOtherProfilePicture(downloadURL) // Set the downloadURL for the image in state to use across the app.
@@ -226,9 +229,11 @@ const Profile = ({ viewProfilePicture, setViewProfilePicture, otherProfilePictur
       const usersCollectionRef = collection(db, 'users') // Grabs the users collection
       const userDocRef = doc(usersCollectionRef, loggedInUserId) // Grabs the doc where the user is
       await updateDoc(userDocRef, { profilePicture: downloadURL }) // Add the image into Firestore
-      // alert("Profile picture uploaded"); //6 Should be sexified
+      setShowLoadingBar(false)
+      // alert("Profile picture uploaded"); //6 Needs improving
     } catch (err) {
       console.error(err)
+      setShowLoadingBar(false)
       //6 Need a "Something went wrong, please try again"
     }
   }
@@ -236,11 +241,27 @@ const Profile = ({ viewProfilePicture, setViewProfilePicture, otherProfilePictur
   const displayProfilePicture = () => {
     if (!visitingUser) {
       return (
-        <img
-          src={loggedInUserProfilePicture === '' ? emptyProfilePicture : loggedInUserProfilePicture}
-          alt="profile"
-          className="aspect-square h-[160px] w-[160px] rounded-[50%] border-4 border-white object-cover"
-        />
+        <>
+          <>
+            <div
+              className={`absolute inset-0 z-30 flex scale-95 items-center justify-center transition-all duration-300 ${
+                showLoadingBar ? 'opacity-100' : 'opacity-0'
+              } pointer-events-none transition-opacity`}
+            >
+              <LoadingBar />
+            </div>
+            <div
+              className={`absolute h-[160px] w-[160px] rounded-[50%] border-4 border-white bg-black transition-all duration-300 ${
+                showLoadingBar ? 'opacity-50' : 'opacity-0'
+              } `}
+            ></div>
+          </>
+          <img
+            src={loggedInUserProfilePicture === '' ? emptyProfilePicture : loggedInUserProfilePicture}
+            alt="profile"
+            className="aspect-square h-[160px] w-[160px] rounded-[50%] border-4 border-white object-cover"
+          />
+        </>
       )
     }
     if (visitingUser) {
