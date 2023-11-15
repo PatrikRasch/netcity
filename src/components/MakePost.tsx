@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 import ThinSeparatorLine from './ThinSeparatorLine'
 import FormValidationAlertMessage from './FormValidationAlertMessage'
-// import useUploadedImageSizeLimit from './utils/imageSizeUtils'
+import LoadingBar from './LoadingBar'
 
 import { GetAllPosts, VisitingUser } from '../interfaces'
 import { useEmptyProfilePicture } from './context/EmptyProfilePictureContextProvider'
@@ -48,6 +48,7 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
   const [validateMakePost, setValidateMakePost] = useState(false)
   const [commandOrControlKeyDown, setCommandOrControlKeyDown] = useState(false)
   const [showValidationAlertMessage, setShowValidationAlertMessage] = useState(false)
+  const [showLoadingBar, setShowLoadingBar] = useState(false)
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
 
@@ -56,6 +57,25 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
     if (!openProfileId) return console.log('No userProfileId') //6 Need to make this error better later
     const targetUser = doc(db, 'users', openProfileId)
     return collection(targetUser, 'postsProfile')
+  }
+
+  const handlePhotoOrLoadingBar = () => {
+    return (
+      <>
+        <div
+          className={`pointer-events-none absolute z-30 h-[35px] w-[35px] overflow-hidden transition-all duration-300 ${
+            showLoadingBar ? '' : 'hidden'
+          }`}
+        >
+          <LoadingBar scale={0.8} height={35} width={35} color={'black'} />
+        </div>
+        <img
+          src={imageGrayEmpty}
+          alt="add and upload file to post"
+          className={`max-w-[35px] transition-opacity duration-300 ${showLoadingBar ? 'hidden' : ''}`}
+        />
+      </>
+    )
   }
 
   //1 Write the post to Firestore
@@ -89,6 +109,7 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
     const imageId = imageToAddToPost.name + ' ' + uuidv4()
     const storageRef = ref(storage, `postImages/${imageId}`) // Connect to storage
     try {
+      setShowLoadingBar(true)
       const addedImage = await uploadBytes(storageRef, imageToAddToPost) // Upload the image
       const downloadURL = await getDownloadURL(addedImage.ref) // Get the downloadURL for the image
       // Update Firestore Database with image:
@@ -99,7 +120,9 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
       setImageAddedToPostId(imageId)
       setImageAddedToPost(downloadURL)
       // alert("Profile picture uploaded"); //6 Should be sexified
+      setShowLoadingBar(false)
     } catch (err) {
+      setShowLoadingBar(false)
       console.error(err)
       //6 Need a "Something went wrong, please try again"
     }
@@ -205,7 +228,7 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
           <textarea
             ref={textareaRef}
             placeholder={validateMakePost ? 'Write something before posting' : 'Make a post'}
-            className={`transition-height w-full resize-none self-start overflow-y-auto rounded-3xl border-2 bg-graySoft p-3 placeholder-grayMediumPlus outline-none duration-500 ${
+            className={`transition-height w-full resize-none self-start overflow-y-auto whitespace-pre rounded-3xl border-2 bg-graySoft p-3 placeholder-grayMediumPlus outline-none duration-500 ${
               textareaActive ? 'min-h-[144px]' : 'min-h-[48px]'
             } ${validateMakePost ? 'border-purpleMain' : 'border-transparent'}`}
             maxLength={1000}
@@ -245,7 +268,7 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
             }}
           />
           <label htmlFor="addImageToPostFeedButton" className="mr-2 flex flex-col hover:cursor-pointer">
-            <img src={imageGrayEmpty} alt="add and upload file to post" className="max-w-[35px]" />
+            <div className="h-[35px] w-[35px]">{handlePhotoOrLoadingBar()}</div>
             <div className="text-center text-verySmall">Photo</div>
           </label>
           <div className={`${imageAddedToPost ? '' : 'absolute'}`}></div>
