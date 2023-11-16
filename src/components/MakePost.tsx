@@ -67,7 +67,7 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
             showLoadingBar ? '' : 'hidden'
           }`}
         >
-          <LoadingBar scale={0.8} height={35} width={35} color={'black'} />
+          <LoadingBar scale={0.8} height={35} width={35} circle={'smallAndBlack'} />
         </div>
         <img
           src={imageGrayEmpty}
