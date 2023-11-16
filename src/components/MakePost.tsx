@@ -228,7 +228,7 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
           <textarea
             ref={textareaRef}
             placeholder={validateMakePost ? 'Write something before posting' : 'Make a post'}
-            className={`transition-height w-full resize-none self-start overflow-y-auto whitespace-pre rounded-3xl border-2 bg-graySoft p-3 placeholder-grayMediumPlus outline-none duration-500 ${
+            className={`transition-height w-full resize-none self-start overflow-y-auto rounded-3xl border-2 bg-graySoft p-3 placeholder-grayMediumPlus outline-none duration-500 ${
               textareaActive ? 'min-h-[144px]' : 'min-h-[48px]'
             } ${validateMakePost ? 'border-purpleMain' : 'border-transparent'}`}
             maxLength={1000}
