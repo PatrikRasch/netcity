@@ -1,83 +1,83 @@
-import React, { useState } from "react";
-import profilePicture from "./../assets/images/profile-picture.jpg";
+import React, { useState } from 'react'
+import profilePicture from './../assets/images/profile-picture.jpg'
 
-import { FirstNameProp } from "../interfaces";
-import { LastNameProp } from "../interfaces";
-import { GetAllPosts } from "../interfaces";
+import { FirstNameProp } from '../interfaces'
+import { LastNameProp } from '../interfaces'
+import { GetPosts } from '../interfaces'
 
-import { db } from "../config/firebase.config";
-import { doc, addDoc, collection } from "firebase/firestore";
+import { db } from '../config/firebase.config'
+import { doc, addDoc, collection } from 'firebase/firestore'
 
 interface Props {
-  loggedInUserId: string;
-  setLoggedInUserId: (value: string) => void;
-  firstName: FirstNameProp["firstName"];
-  lastName: LastNameProp["lastName"];
-  getAllPosts: GetAllPosts["getAllPosts"];
+  loggedInUserId: string
+  setLoggedInUserId: (value: string) => void
+  firstName: FirstNameProp['firstName']
+  lastName: LastNameProp['lastName']
+  getAllPosts: GetPosts['getPosts']
 }
 
 function MakePost(props: Props) {
-  const [postInput, setPostInput] = useState("");
-  const [postId, setPostId] = useState("");
-  const { loggedInUserId, setLoggedInUserId } = props;
-  const { firstName } = props;
-  const { lastName } = props;
-  const { getAllPosts } = props;
+  const [postInput, setPostInput] = useState('')
+  const [postId, setPostId] = useState('')
+  const { loggedInUserId, setLoggedInUserId } = props
+  const { firstName } = props
+  const { lastName } = props
+  const { getAllPosts } = props
 
   //1 Gets the reference to the postsProfile collection for the user
   const getPostsProfileRef = () => {
-    const targetUser = doc(db, "users", loggedInUserId);
-    return collection(targetUser, "postsProfile");
-  };
+    const targetUser = doc(db, 'users', loggedInUserId)
+    return collection(targetUser, 'postsProfile')
+  }
 
   //1 Write the post to Firestore
   const writePost = async (data: {
-    timestamp: object;
-    firstName: string;
-    lastName: string;
-    text: string;
-    date: string;
-    likes: object;
-    dislikes: object;
-    comments: number;
+    timestamp: object
+    firstName: string
+    lastName: string
+    text: string
+    date: string
+    likes: object
+    dislikes: object
+    comments: number
   }) => {
     try {
-      const postsProfileRef = getPostsProfileRef();
-      const newPost = await addDoc(postsProfileRef, data);
-      setPostId(newPost.id); // Set the ID of this post to the state newPost
+      const postsProfileRef = getPostsProfileRef()
+      const newPost = await addDoc(postsProfileRef, data)
+      setPostId(newPost.id) // Set the ID of this post to the state newPost
     } catch (err) {
-      console.error("Error writing to postsProfile: ", err);
+      console.error('Error writing to postsProfile: ', err)
     }
-  };
+  }
 
   //1 Set up new date
-  const date = new Date();
+  const date = new Date()
 
   //1 Turn month number into text
   const getMonthName = (monthNumber: number) => {
-    const date = new Date();
-    date.setMonth(monthNumber - 1);
-    return date.toLocaleString("en-US", { month: "long" });
-  };
+    const date = new Date()
+    date.setMonth(monthNumber - 1)
+    return date.toLocaleString('en-US', { month: 'long' })
+  }
 
   //1 Turn all dates into readable text
   const fullDate = (monthNumber: number) => {
-    const day = date.getDate().toString();
-    const month = getMonthName(monthNumber).toString();
-    const year = date.getFullYear().toString();
-    return day + " " + month + " " + year;
-  };
+    const day = date.getDate().toString()
+    const month = getMonthName(monthNumber).toString()
+    const year = date.getFullYear().toString()
+    return day + ' ' + month + ' ' + year
+  }
 
   return (
     <div>
-      <div className="w-full min-h-[150px] bg-white shadow-xl">
-        <div className="min-h-[120px] flex p-4 gap-2">
+      <div className="min-h-[150px] w-full bg-white shadow-xl">
+        <div className="flex min-h-[120px] gap-2 p-4">
           <div className="min-w-[50px] max-w-min">
-            <img src={profilePicture} alt="profile" className="rounded-[50%] aspect-square object-cover" />
+            <img src={profilePicture} alt="profile" className="aspect-square rounded-[50%] object-cover" />
           </div>
           <textarea
             placeholder="Make a post"
-            className="w-full bg-transparent resize-none"
+            className="w-full resize-none bg-transparent"
             maxLength={150}
             value={postInput}
             onChange={(e) => setPostInput(e.target.value)}
@@ -86,7 +86,7 @@ function MakePost(props: Props) {
         <button
           className="min-h-[30px] w-full bg-[#00A7E1] text-white"
           onClick={(e) => {
-            if (postInput.length === 0) return console.log("add text to input before posting");
+            if (postInput.length === 0) return console.log('add text to input before posting')
             writePost({
               timestamp: date,
               firstName: firstName,
@@ -96,20 +96,20 @@ function MakePost(props: Props) {
               likes: {},
               dislikes: {},
               comments: 0,
-            });
-            getAllPosts();
-            setPostInput("");
+            })
+            getAllPosts()
+            setPostInput('')
           }}
         >
           Post
         </button>
       </div>
-      <div className="w-full h-[15px] bg-gray-100"></div>
+      <div className="h-[15px] w-full bg-gray-100"></div>
     </div>
-  );
+  )
 }
 
-export default MakePost;
+export default MakePost
 
 //1 Excess comments
 //2 When a post is made, the onClick of the post button returns a function that

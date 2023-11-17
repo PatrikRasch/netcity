@@ -8,7 +8,7 @@ import ThinSeparatorLine from './ThinSeparatorLine'
 import FormValidationAlertMessage from './FormValidationAlertMessage'
 import LoadingBar from './LoadingBar'
 
-import { GetAllPosts, VisitingUser } from '../interfaces'
+import { VisitingUser, GetPosts } from '../interfaces'
 import { useEmptyProfilePicture } from './context/EmptyProfilePictureContextProvider'
 import { useLoggedInUserId } from './context/LoggedInUserProfileDataContextProvider'
 import { useLoggedInUserFirstName } from './context/LoggedInUserProfileDataContextProvider'
@@ -26,12 +26,14 @@ import userGrayFilled from './../assets/icons/user/userGrayFilled.svg'
 import { imageSizeExceeded } from './utils/imageSizeUtils'
 
 interface Props {
-  getAllPosts: GetAllPosts['getAllPosts']
+  postLocation: string
+  getPosts: GetPosts['getPosts']
   visitingUser: VisitingUser['visitingUser']
   userPicture: string
+  isPublicPost: boolean
 }
 
-function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
+function MakePost({ postLocation, getPosts, userPicture, visitingUser, isPublicPost }: Props) {
   const [postInput, setPostInput] = useState('')
   const [postId, setPostId] = useState('')
   const { openProfileId } = useParams()
@@ -49,7 +51,6 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
   const [commandOrControlKeyDown, setCommandOrControlKeyDown] = useState(false)
   const [showValidationAlertMessage, setShowValidationAlertMessage] = useState(false)
   const [showLoadingBar, setShowLoadingBar] = useState(false)
-
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
 
   //1 Gets the reference to the postsProfile collection for the user
@@ -79,7 +80,7 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
   }
 
   //1 Write the post to Firestore
-  const writePost = async (data: {
+  const writeProfilePost = async (data: {
     timestamp: object
     firstName: string
     lastName: string
@@ -100,6 +101,32 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
       setPostId(newPost.id) // Set the ID of this post to the state newPost
     } catch (err) {
       console.error('Error writing to postsProfile: ', err)
+    }
+  }
+
+  //1 Gets the reference to the publicPosts collection
+  const publicPostsCollection = collection(db, 'publicPosts')
+
+  const writePublicPost = async (data: {
+    userId: string
+    firstName: string
+    lastName: string
+    text: string
+    image: string
+    imageId: string
+    date: string
+    likes: object
+    dislikes: object
+    comments: object
+    timestamp: object
+    publicPost: boolean
+  }) => {
+    try {
+      if (publicPostsCollection === undefined) return console.log('publicPostsCollection is undefined') //6 Must be improved later
+      const newPublicPost = await addDoc(publicPostsCollection, data)
+      setPostId(newPublicPost.id) // Set the ID of this post to the state newPost
+    } catch (err) {
+      console.error('Error writing to publicPosts: ', err)
     }
   }
 
@@ -189,36 +216,55 @@ function MakePost({ getAllPosts, userPicture, visitingUser }: Props) {
       return
     }
     setFullTimestamp(new Date())
-    writePost({
-      timestamp: fullTimestamp,
-      firstName: loggedInUserFirstName,
-      lastName: loggedInUserLastName,
-      text: postInput,
-      image: imageAddedToPost,
-      imageId: imageAddedToPostId,
-      date: dateDayMonthYear,
-      likes: {},
-      dislikes: {},
-      comments: {},
-      userId: loggedInUserId,
-    })
-    getAllPosts()
-    setPostInput('')
+    if (postLocation === 'profile') {
+      writeProfilePost({
+        timestamp: fullTimestamp,
+        firstName: loggedInUserFirstName,
+        lastName: loggedInUserLastName,
+        text: postInput,
+        image: imageAddedToPost,
+        imageId: imageAddedToPostId,
+        date: dateDayMonthYear,
+        likes: {},
+        dislikes: {},
+        comments: {},
+        userId: loggedInUserId,
+      })
+      getPosts()
+    }
+    if (postLocation === 'global') {
+      writePublicPost({
+        timestamp: fullTimestamp,
+        firstName: loggedInUserFirstName,
+        lastName: loggedInUserLastName,
+        text: postInput,
+        image: imageAddedToPost,
+        imageId: imageAddedToPostId,
+        date: dateDayMonthYear,
+        likes: {},
+        dislikes: {},
+        comments: {},
+        userId: loggedInUserId,
+        publicPost: isPublicPost,
+      })
+      getPosts()
+    }
     setImageAddedToPost('')
+    setPostInput('')
     resetTextarea()
     setTextareaActive(false)
   }
 
   return (
     <div>
-      <div className="font-mainFont pb-1 pl-4 pt-3 font-semibold lg:pl-8">Create a Post</div>
+      <div className="font-mainFont bg-white pb-1 pl-4 pt-3 font-semibold lg:pl-8">Create a Post</div>
       <ThinSeparatorLine />
       <FormValidationAlertMessage
         message={'Image size must be smaller than 2MB'}
         showValidationAlertMessage={showValidationAlertMessage}
         setShowValidationAlertMessage={setShowValidationAlertMessage}
       />
-      <section className="pl-3 pr-3 lg:pl-8 lg:pr-4">
+      <section className="bg-white pl-3 pr-3 lg:pl-8 lg:pr-4">
         <div className="grid grid-cols-[50px,1fr,50px] items-center justify-items-center gap-3 pb-2 pt-3">
           <img
             src={loggedInUserProfilePicture === '' ? emptyProfilePicture : loggedInUserProfilePicture}

@@ -184,9 +184,11 @@ const Profile = ({ viewProfilePicture, setViewProfilePicture, otherProfilePictur
       return (
         <>
           <MakePost
+            postLocation={'profile'}
             userPicture={otherProfilePicture} // pf Picture og logged in user
-            getAllPosts={getAllPosts}
+            getPosts={getAllPosts}
             visitingUser={visitingUser}
+            isPublicPost={false}
           />
           <AllPosts
             openProfileId={openProfileId} // Id of profile being viewed

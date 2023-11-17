@@ -3,6 +3,7 @@ import BackgroundOuter from './BackgroundOuter'
 import AllPosts from './AllPosts'
 import ThinSeparatorLine from './ThinSeparatorLine'
 import FormValidationAlertMessage from './FormValidationAlertMessage'
+import MakePost from './MakePost'
 
 import { db, storage } from '../config/firebase.config'
 import { collection, doc, getDoc, addDoc, query, orderBy, onSnapshot, limit, Timestamp } from 'firebase/firestore'
@@ -58,7 +59,7 @@ function Public() {
   const [postsLoaded, setPostsLoaded] = useState(10)
   const [showGlobalPosts, setShowGlobalPosts] = useState(true)
   const [showFriendsPosts, setShowFriendsPosts] = useState(false)
-  const [publicPost, setPublicPost] = useState(true)
+  const [isPublicPost, setIsPublicPost] = useState(true)
   const [imageAddedToPostFeed, setImageAddedToPostFeed] = useState<string>('')
   const [imageAddedToPostFeedId, setImageAddedToPostFeedId] = useState<string>('')
   const [textareaActive, setTextareaActive] = useState(false)
@@ -70,29 +71,6 @@ function Public() {
 
   //1 Gets the reference to the publicPosts collection
   const publicPostsCollection = collection(db, 'publicPosts')
-
-  const writePost = async (data: {
-    userId: string
-    firstName: string
-    lastName: string
-    text: string
-    image: string
-    imageId: string
-    date: string
-    likes: object
-    dislikes: object
-    comments: object
-    timestamp: object
-    publicPost: boolean
-  }) => {
-    try {
-      if (publicPostsCollection === undefined) return console.log('publicPostsCollection is undefined') //6 Must be improved later
-      const newPublicPost = await addDoc(publicPostsCollection, data)
-      setPostId(newPublicPost.id) // Set the ID of this post to the state newPost
-    } catch (err) {
-      console.error('Error writing to publicPosts: ', err)
-    }
-  }
 
   //1 GET POSTS FOR PROFILE CURRENTLY BEING VIEWED
   //  - Gets all the posts (profilePosts in Firestore) from the current profile subcollection.
@@ -160,7 +138,7 @@ function Public() {
   }, [])
 
   const changePostDestination = () => {
-    setPublicPost((prevMakePublicPost) => !prevMakePublicPost)
+    setIsPublicPost((prevMakePublicPost) => !prevMakePublicPost)
   }
 
   //6 changePostDestination is redundant atm due to postDestination not using publicPost state, but rather using showGlobalPosts
@@ -255,33 +233,6 @@ function Public() {
     if (e.key === 'Meta' || e.key === 'Control') setCommandOrControlKeyDown(false)
   }
 
-  const handlePost = () => {
-    if (postInput.length === 0 && imageAddedToPostFeed === '') {
-      setValidateMakePost(true)
-      return
-    }
-    setFullTimestamp(new Date())
-    writePost({
-      timestamp: fullTimestamp,
-      firstName: loggedInUserFirstName,
-      lastName: loggedInUserLastName,
-      text: postInput,
-      image: imageAddedToPostFeed,
-      imageId: imageAddedToPostFeedId,
-      date: dateDayMonthYear,
-      likes: {},
-      dislikes: {},
-      comments: {},
-      userId: loggedInUserId,
-      publicPost: publicPost,
-    })
-    getGlobalPosts()
-    setPostInput('')
-    setImageAddedToPostFeed('')
-    resetTextarea()
-    setTextareaActive(false)
-  }
-
   return (
     <div>
       <BackgroundOuter />
@@ -305,7 +256,7 @@ function Public() {
                 setShowGlobalPosts(true)
                 setShowFriendsPosts(false)
                 setPostsLoaded(10)
-                setPublicPost(true)
+                setIsPublicPost(true)
               }}
             >
               <img src={showGlobalPosts ? globalWhiteEmpty : globalBlackEmpty} alt="" className="h-[28px]" />
@@ -321,7 +272,7 @@ function Public() {
                 setShowFriendsPosts(true)
                 setShowGlobalPosts(false)
                 setPostsLoaded(10)
-                setPublicPost(false)
+                setIsPublicPost(false)
               }}
             >
               <img src={showFriendsPosts ? starWhiteEmpty : starBlackFilled} alt="" className="h-[28px]" />
@@ -332,10 +283,17 @@ function Public() {
 
           {/* Make a post row */}
           {/* <MakePost /> */}
-          <div className="font-mainFont bg-white pb-1 pl-4 pt-3 font-semibold lg:pl-8">Create a Post</div>
+          {/* <div className="font-mainFont bg-white pb-1 pl-4 pt-3 font-semibold lg:pl-8">Create a Post</div> */}
           <ThinSeparatorLine />
+          <MakePost
+            postLocation={showGlobalPosts ? 'global' : 'friends'}
+            getPosts={showGlobalPosts ? getGlobalPosts : getFriendsPosts}
+            isPublicPost={showGlobalPosts ? true : false}
+            userPicture={loggedInUserProfilePicture}
+            visitingUser={false}
+          />
 
-          <section className="bg-white pl-3 pr-3 lg:pl-8 lg:pr-4">
+          {/* <section className="bg-white pl-3 pr-3 lg:pl-8 lg:pr-4">
             <div className="grid grid-cols-[50px,1fr,50px] items-center justify-items-center gap-3 pb-2 pt-3">
               <img
                 src={loggedInUserProfilePicture === '' ? emptyProfilePicture : loggedInUserProfilePicture}
@@ -391,10 +349,10 @@ function Public() {
               <div className={`${imageAddedToPostFeed ? '' : 'absolute'}`}></div>
               <div className={`${imageAddedToPostFeed ? '' : 'absolute'}`}>{displayUploadedImageOrNot()}</div>
               <div className={`${imageAddedToPostFeed ? '' : 'absolute'}`}></div>
-            </div>
+            </div> */}
 
-            {/* Post section */}
-            <div className="grid grid-cols-[50px,1fr,50px] items-center justify-items-center gap-3 pb-3">
+          {/* Post section */}
+          {/* <div className="grid grid-cols-[50px,1fr,50px] items-center justify-items-center gap-3 pb-3">
               <div></div>
               <div className="flex w-full items-center justify-around gap-4 lg:justify-between lg:gap-6">
                 <button
@@ -418,7 +376,7 @@ function Public() {
               </div>
             </div>
             <div></div>
-          </section>
+          </section> */}
           <div className="h-[7px] w-full bg-graySoft"></div>
 
           <AllPosts

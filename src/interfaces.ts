@@ -70,16 +70,16 @@ export interface PostData {
   userId: string
 }
 
+export interface GetPosts {
+  getPosts: () => Promise<void>
+}
+
 export interface FirstNameProp {
   firstName: string
 }
 
 export interface LastNameProp {
   lastName: string
-}
-
-export interface GetAllPosts {
-  getAllPosts: () => Promise<void>
 }
 
 export interface ProfilePicture {
