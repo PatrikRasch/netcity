@@ -232,7 +232,7 @@ function MakePost({ postLocation, getPosts, userPicture, visitingUser, isPublicP
       })
       getPosts()
     }
-    if (postLocation === 'global') {
+    if (postLocation !== 'profile') {
       writePublicPost({
         timestamp: fullTimestamp,
         firstName: loggedInUserFirstName,
@@ -265,11 +265,11 @@ function MakePost({ postLocation, getPosts, userPicture, visitingUser, isPublicP
         setShowValidationAlertMessage={setShowValidationAlertMessage}
       />
       <section className="bg-white pl-3 pr-3 lg:pl-8 lg:pr-4">
-        <div className="grid grid-cols-[50px,1fr,50px] items-center justify-items-center gap-3 pb-2 pt-3">
+        <div className="grid grid-cols-[55px,1fr,55px] items-center justify-items-center gap-3 pb-2 pt-3">
           <img
             src={loggedInUserProfilePicture === '' ? emptyProfilePicture : loggedInUserProfilePicture}
             alt=""
-            className="aspect-square h-[40px] w-[40px] rounded-[50px] object-cover lg:h-[55px] lg:w-[55px]"
+            className="h-[40px] w-[40px] cursor-pointer rounded-[50%] object-cover lg:h-[55px] lg:w-[55px]"
           />
           <textarea
             ref={textareaRef}
@@ -323,7 +323,7 @@ function MakePost({ postLocation, getPosts, userPicture, visitingUser, isPublicP
         </div>
 
         {/* Post section */}
-        <div className="grid grid-cols-[50px,1fr,50px] items-center justify-items-center gap-3 pb-3">
+        <div className="grid grid-cols-[55px,1fr,55px] items-center justify-items-center gap-3 pb-3">
           <div></div>
           <div className="flex w-full items-center justify-around gap-4 lg:justify-between lg:gap-6">
             <button
