@@ -1,14 +1,12 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState } from 'react'
 import BackgroundOuter from './BackgroundOuter'
 import AllPosts from './AllPosts'
 import ThinSeparatorLine from './ThinSeparatorLine'
 import FormValidationAlertMessage from './FormValidationAlertMessage'
 import MakePost from './MakePost'
 
-import { db, storage } from '../config/firebase.config'
-import { collection, doc, getDoc, addDoc, query, orderBy, onSnapshot, limit, Timestamp } from 'firebase/firestore'
-
-import { v4 as uuidv4 } from 'uuid'
+import { db } from '../config/firebase.config'
+import { collection, doc, getDoc, query, orderBy, onSnapshot, limit, Timestamp } from 'firebase/firestore'
 
 import imageGrayEmpty from './../assets/icons/image/imageGrayEmpty.webp'
 import globalBlackEmpty from './../assets/icons/global/globalBlackEmpty.svg'
@@ -17,15 +15,8 @@ import starBlackFilled from './../assets/icons/star/starBlackFilled.svg'
 import starWhiteEmpty from './../assets/icons/star/starWhiteEmpty.svg'
 
 import { useLoggedInUserId } from './context/LoggedInUserProfileDataContextProvider'
-import { useLoggedInUserFirstName } from './context/LoggedInUserProfileDataContextProvider'
-import { useLoggedInUserLastName } from './context/LoggedInUserProfileDataContextProvider'
 import { useLoggedInUserProfilePicture } from './context/LoggedInUserProfileDataContextProvider'
-import { useEmptyProfilePicture } from './context/EmptyProfilePictureContextProvider'
-import { useDateFunctions } from './custom-hooks/useDateFunctions'
 import useInfinityScrollFunctions from './custom-hooks/useInfinityScrollFunctions'
-import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage'
-
-import { imageSizeExceeded } from './utils/imageSizeUtils'
 
 interface PublicPostData {
   userId: string
@@ -45,29 +36,15 @@ interface PublicPostData {
 
 function Public() {
   const { loggedInUserId, setLoggedInUserId } = useLoggedInUserId()
-  const { loggedInUserFirstName, setLoggedInUserFirstName } = useLoggedInUserFirstName()
-  const { loggedInUserLastName, setLoggedInUserLastName } = useLoggedInUserLastName()
   const loggedInUserProfilePicture = useLoggedInUserProfilePicture()
-  const emptyProfilePicture = useEmptyProfilePicture()
-  const { dateDayMonthYear } = useDateFunctions()
-  const [postInput, setPostInput] = useState('')
-  const [postId, setPostId] = useState('')
   const [globalPosts, setGlobalPosts] = useState<PublicPostData[]>([])
   const [friendsPosts, setFriendsPosts] = useState<PublicPostData[]>([])
-  const [fullTimestamp, setFullTimestamp] = useState({})
   const [fetchingMorePosts, setFetchingMorePosts] = useState(false)
   const [postsLoaded, setPostsLoaded] = useState(10)
   const [showGlobalPosts, setShowGlobalPosts] = useState(true)
   const [showFriendsPosts, setShowFriendsPosts] = useState(false)
   const [isPublicPost, setIsPublicPost] = useState(true)
-  const [imageAddedToPostFeed, setImageAddedToPostFeed] = useState<string>('')
-  const [imageAddedToPostFeedId, setImageAddedToPostFeedId] = useState<string>('')
-  const [textareaActive, setTextareaActive] = useState(false)
-  const [validateMakePost, setValidateMakePost] = useState(false)
-  const [commandOrControlKeyDown, setCommandOrControlKeyDown] = useState(false)
   const [showValidationAlertMessage, setShowValidationAlertMessage] = useState(false)
-
-  const textareaRef = useRef<HTMLTextAreaElement | null>(null)
 
   //1 Gets the reference to the publicPosts collection
   const publicPostsCollection = collection(db, 'publicPosts')
@@ -136,17 +113,6 @@ function Public() {
   useEffect(() => {
     getFriendsPosts()
   }, [])
-
-  const changePostDestination = () => {
-    setIsPublicPost((prevMakePublicPost) => !prevMakePublicPost)
-  }
-
-  //6 changePostDestination is redundant atm due to postDestination not using publicPost state, but rather using showGlobalPosts
-
-  const postDestination = () => {
-    if (showGlobalPosts) return 'Public post'
-    else return 'Friends only'
-  }
 
   useInfinityScrollFunctions({
     fetchingMorePosts,
