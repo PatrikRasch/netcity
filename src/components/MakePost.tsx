@@ -22,6 +22,8 @@ import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage
 import imageGrayEmpty from './../assets/icons/image/imageGrayEmpty.webp'
 import imageBlackEmpty from './../assets/icons/image/imageBlackEmpty.webp'
 import userGrayFilled from './../assets/icons/user/userGrayFilled.svg'
+import globalBlackEmpty from './../assets/icons/global/globalBlackEmpty.svg'
+import starBlackFilled from './../assets/icons/star/starBlackFilled.svg'
 
 import { imageSizeExceeded } from './utils/imageSizeUtils'
 
@@ -31,9 +33,10 @@ interface Props {
   visitingUser: VisitingUser['visitingUser']
   userPicture: string
   isPublicPost: boolean
+  showGlobalPosts?: boolean
 }
 
-function MakePost({ postLocation, getPosts, userPicture, visitingUser, isPublicPost }: Props) {
+function MakePost({ postLocation, getPosts, userPicture, visitingUser, isPublicPost, showGlobalPosts }: Props) {
   const [postInput, setPostInput] = useState('')
   const [postId, setPostId] = useState('')
   const { openProfileId } = useParams()
@@ -255,6 +258,19 @@ function MakePost({ postLocation, getPosts, userPicture, visitingUser, isPublicP
     setTextareaActive(false)
   }
 
+  const displayPostLocation = () => {
+    if (postLocation === 'profile') return 'Profile post'
+    if (postLocation === 'global') return 'Public post'
+    if (postLocation === 'friends') return 'Friends only'
+    return ''
+  }
+
+  const displayPostLocationIcon = () => {
+    if (postLocation === 'profile') return userGrayFilled
+    if (postLocation === 'global') return globalBlackEmpty
+    if (postLocation === 'friends') return starBlackFilled
+  }
+
   return (
     <div>
       <div className="font-mainFont bg-white pb-1 pl-4 pt-3 font-semibold lg:pl-8">Create a Post</div>
@@ -335,9 +351,9 @@ function MakePost({ postLocation, getPosts, userPicture, visitingUser, isPublicP
               Post
             </button>
             <button className="grid h-[30px] w-[50%] cursor-default grid-cols-[20px,77px] items-center justify-center rounded-3xl bg-graySoft pl-2 pr-2 text-[clamp(12px,1svw,20px)] text-textMain lg:flex lg:h-[38px] lg:w-[clamp(30%,15vw,280px)] lg:grid-cols-[20px,65px] lg:gap-2">
-              <img src={userGrayFilled} alt="" className="w-[20px] lg:w-[30px]" />
+              <img src={displayPostLocationIcon()} alt="" className="w-[20px] lg:w-[30px]" />
               <div className="font-mainFont mt-[1px] w-full whitespace-nowrap text-center font-semibold lg:mt-0 lg:w-min">
-                Profile Post
+                {displayPostLocation()}
               </div>
             </button>
           </div>
