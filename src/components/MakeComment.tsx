@@ -49,6 +49,7 @@ function MakeComment({
   const { dateDayMonthYear } = useDateFunctions()
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
   const [validateMakeComment, setValidateMakeComment] = useState(false)
+  const [commandOrControlKeyDown, setCommandOrControlKeyDown] = useState(false)
 
   const postComment = async (commentData: {
     timestamp: object
@@ -95,6 +96,13 @@ function MakeComment({
     textarea.rows = 1
   }
 
+  const handleKeyDown = (e: any) => {
+    if (e.key === 'Meta' || e.key === 'Control') setCommandOrControlKeyDown(true)
+  }
+  const handleKeyUp = (e: any) => {
+    if (e.key === 'Meta' || e.key === 'Control') setCommandOrControlKeyDown(false)
+  }
+
   return (
     <div className="grid grid-cols-[50px,1fr,50px] items-center pb-3 pt-3 lg:grid-cols-[50px,1fr,40px] lg:gap-4">
       <img
@@ -118,6 +126,30 @@ function MakeComment({
             setPostCommentInput(e.target.value)
             handleTextareaChange()
             setFullTimestamp(new Date())
+          }}
+          onKeyDown={(e) => {
+            handleKeyDown(e)
+            if (e.key === 'Enter' && commandOrControlKeyDown) {
+              postComment({
+                timestamp: fullTimestamp,
+                firstName: loggedInUserFirstName,
+                lastName: loggedInUserLastName,
+                text: postCommentInput,
+                date: dateDayMonthYear,
+                likes: {},
+                dislikes: {},
+                userId: loggedInUserId,
+                postId: postId,
+              })
+              setPostTotalNumOfComments(postTotalNumOfComments + 1)
+              if (context === 'feed') getNumOfComments(feedPostDocRef)
+              if (context === 'profile') getNumOfComments(profilePostDocRef)
+              setPostCommentInput('')
+              resetTextarea()
+            }
+          }}
+          onKeyUp={(e) => {
+            handleKeyUp(e)
           }}
           rows={1}
         ></textarea>
