@@ -19,6 +19,7 @@ import { db, storage } from './../config/firebase.config'
 import { doc, addDoc, collection } from 'firebase/firestore'
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage'
 
+import closeGrayFilled from './../assets/icons/close/closeGrayFilled.svg'
 import imageGrayEmpty from './../assets/icons/image/imageGrayEmpty.webp'
 import imageBlackEmpty from './../assets/icons/image/imageBlackEmpty.webp'
 import userGrayFilled from './../assets/icons/user/userGrayFilled.svg'
@@ -165,12 +166,12 @@ function MakePost({ postLocation, getPosts, userPicture, visitingUser, isPublicP
           <div className="relative">
             <img src={imageAddedToPost} alt="" className="rounded-xl p-[3px] shadow-xl" />
             <div
-              className="absolute right-[15px] top-[15px] flex h-[22px] w-[22px] items-center justify-center rounded-[50%] bg-white opacity-90 drop-shadow-xl hover:cursor-pointer"
+              className="absolute right-[15px] top-[15px] flex items-center justify-center rounded-[50%] bg-white drop-shadow-lg hover:cursor-pointer"
               onClick={() => {
                 deleteImageAddedToPost()
               }}
             >
-              X
+              <img src={closeGrayFilled} alt="exit register" className="w-[30px] lg:w-[35px]" />
             </div>
           </div>
         </div>
