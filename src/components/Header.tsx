@@ -50,6 +50,7 @@ const Header = ({ feedOpen, setFeedOpen, peopleOpen, setPeopleOpen }: Props) => 
         <div
           className="cursor-pointer justify-self-center"
           onClick={() => {
+            if (feedOpen) window.scrollTo({ top: 0, behavior: 'smooth' })
             navigate('/public')
           }}
         >
@@ -69,6 +70,7 @@ const Header = ({ feedOpen, setFeedOpen, peopleOpen, setPeopleOpen }: Props) => 
         <div
           className="cursor-pointer justify-self-center"
           onClick={() => {
+            if (peopleOpen) window.scrollTo({ top: 0, behavior: 'smooth' })
             navigate('/people')
           }}
         >
@@ -99,6 +101,7 @@ const Header = ({ feedOpen, setFeedOpen, peopleOpen, setPeopleOpen }: Props) => 
             alt=""
             className="aspect-square max-h-[55px] cursor-pointer justify-self-center rounded-[50px] object-cover"
             onClick={() => {
+              if (profileOpen) window.scrollTo({ top: 0, behavior: 'smooth' })
               navigate(`/profile/${loggedInUserId}`)
             }}
           />
