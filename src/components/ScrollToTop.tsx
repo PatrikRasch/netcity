@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
 
-import arrowUpCircle from '../assets/icons/arrowUp/arrowUpCircle.svg'
+import arrowUpCircle from '../assets/icons/arrowUp/arrowUpCircle.png'
 
 function ScrollToTop() {
   const [yScrollOver1000, setYScrollOver1000] = useState(false)
+  const [scrollToTopClicked, setScrollToTopClicked] = useState(false)
 
   window.onscroll = () => {
     if (window.scrollY > 1500) setYScrollOver1000(true)
@@ -12,19 +13,18 @@ function ScrollToTop() {
 
   return (
     <div
-      className={`fixed left-1/2 top-[120px] z-10 translate-x-[-50%] ${
-        yScrollOver1000 ? '' : 'pointer-events-none opacity-0'
-      } transition-opacity duration-500`}
+      className={`fixed left-1/2 top-[100px] z-10 translate-x-[-50%] cursor-pointer opacity-70 transition-transform duration-1000 ease-in-out hover:opacity-100 ${
+        yScrollOver1000 ? '' : 'pointer-events-none translate-y-[-90px] opacity-0'
+      }`}
+      onClick={() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+        setScrollToTopClicked(true)
+        setTimeout(() => {
+          setScrollToTopClicked(false)
+        }, 1000)
+      }}
     >
-      <img
-        src={arrowUpCircle}
-        alt=""
-        className="w-[40px] cursor-pointer"
-        onClick={() => {
-          window.scrollTo({ top: 0, behavior: 'smooth' })
-        }}
-      />
-      {/* <img src={arrowUpCircle} alt="" className="absolute w-[45px]" /> */}
+      <img src={arrowUpCircle} alt="" className={`w-[30px] ${scrollToTopClicked ? 'animate-scroll-up-clicked' : ''}`} />
     </div>
   )
 }
