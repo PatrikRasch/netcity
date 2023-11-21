@@ -4,9 +4,10 @@ import BackgroundOuter from './BackgroundOuter'
 import SearchPeople from './SearchPeople'
 import PeopleUser from './PeopleUser'
 import ThinSeparatorLine from './ThinSeparatorLine'
+import ScrollToTop from './ScrollToTop'
 
 import { db } from './../config/firebase.config'
-import { DocumentData, collection, doc, getDoc, getDocs, updateDoc } from 'firebase/firestore'
+import { DocumentData, collection, doc, getDoc, getDocs } from 'firebase/firestore'
 
 import { useLoggedInUserId } from './context/LoggedInUserProfileDataContextProvider'
 
@@ -373,6 +374,7 @@ const People = () => {
 
   return (
     <div>
+      <ScrollToTop />
       <BackgroundOuter />
       <div className="items-start lg:grid lg:justify-center lg:bg-graySoft">
         <div className="min-h-[calc(100svh-80px)] bg-white">
@@ -422,7 +424,7 @@ const People = () => {
                 }}
               >
                 <div
-                  className={`absolute left-[85%] top-[-10%] flex h-[18px] w-[18px] items-center justify-center rounded-[50%] bg-red-500 text-white lg:rounded-3xl lg:p-2 ${
+                  className={`absolute left-[85%] top-[-10%] flex h-[18px] w-[18px] items-center justify-center rounded-[50%] bg-red-500 text-white lg:p-2 ${
                     numOfReceivedFriendRequests > 0 ? 'opacity-1' : 'opacity-0'
                   }`}
                 >

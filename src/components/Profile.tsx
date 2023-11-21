@@ -24,6 +24,7 @@ import ThinSeparatorLine from './ThinSeparatorLine'
 import ThickSeparatorLine from './ThickSeparatorLine'
 import FormValidationAlertMessage from './FormValidationAlertMessage'
 import LoadingBar from './LoadingBar'
+import ScrollToTop from './ScrollToTop'
 //- Image imports
 import globalWhiteEmpty from '../assets/icons/global/globalWhiteEmpty.svg'
 import lockWithCirclePurple from '../assets/icons/lockCircle/lockWithCirclePurple.webp'
@@ -731,6 +732,7 @@ const Profile = ({ viewProfilePicture, setViewProfilePicture, otherProfilePictur
 
   return (
     <div>
+      <ScrollToTop />
       <FormValidationAlertMessage
         message={'Image size must be smaller than 2MB'}
         showValidationAlertMessage={showValidationAlertMessage}

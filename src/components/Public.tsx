@@ -17,6 +17,7 @@ import starWhiteEmpty from './../assets/icons/star/starWhiteEmpty.svg'
 import { useLoggedInUserId } from './context/LoggedInUserProfileDataContextProvider'
 import { useLoggedInUserProfilePicture } from './context/LoggedInUserProfileDataContextProvider'
 import useInfinityScrollFunctions from './custom-hooks/useInfinityScrollFunctions'
+import ScrollToTop from './ScrollToTop'
 
 interface PublicPostData {
   userId: string
@@ -124,6 +125,7 @@ function Public() {
 
   return (
     <div>
+      <ScrollToTop />
       <BackgroundOuter />
       <FormValidationAlertMessage
         message={'Image size must be smaller than 2MB'}
@@ -178,6 +180,7 @@ function Public() {
             isPublicPost={showGlobalPosts ? true : false}
             userPicture={loggedInUserProfilePicture}
             visitingUser={false}
+            showGlobalPosts={showGlobalPosts}
           />
           {/* All posts row */}
           <AllPosts
