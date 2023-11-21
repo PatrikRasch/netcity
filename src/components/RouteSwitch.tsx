@@ -49,7 +49,7 @@ function RouteSwitch() {
           />
         </div>
 
-        <div className="fixed z-10">
+        <div className="fixed z-20">
           <Header feedOpen={feedOpen} setFeedOpen={setFeedOpen} peopleOpen={peopleOpen} setPeopleOpen={setPeopleOpen} />
         </div>
         <div className="h-[80px]"></div>
