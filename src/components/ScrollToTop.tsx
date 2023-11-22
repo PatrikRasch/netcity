@@ -5,10 +5,13 @@ import arrowUpCircle from '../assets/icons/arrowUp/arrowUpCircle.png'
 function ScrollToTop() {
   const [yScrollOver1000, setYScrollOver1000] = useState(false)
   const [scrollToTopClicked, setScrollToTopClicked] = useState(false)
+  const [lastScrollValue, setLastScrollValue] = useState(0)
 
-  window.onscroll = () => {
+  window.onscroll = (e) => {
     if (window.scrollY > 1500) setYScrollOver1000(true)
     if (window.scrollY < 1500) setYScrollOver1000(false)
+    if (window.scrollY < lastScrollValue) setYScrollOver1000(false)
+    setLastScrollValue(window.scrollY)
   }
 
   return (
