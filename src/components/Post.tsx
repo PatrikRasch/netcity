@@ -419,7 +419,7 @@ const Post = ({
           </button>
         </div>
       )
-    if (displayFullPostText) return postText
+    if (displayFullPostText) return <div className="whitespace-pre-wrap">{postText}</div>
   }
 
   const renderAllCommentsOnPost = () => {
