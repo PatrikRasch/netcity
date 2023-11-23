@@ -243,7 +243,7 @@ const Post = ({
     setDisliked(false) // Set liked to false, makes heart empty
     // Frontend updates
     delete (postDislikes as { [key: string]: boolean })[loggedInUserId] // Remove the userId from postLikes
-    setPostNumOfDislikes(-Object.keys(postDislikes).length) // Update state for number of likes to display
+    setPostNumOfDislikes(Object.keys(postDislikes).length) // Update state for number of likes to display
     // Backend updates:
     delete (postData?.dislikes as { [key: string]: boolean })[loggedInUserId] // Delete the userId from the postData object
     const newDislikes = { ...postData?.dislikes } // Define new object to hold the likes
