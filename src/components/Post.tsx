@@ -405,36 +405,21 @@ const Post = ({
   }
 
   const displayFullPostOrNot = () => {
-    if (displayFullPostText && postText.length > 300)
+    if (postText.length > 300)
       return (
-        <div>
-          <div className="font-mainFont">{postText + ' '}</div>
-          <span className="text-purpleMain">
-            <button
-              onClick={() => {
-                setDisplayFullPostText(false)
-              }}
-            >
-              see less
-            </button>
-          </span>
+        <div className="whitespace-pre-wrap">
+          <span className="font-mainFont">{displayFullPostText ? postText + ' ' : postText.slice(0, 300) + ' '}</span>
+          <button
+            className="text-purpleMain"
+            onClick={() => {
+              setDisplayFullPostText((prevDisplayFullPostText) => !prevDisplayFullPostText)
+            }}
+          >
+            {displayFullPostText ? 'see less' : '... see more'}
+          </button>
         </div>
       )
     if (displayFullPostText) return postText
-    return (
-      <div className="font-mainFont">
-        {postText.slice(0, 300) + ' '}
-        <span className="text-purpleMain">
-          <button
-            onClick={() => {
-              setDisplayFullPostText(true)
-            }}
-          >
-            ... see more
-          </button>
-        </span>
-      </div>
-    )
   }
 
   const renderAllCommentsOnPost = () => {
