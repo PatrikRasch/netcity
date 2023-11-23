@@ -405,6 +405,13 @@ const Post = ({
   }
 
   const displayFullPostOrNot = () => {
+    while (/^\s+/.test(postText)) {
+      postText = postText.slice(1)
+    }
+    while (/\n{4,}/.test(postText)) {
+      const index = postText.search(/\n{4,}/)
+      postText = postText.slice(0, index) + postText.slice(index + 1)
+    }
     if (postText.length > 300)
       return (
         <div className="whitespace-pre-wrap">
@@ -419,7 +426,9 @@ const Post = ({
           </button>
         </div>
       )
-    if (displayFullPostText) return <div className="whitespace-pre-wrap">{postText}</div>
+    if (displayFullPostText) {
+      return <div className="whitespace-pre-wrap">{postText}</div>
+    }
   }
 
   const renderAllCommentsOnPost = () => {
