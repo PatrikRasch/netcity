@@ -216,7 +216,7 @@ const Comment = ({
                 <div className="gap-4 hyphens-auto">{commentText}</div>
               </div>
               {/* DESKTOP */}
-              <div className="flex hidden flex-col lg:block">
+              <div className="hidden flex-col lg:block">
                 <div className="flex items-center gap-2">
                   <div
                     className="max-w-min cursor-pointer whitespace-nowrap text-[14px] font-bold"
@@ -226,7 +226,7 @@ const Comment = ({
                   >
                     {commentFirstName + ' ' + commentLastName}
                   </div>
-                  <div className="text-[11px] text-grayMain">{timeSincePosted()}</div>
+                  <div className="mt-[2px] text-[11px] text-grayMain">{timeSincePosted()}</div>
                 </div>
                 <div className="gap-4 hyphens-auto">{commentText}</div>
               </div>
