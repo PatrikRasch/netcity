@@ -5,8 +5,10 @@ import Dislikes from './Dislikes'
 import DeletePost from './DeletePost'
 import { useParams } from 'react-router-dom'
 
+import firebase from 'firebase/compat/app'
+
 import { db } from './../config/firebase.config'
-import { collection, doc, getDoc, deleteDoc, updateDoc, DocumentReference } from 'firebase/firestore'
+import { collection, doc, getDoc, deleteDoc, updateDoc, DocumentReference, Timestamp } from 'firebase/firestore'
 import { useEmptyProfilePicture } from './context/EmptyProfilePictureContextProvider'
 
 // import { useCommentLikingFunctions } from "./custom-hooks/useCommentLikingFunctions";
@@ -20,6 +22,7 @@ interface Props {
   commentLastName: string
   commentText: string
   commentDate: string
+  commentTimestamp: Timestamp
   commentLikes: object
   commentDislikes: object
   commentById: string
@@ -40,6 +43,7 @@ const Comment = ({
   commentLastName,
   commentText,
   commentDate,
+  commentTimestamp,
   commentLikes,
   commentDislikes,
   commentById,
@@ -125,6 +129,25 @@ const Comment = ({
     }
   }
 
+  const timeSincePosted = () => {
+    const currentDate = firebase.firestore.Timestamp.fromDate(new Date())
+    const hoursSincePosted = Math.floor((currentDate.seconds - commentTimestamp.seconds) / 60 / 60)
+    const minutesSincePosted = Math.floor((currentDate.seconds - commentTimestamp.seconds) / 60)
+    const secondsSincePosted = Math.floor(currentDate.seconds - commentTimestamp.seconds)
+    if (secondsSincePosted < 60) {
+      return 'Less than 1 minute ago'
+    }
+    if (minutesSincePosted < 60) {
+      if (minutesSincePosted === 1) return minutesSincePosted + ' minute ago'
+      return minutesSincePosted + ' minutes ago'
+    }
+    if (hoursSincePosted < 24) {
+      if (hoursSincePosted === 1) return hoursSincePosted + ' hour ago'
+      return hoursSincePosted + ' hours ago'
+    }
+    return commentDate
+  }
+
   const getCommentProfilePicture = async (userId: string) => {
     if (!userId) return <h1>Loading...</h1>
     const usersDoc = doc(db, 'users', userId)
@@ -189,7 +212,7 @@ const Comment = ({
                 >
                   {commentFirstName + ' ' + commentLastName}
                 </div>
-                <div className="text-[11px] text-grayMain">{commentDate}</div>
+                <div className="text-[11px] text-grayMain">{timeSincePosted()}</div>
                 <div className="gap-4 hyphens-auto">{commentText}</div>
               </div>
               {/* DESKTOP */}
@@ -203,7 +226,7 @@ const Comment = ({
                   >
                     {commentFirstName + ' ' + commentLastName}
                   </div>
-                  <div className="text-[11px] text-grayMain">{commentDate}</div>
+                  <div className="text-[11px] text-grayMain">{timeSincePosted()}</div>
                 </div>
                 <div className="gap-4 hyphens-auto">{commentText}</div>
               </div>
