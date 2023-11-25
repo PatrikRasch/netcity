@@ -77,6 +77,10 @@ module.exports = {
           '0%': { transform: 'translateY(0)' },
           '25%': { transform: 'translateY(-80px)' },
         },
+        'rotate-90': {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(90deg)' },
+        },
       },
       animation: {
         'slide-in-and-out1': 'slide-in-and-out 8s ease-in-out 1.5s infinite',
@@ -95,6 +99,8 @@ module.exports = {
         'delete-post-bounce2': 'delete-post-bounce 0.5s ease-in-out 0.05s both',
         'delete-post-bounce3': 'delete-post-bounce 0.5s ease-in-out 0.1s both',
         'scroll-up-clicked': 'scroll-up-clicked 2.4s ease-in-out',
+        'rotate-90': 'rotate-90 0.3s ease-in-out forwards',
+        'remove-image-clicked': 'rotate-90 0.3s linear infinite',
       },
     },
   },
