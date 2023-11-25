@@ -55,6 +55,8 @@ function MakePost({ postLocation, getPosts, userPicture, visitingUser, isPublicP
   const [commandOrControlKeyDown, setCommandOrControlKeyDown] = useState(false)
   const [showValidationAlertMessage, setShowValidationAlertMessage] = useState(false)
   const [showLoadingBar, setShowLoadingBar] = useState(false)
+  const [removeImageFromPostMouseEntered, setRemoveImageFromPostMouseEntered] = useState(false)
+  const [removeImageFromPostClicked, setRemoveImageFromPostClicked] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
 
   //1 Gets the reference to the postsProfile collection for the user
@@ -166,12 +168,27 @@ function MakePost({ postLocation, getPosts, userPicture, visitingUser, isPublicP
           <div className="relative">
             <img src={imageAddedToPost} alt="" className="rounded-xl p-[3px] shadow-xl" />
             <div
-              className="absolute right-[15px] top-[15px] flex items-center justify-center rounded-[50%] bg-white drop-shadow-lg hover:cursor-pointer"
+              className={`absolute right-[15px] top-[15px] flex items-center justify-center rounded-[50%] drop-shadow-lg transition-colors duration-300 ease-in-out hover:cursor-pointer hover:bg-black ${
+                removeImageFromPostClicked ? 'pointer-events-none bg-black hover:cursor-default' : 'bg-white'
+              }`}
               onClick={() => {
                 deleteImageAddedToPost()
+                setRemoveImageFromPostClicked(true)
               }}
             >
-              <img src={closeGrayFilled} alt="exit register" className="w-[30px] lg:w-[35px]" />
+              <img
+                src={closeGrayFilled}
+                alt="exit register"
+                className={`w-[30px] lg:w-[35px] ${removeImageFromPostMouseEntered ? 'animate-rotate-90' : ''} ${
+                  removeImageFromPostClicked ? 'animate-remove-image-clicked' : ''
+                }`}
+                onMouseEnter={() => {
+                  setRemoveImageFromPostMouseEntered(true)
+                  setTimeout(() => {
+                    setRemoveImageFromPostMouseEntered(false)
+                  }, 300)
+                }}
+              />
             </div>
           </div>
         </div>
@@ -185,9 +202,11 @@ function MakePost({ postLocation, getPosts, userPicture, visitingUser, isPublicP
         const postImageRef = ref(storage, `postImages/${imageAddedToPostId}`)
         await deleteObject(postImageRef)
         setImageAddedToPost('')
+        setRemoveImageFromPostClicked(false)
       }
     } catch (err) {
       console.error(err)
+      setRemoveImageFromPostClicked(false)
     }
   }
 
