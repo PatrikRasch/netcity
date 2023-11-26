@@ -18,6 +18,7 @@ import { useLoggedInUserId } from './context/LoggedInUserProfileDataContextProvi
 import { useLoggedInUserProfilePicture } from './context/LoggedInUserProfileDataContextProvider'
 import useInfinityScrollFunctions from './custom-hooks/useInfinityScrollFunctions'
 import ScrollToTop from './ScrollToTop'
+import MakePostActivator from './MakePostActivator'
 
 interface PublicPostData {
   userId: string
@@ -126,6 +127,7 @@ function Public() {
   return (
     <div>
       <ScrollToTop />
+      <MakePostActivator />
       <BackgroundOuter />
       <FormValidationAlertMessage
         message={'Image size must be smaller than 2MB'}
