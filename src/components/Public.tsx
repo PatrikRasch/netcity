@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import BackgroundOuter from './BackgroundOuter'
 import AllPosts from './AllPosts'
 import ThinSeparatorLine from './ThinSeparatorLine'
@@ -36,6 +36,10 @@ interface PublicPostData {
   publicPost: boolean
 }
 
+interface MakePostTextAreaRef {
+  focusInput: () => void
+}
+
 function Public() {
   const { loggedInUserId, setLoggedInUserId } = useLoggedInUserId()
   const loggedInUserProfilePicture = useLoggedInUserProfilePicture()
@@ -47,6 +51,7 @@ function Public() {
   const [showFriendsPosts, setShowFriendsPosts] = useState(false)
   const [isPublicPost, setIsPublicPost] = useState(true)
   const [showValidationAlertMessage, setShowValidationAlertMessage] = useState(false)
+  const makePostTextareaRef = useRef<MakePostTextAreaRef>(null)
 
   //1 Gets the reference to the publicPosts collection
   const publicPostsCollection = collection(db, 'publicPosts')
@@ -124,10 +129,14 @@ function Public() {
     getGlobalPosts,
   })
 
+  const focusMakePostTextarea = () => {
+    if (makePostTextareaRef.current) makePostTextareaRef.current.focusInput()
+  }
+
   return (
     <div>
       <ScrollToTop />
-      <MakePostActivator />
+      <MakePostActivator focusMakePostTextarea={focusMakePostTextarea} />
       <BackgroundOuter />
       <FormValidationAlertMessage
         message={'Image size must be smaller than 2MB'}
@@ -183,6 +192,7 @@ function Public() {
             userPicture={loggedInUserProfilePicture}
             visitingUser={false}
             showGlobalPosts={showGlobalPosts}
+            ref={makePostTextareaRef}
           />
           {/* All posts row */}
           <AllPosts
