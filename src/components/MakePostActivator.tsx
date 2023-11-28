@@ -41,15 +41,11 @@ function MakePostActivator({ focusMakePostTextarea }: Props) {
       className={`fixed bottom-[5%] right-[5%] z-10 cursor-pointer rounded-[50%] bg-purpleMain p-4 transition-opacity duration-300 ease-in-out hover:opacity-100 lg:bottom-[7%] lg:right-[7%] ${
         yScrollOver500 ? 'opacity-100 lg:opacity-80' : 'pointer-events-none opacity-0'
       }`}
+      onClick={() => {
+        handleScrollToTop()
+      }}
     >
-      <img
-        src={postsWhiteEmpty}
-        alt=""
-        className="w-[40px] lg:w-[50px]"
-        onClick={() => {
-          handleScrollToTop()
-        }}
-      />
+      <img src={postsWhiteEmpty} alt="" className="w-[40px] lg:w-[50px]" />
     </div>
   )
 }
