@@ -1,22 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import AllCommentsOnPost from './AllCommentsOnPost'
-import MakeComment from './MakeComment'
-import Likes from './Likes'
-import Dislikes from './Dislikes'
-import DeletePost from './DeletePost'
-import ThinSeparatorLine from './ThinSeparatorLine'
-
 import firebase from 'firebase/compat/app'
-
-import { useDateFunctions } from './custom-hooks/useDateFunctions'
-
-import commentGrayEmpty from './../assets/icons/comment/commentGrayEmpty.svg'
-import commentWhiteFilled from './../assets/icons/comment/commentWhiteFilled.svg'
-import starBlackFilled from './../assets/icons/star/starBlackFilled.svg'
-import globalBlackEmpty from './../assets/icons/global/globalBlackEmpty.svg'
-import triangleBlackFilled from './../assets/icons/triangle/triangleBlackFilled.svg'
-
+import { ref, deleteObject } from 'firebase/storage'
 import { db, storage } from './../config/firebase.config'
 import {
   doc,
@@ -31,11 +16,28 @@ import {
   DocumentReference,
   Timestamp,
 } from 'firebase/firestore'
-import { ref, deleteObject } from 'firebase/storage'
+
+// - Component imports
+import AllCommentsOnPost from './AllCommentsOnPost'
+import MakeComment from './MakeComment'
+import Likes from './Likes'
+import Dislikes from './Dislikes'
+import DeletePost from './DeletePost'
+import ThinSeparatorLine from './ThinSeparatorLine'
+// - Image imports
+import commentGrayEmpty from './../assets/icons/comment/commentGrayEmpty.svg'
+import commentWhiteFilled from './../assets/icons/comment/commentWhiteFilled.svg'
+import starBlackFilled from './../assets/icons/star/starBlackFilled.svg'
+import globalBlackEmpty from './../assets/icons/global/globalBlackEmpty.svg'
+import triangleBlackFilled from './../assets/icons/triangle/triangleBlackFilled.svg'
+// - Context imports
 import { useEmptyProfilePicture } from './context/EmptyProfilePictureContextProvider'
 import { useLoggedInUserId } from './context/LoggedInUserProfileDataContextProvider'
-import { TargetData, CommentData } from '../interfaces'
+// - Custom hook imports
+import { useDateFunctions } from './custom-hooks/useDateFunctions'
 
+// - Interfaces
+import { TargetData, CommentData } from '../interfaces'
 interface Props {
   postFirstName: string
   postLastName: string

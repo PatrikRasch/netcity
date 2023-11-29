@@ -1,25 +1,27 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { db } from '../config/firebase.config'
+import { collection, doc, getDoc, query, orderBy, onSnapshot, limit, Timestamp } from 'firebase/firestore'
+
+// - Component imports
 import BackgroundOuter from './BackgroundOuter'
 import AllPosts from './AllPosts'
 import ThinSeparatorLine from './ThinSeparatorLine'
 import FormValidationAlertMessage from './FormValidationAlertMessage'
 import MakePost from './MakePost'
-
-import { db } from '../config/firebase.config'
-import { collection, doc, getDoc, query, orderBy, onSnapshot, limit, Timestamp } from 'firebase/firestore'
-
-import imageGrayEmpty from './../assets/icons/image/imageGrayEmpty.webp'
+import ScrollToTop from './ScrollToTop'
+import MakePostActivator from './MakePostActivator'
+// - Image imports
 import globalBlackEmpty from './../assets/icons/global/globalBlackEmpty.svg'
 import globalWhiteEmpty from './../assets/icons/global/globalWhiteEmpty.svg'
 import starBlackFilled from './../assets/icons/star/starBlackFilled.svg'
 import starWhiteEmpty from './../assets/icons/star/starWhiteEmpty.svg'
-
+// - Context imports
 import { useLoggedInUserId } from './context/LoggedInUserProfileDataContextProvider'
 import { useLoggedInUserProfilePicture } from './context/LoggedInUserProfileDataContextProvider'
+// - Custom hook imports
 import useInfinityScrollFunctions from './custom-hooks/useInfinityScrollFunctions'
-import ScrollToTop from './ScrollToTop'
-import MakePostActivator from './MakePostActivator'
 
+// - Interfaces
 interface PublicPostData {
   userId: string
   firstName: string
@@ -35,14 +37,15 @@ interface PublicPostData {
   id: string
   publicPost: boolean
 }
-
 interface MakePostTextAreaRef {
   focusInput: () => void
 }
 
 function Public() {
+  // Contexts
   const { loggedInUserId, setLoggedInUserId } = useLoggedInUserId()
   const loggedInUserProfilePicture = useLoggedInUserProfilePicture()
+  // States
   const [globalPosts, setGlobalPosts] = useState<PublicPostData[]>([])
   const [friendsPosts, setFriendsPosts] = useState<PublicPostData[]>([])
   const [fetchingMorePosts, setFetchingMorePosts] = useState(false)
@@ -51,6 +54,7 @@ function Public() {
   const [showFriendsPosts, setShowFriendsPosts] = useState(false)
   const [isPublicPost, setIsPublicPost] = useState(true)
   const [showValidationAlertMessage, setShowValidationAlertMessage] = useState(false)
+  // Refs
   const makePostTextareaRef = useRef<MakePostTextAreaRef>(null)
 
   //1 Gets the reference to the publicPosts collection
